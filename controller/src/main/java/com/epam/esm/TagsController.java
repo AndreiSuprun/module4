@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -29,13 +30,13 @@ public class TagsController {
     }
 
     @GetMapping("/tags/{id}")
-    Tag one(@PathVariable Long id) {
+    Tag one(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
 
         return tagService.find(id).orElseThrow(() -> new NotFoundException("tag.notfound", id));
     }
 
     @DeleteMapping("/tags/{id}")
-    void delete(@PathVariable Long id) {
+    void delete(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
         tagService.delete(id);
     }
 }

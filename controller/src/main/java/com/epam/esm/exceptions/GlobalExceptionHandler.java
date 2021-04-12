@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiResponse.setErrorCode("40401");
         apiResponse.setErrorMessage(ex.getLocalizedMessage());
 
-        return new ResponseEntity <CustomErrorResponse> (apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<CustomErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({NotFoundException.class})
@@ -33,14 +35,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiResponse.setErrorCode("40401");
         apiResponse.setErrorMessage(ex.getLocalizedMessage());
 
-        return new ResponseEntity <CustomErrorResponse> (apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<CustomErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
-
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("errorCode", "40001");
         List<String> errors = ex.getBindingResult().getFieldErrors()
@@ -51,10 +52,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("errorMessage", errors);
 
         return new ResponseEntity<>(body, headers, status);
-}
+    }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public void constraintViolationException(HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<Object> handleConstraintViolation(
+            ConstraintViolationException ex, WebRequest request) {
+        List<String> errors = new ArrayList<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            errors.add(violation.getRootBeanClass().getName() + " " +
+                    violation.getPropertyPath() + ": " + violation.getMessage());
+        }
+        CustomErrorResponse apiResponse = new CustomErrorResponse();
+        apiResponse.setErrorCode("40001");
+        apiResponse.setErrorMessage(ex.getLocalizedMessage());
+        return new ResponseEntity<>(
+                apiResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
-    }
+}
