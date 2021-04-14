@@ -1,9 +1,10 @@
-package com.epam.esm;
+package com.epam.esm.controller;
 
+import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.exceptions.NotFoundException;
+import com.epam.esm.controller.exception.NotFoundException;
 
-import com.epam.esm.exceptions.UnsupportedPatchOperationException;
+import com.epam.esm.controller.exception.UnsupportedPatchOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,38 +20,40 @@ import java.util.Set;
 
 @RestController
 @Validated
+@RequestMapping("/gift_certificates")
 public class GiftCertificatesController {
 
-    private final GiftCertificatesService giftCertificatesService;
-    private final String CREATE_DATE = "create_date";
-    private final String LAST_UPDATE_DATE = "last_update_date";
+    private GiftCertificatesService giftCertificatesService;
+    private static final String CREATE_DATE = "create_date";
+    private static final String LAST_UPDATE_DATE = "last_update_date";
 
-    public GiftCertificatesController(@Autowired GiftCertificatesService giftCertificateService) {
+    @Autowired
+    public GiftCertificatesController(GiftCertificatesService giftCertificateService) {
         this.giftCertificatesService = giftCertificateService;
     }
 
-    @GetMapping("/gift_certificates")
-    List<GiftCertificate> all() {
+    @GetMapping
+    public List<GiftCertificate> getAll() {
         return giftCertificatesService.findAll();
     }
 
-    @PostMapping("/gift_certificates")
-    GiftCertificate newGiftCertificate(@Valid @RequestBody GiftCertificate newCertificate) {
+    @PostMapping
+    public GiftCertificate addGiftCertificate(@Valid @RequestBody GiftCertificate newCertificate) {
         return giftCertificatesService.add(newCertificate);
     }
 
-    @GetMapping("/gift_certificates/{id}")
-    GiftCertificate one(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
+    @GetMapping("/{id}")
+    public GiftCertificate getOne(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
         return giftCertificatesService.find(id).orElseThrow(() -> new NotFoundException("certificate.notfound", id));
     }
 
-    @DeleteMapping("/gift_certificates/{id}")
-    void delete(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
         giftCertificatesService.delete(id);
     }
 
-    @PutMapping("/gift_certificates/{id}")
-    GiftCertificate update(@RequestBody Map<String, String> requestMap, @PathVariable @Min(value = 1, message = "{id.minvalue}") Long id){
+    @PutMapping("/{id}")
+    public GiftCertificate update(@RequestBody Map<String, String> requestMap, @PathVariable @Min(value = 1, message = "{id.minvalue}") Long id){
         if (requestMap.containsKey(CREATE_DATE) || requestMap.containsKey(LAST_UPDATE_DATE)){
             Set<String> fields = new HashSet<>();
             fields.add(CREATE_DATE);

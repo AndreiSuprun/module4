@@ -41,10 +41,17 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     final static String SORT = "sort";
     final static String DATE = "date";
 
-    @Autowired
+
     private JdbcTemplate jdbcTemplate;
-    @Autowired
+
+
     private TagDAO tagDAO;
+
+    @Autowired
+    public GiftCertificateDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.tagDAO = tagDAO;
+    }
 
     @Override
     public Optional<GiftCertificate> findOne(long id) {

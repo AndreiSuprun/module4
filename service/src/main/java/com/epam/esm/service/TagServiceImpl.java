@@ -1,4 +1,4 @@
-package com.epam.esm;
+package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.entity.Tag;
@@ -13,7 +13,8 @@ public class TagServiceImpl implements TagService{
 
     private TagDAO tagDAO;
 
-    public TagServiceImpl(@Autowired TagDAO tagDAO) {
+    @Autowired
+    public TagServiceImpl(TagDAO tagDAO) {
         this.tagDAO = tagDAO;
     }
 

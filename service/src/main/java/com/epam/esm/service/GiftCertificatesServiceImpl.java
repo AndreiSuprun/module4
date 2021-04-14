@@ -1,12 +1,12 @@
-package com.epam.esm;
+package com.epam.esm.service;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,14 +14,16 @@ import java.util.Optional;
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
-    private GiftCertificateDAO giftCertificateDAO;
-    private static String NAME = "name";
-    private static String DESCRIPTION = "description";
-    private static String PRICE = "price";
-    private static String DURATION = "duration";
-    private static String TAGS = "tags";
-    private static String DELIMITER = ",";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String PRICE = "price";
+    private static final String DURATION = "duration";
+    private static final String TAGS = "tags";
+    private static final String DELIMITER = ",";
 
+    private GiftCertificateDAO giftCertificateDAO;
+
+    @Autowired
     public GiftCertificatesServiceImpl(GiftCertificateDAO giftCertificateDAO) {
         this.giftCertificateDAO = giftCertificateDAO;
     }
@@ -32,8 +34,11 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     }
 
     @Override
-    public Optional<GiftCertificate> update(Map<String, String> map, long id) {
+    public GiftCertificate update(Map<String, String> map, long id) {
         Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
+        if (!certificateOptional.isPresent()){
+
+        }
         if (certificateOptional.isPresent()) {
             GiftCertificate certificate = certificateOptional.get();
             if (map.containsKey(NAME)) {
@@ -56,8 +61,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
                 }
             }
             giftCertificateDAO.update(certificate);
+            return certificate;
         }
-        return certificateOptional;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     }
 
     @Override
-    public Optional<GiftCertificate> find(long id) {
+    public GiftCertificate find(long id) {
         return giftCertificateDAO.findOne(id);
     }
 

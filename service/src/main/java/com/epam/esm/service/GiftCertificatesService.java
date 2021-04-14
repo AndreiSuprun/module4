@@ -1,4 +1,4 @@
-package com.epam.esm;
+package com.epam.esm.service;
 
 import com.epam.esm.entity.GiftCertificate;
 
@@ -10,11 +10,11 @@ public interface GiftCertificatesService {
 
     GiftCertificate add(GiftCertificate giftCertificate);
 
-    Optional<GiftCertificate> update(Map<String, String> map, long id);
+    GiftCertificate update(Map<String, String> map, long id);
 
     void delete(long id);
 
-    Optional<GiftCertificate> find(long id);
+    GiftCertificate find(long id);
 
     List<GiftCertificate> findByQuery(Map<String, String> query);
 

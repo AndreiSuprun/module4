@@ -1,11 +1,10 @@
-package com.epam.esm;
+package com.epam.esm.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 @Configuration
-public class MyWebInitializer extends
-        AbstractAnnotationConfigDispatcherServletInitializer {
+public class MyWebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -14,13 +13,11 @@ public class MyWebInitializer extends
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-
         return new Class[]{WebConfig.class};
     }
 
     @Override
     protected String[] getServletMappings() {
-
-        return new String[]{"/"};
+        return new String[]{"/api"};
     }
 }

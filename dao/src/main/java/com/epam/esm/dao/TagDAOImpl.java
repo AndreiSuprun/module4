@@ -20,8 +20,12 @@ public class TagDAOImpl implements TagDAO{
     final static String INSERT_TAG = "INSERT INTO tags (name) VALUES (?)";
     final static String SELECT_ALL_TAGS = "SELECT * FROM tags";
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public TagDAOImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Optional<Tag> findOne(long id) {

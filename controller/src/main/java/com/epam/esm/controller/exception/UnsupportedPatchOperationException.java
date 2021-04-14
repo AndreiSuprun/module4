@@ -1,4 +1,4 @@
-package com.epam.esm.exceptions;
+package com.epam.esm.controller.exception;
 
 import java.util.Locale;
 import java.util.Set;

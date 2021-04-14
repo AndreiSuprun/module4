@@ -1,4 +1,4 @@
-package com.epam.esm;
+package com.epam.esm.config;
 
 import javax.sql.DataSource;
 
@@ -34,13 +34,15 @@ public class DBConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(getDataSource());
+    @Autowired
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
-    @Bean(name="transactionManager")
-    public PlatformTransactionManager txManager() {
-        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(getDataSource());
+    @Bean
+    @Autowired
+    public PlatformTransactionManager txManager(DataSource dataSource) {
+        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         return transactionManager;
     }
 }

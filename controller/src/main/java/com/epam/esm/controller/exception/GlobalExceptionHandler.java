@@ -1,4 +1,4 @@
-package com.epam.esm.exceptions;
+package com.epam.esm.controller.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,17 +25,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode("40401");
         apiResponse.setErrorMessage(ex.getLocalizedMessage());
-
-        return new ResponseEntity<CustomErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler({UnsupportedPatchOperationException.class})
     public ResponseEntity<CustomErrorResponse> entityNotFound(UnsupportedPatchOperationException ex, WebRequest request) {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode("40401");
         apiResponse.setErrorMessage(ex.getLocalizedMessage());
 
-        return new ResponseEntity<CustomErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @Override
