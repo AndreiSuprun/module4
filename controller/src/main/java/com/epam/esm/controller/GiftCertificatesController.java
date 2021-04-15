@@ -24,8 +24,6 @@ import java.util.Set;
 public class GiftCertificatesController {
 
     private GiftCertificatesService giftCertificatesService;
-    private static final String CREATE_DATE = "create_date";
-    private static final String LAST_UPDATE_DATE = "last_update_date";
 
     @Autowired
     public GiftCertificatesController(GiftCertificatesService giftCertificateService) {
@@ -44,7 +42,7 @@ public class GiftCertificatesController {
 
     @GetMapping("/{id}")
     public GiftCertificate getOne(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
-        return giftCertificatesService.find(id).orElseThrow(() -> new NotFoundException("certificate.notfound", id));
+        return giftCertificatesService.find(id);
     }
 
     @DeleteMapping("/{id}")
@@ -52,14 +50,8 @@ public class GiftCertificatesController {
         giftCertificatesService.delete(id);
     }
 
-    @PutMapping("/{id}")
-    public GiftCertificate update(@RequestBody Map<String, String> requestMap, @PathVariable @Min(value = 1, message = "{id.minvalue}") Long id){
-        if (requestMap.containsKey(CREATE_DATE) || requestMap.containsKey(LAST_UPDATE_DATE)){
-            Set<String> fields = new HashSet<>();
-            fields.add(CREATE_DATE);
-            fields.add(LAST_UPDATE_DATE);
-            throw new UnsupportedPatchOperationException("certificate.fields.notupdatable", fields);
-        }
-        return giftCertificatesService.update(requestMap, id).orElseThrow(() -> new NotFoundException("certificate.notfound", id));
+    @PatchMapping("/{id}")
+    public GiftCertificate update(@RequestBody GiftCertificate updatedCertificate, @PathVariable @Min(value = 1, message = "{id.minvalue}") Long id){
+        return giftCertificatesService.update(updatedCertificate, id);
     }
 }

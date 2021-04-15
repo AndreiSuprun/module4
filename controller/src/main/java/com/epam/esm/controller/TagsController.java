@@ -33,7 +33,7 @@ public class TagsController {
 
     @GetMapping("/{id}")
     public Tag one(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
-        return tagService.find(id).orElseThrow(() -> new NotFoundException("tag.notfound", id));
+        return tagService.find(id);//.orElseThrow(() -> new NotFoundException("tag.notfound", id));
     }
 
     @DeleteMapping("/{id}")

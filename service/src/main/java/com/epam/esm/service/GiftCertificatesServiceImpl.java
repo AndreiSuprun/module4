@@ -3,12 +3,11 @@ package com.epam.esm.service;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.ErrorCode;
+import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -34,49 +33,51 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     }
 
     @Override
-    public GiftCertificate update(Map<String, String> map, long id) {
+    public GiftCertificate update(GiftCertificate certificateDto, Long id) {
         Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
-        if (!certificateOptional.isPresent()){
+        if (!certificateOptional.isPresent()) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
+        GiftCertificate certificateInDB = certificateOptional.get();
 
+        if (certificateDto.getName()!=null) {
+            certificateInDB.setName(certificateDto.getName());
         }
-        if (certificateOptional.isPresent()) {
-            GiftCertificate certificate = certificateOptional.get();
-            if (map.containsKey(NAME)) {
-                certificate.setName(map.get(NAME));
-            }
-            if (map.containsKey(DESCRIPTION)) {
-                certificate.setDescription(map.get(DESCRIPTION));
-            }
-            if (map.containsKey(PRICE)) {
-                certificate.setPrice(new BigDecimal(map.get(PRICE)));
-            }
-            if (map.containsKey(DURATION)) {
-                certificate.setDuration(Integer.parseInt(map.get(DURATION)));
-            }
-            if (map.containsKey(TAGS)) {
-                String[] tags = map.get(TAGS).split(DELIMITER);
-                certificate.getTags().clear();
-                for (String tagName : tags) {
-                    certificate.addTag(new Tag(tagName));
-                }
-            }
-            giftCertificateDAO.update(certificate);
-            return certificate;
+        if (certificateDto.getDescription()!=null) {
+            certificateInDB.setDescription(certificateDto.getDescription());
         }
+        if (certificateDto.getPrice()!=null) {
+            certificateInDB.setPrice(certificateDto.getPrice());
+        }
+        if (certificateDto.getDuration()!=null) {
+            certificateInDB.setDuration(certificateDto.getDuration());
+        }
+        if (!certificateDto.getTags().isEmpty()) {
+            certificateInDB.getTags().clear();
+            for (Tag tag : certificateDto.getTags()) {
+                certificateInDB.addTag(tag);
+            }
+        }
+        giftCertificateDAO.update(certificateInDB);
+        return certificateInDB;
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         giftCertificateDAO.delete(id);
     }
 
     @Override
-    public GiftCertificate find(long id) {
-        return giftCertificateDAO.findOne(id);
+    public GiftCertificate find(Long id) {
+        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
+        if (!certificateOptional.isPresent()) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
+        return certificateOptional.get();
     }
 
     @Override
-    public List<GiftCertificate> findByQuery(Map<String, String> query) {
+    public List<GiftCertificate> findByQuery(Query query) {
         return giftCertificateDAO.findByQuery(query);
     }
 

@@ -10,13 +10,13 @@ public interface GiftCertificatesService {
 
     GiftCertificate add(GiftCertificate giftCertificate);
 
-    GiftCertificate update(Map<String, String> map, long id);
+    GiftCertificate update(GiftCertificate giftCertificate, Long id);
 
-    void delete(long id);
+    void delete(Long id);
 
-    GiftCertificate find(long id);
+    GiftCertificate find(Long id);
 
-    List<GiftCertificate> findByQuery(Map<String, String> query);
+    List<GiftCertificate> findByQuery(Query query);
 
     List<GiftCertificate> findAll();
 }

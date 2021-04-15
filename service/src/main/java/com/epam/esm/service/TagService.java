@@ -9,11 +9,11 @@ public interface TagService {
 
     Tag add(Tag tag);
 
-    Optional<Tag> find(long id);
+    Tag find(Long id);
 
     List<Tag> findAll();
 
     Tag findByName(String name);
 
-    void delete(long id);
+    void delete(Long id);
 }

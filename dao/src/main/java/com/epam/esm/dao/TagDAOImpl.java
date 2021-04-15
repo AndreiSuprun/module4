@@ -34,8 +34,9 @@ public class TagDAOImpl implements TagDAO{
     }
 
     @Override
-    public Tag findByName(String name) {
-        return jdbcTemplate.queryForObject(SELECT_ONE_TAG_BY_NAME,  new TagMapper(), name);
+    public Optional<Tag> findByName(String name) {
+        Tag tag = jdbcTemplate.queryForObject(SELECT_ONE_TAG_BY_NAME,  new TagMapper(), name);
+        return Optional.ofNullable(tag);
     }
 
     @Override

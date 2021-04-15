@@ -1,7 +1,10 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.ErrorCode;
+import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,12 @@ public class TagServiceImpl implements TagService{
     }
 
     @Override
-    public Optional<Tag> find(long id) {
-        return tagDAO.findOne(id);
+    public Tag find(Long id) {
+        Optional<Tag> tagOptional = tagDAO.findOne(id);
+        if (!tagOptional.isPresent()){
+            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, "id", id);
+        }
+        return tagOptional.get();
     }
 
     @Override
@@ -35,11 +42,15 @@ public class TagServiceImpl implements TagService{
 
     @Override
     public Tag findByName(String name) {
-        return tagDAO.findByName(name);
+        Optional<Tag> tagOptional = tagDAO.findByName(name);
+        if (!tagOptional.isPresent()){
+            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, "name", name);
+        }
+        return tagOptional.get();
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         tagDAO.delete(id);
     }
 }

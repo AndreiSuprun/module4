@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class GiftCertificate {
 
-    private long id;
+    private Long id;
 
     @NotEmpty(message="{giftcertificate.name.notempty}")
     private String name;
@@ -24,7 +24,7 @@ public class GiftCertificate {
 
     @NotNull(message="{giftcertificate.duration.notempty}")
     @Min(value = 1, message="{giftcertificate.duration.min}")
-    private int duration;
+    private Integer duration;
 
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
@@ -45,11 +45,11 @@ public class GiftCertificate {
     public GiftCertificate() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -77,11 +77,11 @@ public class GiftCertificate {
         this.price = price;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
