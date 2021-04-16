@@ -58,7 +58,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateMapper(), id);
         if (giftCertificate != null) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), id);
-            giftCertificate.setTags(new HashSet<>(tags));
+            giftCertificate.setTags(tags);
         }
         return Optional.ofNullable(giftCertificate);
 }
@@ -68,7 +68,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         List<GiftCertificate> list = jdbcTemplate.query(SELECT_ALL_GIFT_CERTIFICATES, new GiftCertificateMapper());
         for (GiftCertificate certificate : list) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
-            certificate.setTags(new HashSet<>(tags));
+            certificate.setTags(tags);
         }
         return list;
     }
@@ -82,22 +82,22 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate insert(GiftCertificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
+            PreparedStatement preparedStatement = connection
                     .prepareStatement(INSERT_GIFT_CERTIFICATE);
-            ps.setString(1, certificate.getName());
-            ps.setString(2, certificate.getDescription());
-            ps.setBigDecimal(3, certificate.getPrice());
-            ps.setInt(4, certificate.getDuration());
-            ps.setDate(5, new Date(System.currentTimeMillis()));
-            ps.setDate(6, new Date(System.currentTimeMillis()));
-            return ps;
+            preparedStatement.setString(1, certificate.getName());
+            preparedStatement.setString(2, certificate.getDescription());
+            preparedStatement.setBigDecimal(3, certificate.getPrice());
+            preparedStatement.setInt(4, certificate.getDuration());
+            preparedStatement.setDate(5, new Date(System.currentTimeMillis()));
+            preparedStatement.setDate(6, new Date(System.currentTimeMillis()));
+            return preparedStatement;
         }, keyHolder);
-        long id = (long) keyHolder.getKey();
+        Long id = (Long) keyHolder.getKey();
         certificate.setId(id);
 
         for (Tag tag : certificate.getTags()) {
-            Tag tagInDB = tagDAO.findByName(tag.getName());
-            if (tagInDB == null) {
+            Optional<Tag> tagInDBOpt = tagDAO.findByName(tag.getName());
+            if (!tagInDBOpt.isPresent()) {
                 tagInDB = tagDAO.insert(tag);
             }
             jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDB.getId());
@@ -150,7 +150,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateMapper());
         for (GiftCertificate certificate : certificateList) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
-            certificate.setTags(new HashSet<>(tags));
+            certificate.setTags(tags);
         }
         return certificateList;
     }

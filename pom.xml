@@ -6,12 +6,11 @@
 
   <groupId>com.epam.esm</groupId>
   <artifactId>module2_task</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <modules>
     <module>service</module>
     <module>dao</module>
-    <module>controller</module>
-      <module>config</module>
+    <module>restapp</module>
   </modules>
 
   <packaging>pom</packaging>
@@ -33,7 +32,7 @@
       <version>2.0.1.Final</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>7.0.1.Final</version>
     </dependency>

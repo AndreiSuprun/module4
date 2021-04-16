@@ -1,4 +1,4 @@
-package com.epam.esm.config;
+package com.epam.esm.restapp.config;
 
 import javax.sql.DataSource;
 

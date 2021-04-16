@@ -1,5 +1,6 @@
-package com.epam.esm.controller.exception;
+package com.epam.esm.restapp.exception;
 
+import com.epam.esm.service.exception.ProjectException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,12 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<CustomErrorResponse> entityNotFound(NotFoundException ex, WebRequest request) {
+    @ExceptionHandler({ProjectException.class})
+    public ResponseEntity<CustomErrorResponse> entityNotFound(ProjectException ex, WebRequest request) {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode("40401");
         apiResponse.setErrorMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiResponse, ex.getErrorCode().);
     }
 
     @ExceptionHandler({UnsupportedPatchOperationException.class})

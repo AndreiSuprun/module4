@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     }
 
     @Override
-    public GiftCertificate add(GiftCertificate giftCertificate) {
+    public GiftCertificate add(GiftCertificateDTO giftCertificateDTO) {
+
         return giftCertificateDAO.insert(giftCertificate);
     }
 

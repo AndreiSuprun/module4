@@ -6,6 +6,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public class GiftCertificate {
@@ -29,10 +30,10 @@ public class GiftCertificate {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     public GiftCertificate(String name, String description, BigDecimal price, int duration, LocalDateTime createDate,
-                           LocalDateTime lastUpdateDate, Set<Tag> tags) {
+                           LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -101,11 +102,11 @@ public class GiftCertificate {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Set<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 

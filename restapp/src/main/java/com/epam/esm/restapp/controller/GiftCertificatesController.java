@@ -1,21 +1,16 @@
-package com.epam.esm.controller;
+package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.controller.exception.NotFoundException;
 
-import com.epam.esm.controller.exception.UnsupportedPatchOperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.util.Map;
 import javax.validation.constraints.Min;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @RestController

@@ -1,8 +1,7 @@
-package com.epam.esm.controller;
+package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.TagService;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.controller.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
