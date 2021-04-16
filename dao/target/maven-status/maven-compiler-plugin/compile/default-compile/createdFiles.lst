@@ -1,0 +1,4 @@
+com\epam\esm\dao\GenericDao.class
+com\epam\esm\dao\GiftCertificateDAO.class
+com\epam\esm\entity\Tag.class
+com\epam\esm\entity\GiftCertificate.class
