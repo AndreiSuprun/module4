@@ -1,24 +1,22 @@
 package com.epam.esm.service.validator;
 
-import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.TagDTO;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.validator.impl.DescriptionValidator;
 import com.epam.esm.service.validator.impl.DurationValidator;
 import com.epam.esm.service.validator.impl.NameValidator;
 import com.epam.esm.service.validator.impl.PriceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
-
+@Service
 public class GiftCertificateValidator extends EntityValidator {
 
     private final static String NAME_FIELD = "name";
     private final static String DESCRIPTION_FIELD = "name";
     private final static String PRICE_FIELD = "price";
     private final static String DURATION_FIELD = "duration";
-
 
     private TagValidator tagValidator;
 
@@ -32,29 +30,29 @@ public class GiftCertificateValidator extends EntityValidator {
     }
 
     @Override
-    protected void validateObject(List<ProjectException> errors, Object object) {
-        if (!(object instanceof GiftCertificateDTO)) {
+    protected void validateObject(List<String> invalidFields, Object object) {
+        if (!(object instanceof GiftCertificate)) {
             throw new IllegalArgumentException("The object has not Periodical type");
         }
-        GiftCertificateDTO giftCertificateDTO = (GiftCertificateDTO) object;
+        GiftCertificate giftCertificate = (GiftCertificate) object;
         validateField(new NameValidator(),
-                giftCertificateDTO.getName(),
-                errors, NAME_FIELD, giftCertificateDTO.getName());
+                giftCertificate.getName(),
+                invalidFields, NAME_FIELD, giftCertificate.getName());
         validateField(new DescriptionValidator(),
-                giftCertificateDTO.getName(),
-                errors, DESCRIPTION_FIELD, giftCertificateDTO.getDescription());
+                giftCertificate.getName(),
+                invalidFields, DESCRIPTION_FIELD, giftCertificate.getDescription());
         validateField(new PriceValidator(),
-                giftCertificateDTO.getPrice(),
-                errors, PRICE_FIELD, giftCertificateDTO.getPrice().toString());
+                giftCertificate.getPrice(),
+                invalidFields, PRICE_FIELD, giftCertificate.getPrice().toString());
         validateField(new DurationValidator(),
-                giftCertificateDTO.getDuration(),
-                errors, DURATION_FIELD, giftCertificateDTO.getDuration().toString());
+                giftCertificate.getDuration(),
+                invalidFields, DURATION_FIELD, giftCertificate.getDuration().toString());
         validateField(new DurationValidator(),
-                giftCertificateDTO.getDuration(),
-                errors, DURATION_FIELD, giftCertificateDTO.getDuration().toString());
-        List<TagDTO> tags = giftCertificateDTO.getTags();
-        for (TagDTO tagDTO : tags){
-            tagValidator.validateObject(errors, tagDTO);
+                giftCertificate.getDuration(),
+                invalidFields, DURATION_FIELD, giftCertificate.getDuration().toString());
+        List<Tag> tags = giftCertificate.getTags();
+        for (Tag tag : tags){
+            tagValidator.validateObject(invalidFields, tag);
         }
     }
 }

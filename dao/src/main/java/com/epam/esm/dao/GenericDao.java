@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface GenericDao<T> {
 
-     Optional<T> findOne(long id);
+     Optional<T> findOne(Long id);
 
      List<T> findAll() ;
 
@@ -16,5 +16,5 @@ public interface GenericDao<T> {
 
      T update(T obj);
 
-     void delete(long id);
+     boolean delete(Long id);
 }

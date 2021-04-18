@@ -1,12 +1,11 @@
 package com.epam.esm.restapp.controller;
 
-import com.epam.esm.service.TagService;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.TagService;
+import com.epam.esm.service.dto.TagDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -21,22 +20,27 @@ public class TagsController {
     }
 
     @GetMapping
-    public List<Tag> all() {
+    public List<TagDTO> all() {
         return tagService.findAll();
     }
 
     @PostMapping
-    public Tag newTag(@Valid @RequestBody Tag newTag) {
+    public TagDTO newTag(@RequestBody TagDTO newTag) {
         return tagService.add(newTag);
     }
 
     @GetMapping("/{id}")
-    public Tag one(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
-        return tagService.find(id);//.orElseThrow(() -> new NotFoundException("tag.notfound", id));
+    public TagDTO one(@PathVariable Long id) {
+        return tagService.find(id);
+    }
+
+    @PutMapping("/{id}")
+    public TagDTO update(@RequestBody TagDTO updatedTag) {
+        return tagService.update(updatedTag);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
+    public void delete(@PathVariable Long id) {
         tagService.delete(id);
     }
 }

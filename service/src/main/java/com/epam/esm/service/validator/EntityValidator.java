@@ -8,20 +8,25 @@ import java.util.List;
 
 public abstract class EntityValidator {
 
-    public List<ProjectException> validate(Object object) {
-        List<ProjectException> errors = new LinkedList<>();
-        validateObject(errors, object);
-        return errors;
+    private static final String DELIMITER = " - ";
+
+    public List<String> validate(Object object) {
+        List<String> invalidFields = new LinkedList<>();
+        validateObject(invalidFields, object);
+        return invalidFields;
     }
 
-    protected abstract void validateObject(List<ProjectException> errors,
+    protected abstract void validateObject(List<String> invalidFields,
                                            Object object);
 
     protected <T> void validateField(Validator<T> validator,
                                      T field,
-                                     List<ProjectException> errors, String... params) {
-        if (!validator.isValid(field)){
-            errors.add(new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, params));}
+                                     List<String> invalidFields, String... params) {
+        if (!validator.isValid(field)) {
+            if (params.length == 2) {
+                invalidFields.add(params[0] + DELIMITER + params[1]);
+            }
         }
     }
+}
 

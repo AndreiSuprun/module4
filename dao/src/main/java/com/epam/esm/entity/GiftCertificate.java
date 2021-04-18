@@ -1,30 +1,25 @@
 package com.epam.esm.entity;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public class GiftCertificate {
 
     private Long id;
 
-    @NotEmpty(message="{giftcertificate.name.notempty}")
+    //@NotEmpty(message="{giftcertificate.name.notempty}")
     private String name;
 
-    @NotEmpty(message="{giftcertificate.description.notempty}")
+    //@NotEmpty(message="{giftcertificate.description.notempty}")
     private String description;
 
-    @NotNull(message="{giftcertificate.price.notnull}")
-    @DecimalMin(value = "1.00", message="{giftcertificate.price.min}")
+    //@NotNull(message="{giftcertificate.price.notnull}")
+   // @DecimalMin(value = "1.00", message="{giftcertificate.price.min}")
     private BigDecimal price;
 
-    @NotNull(message="{giftcertificate.duration.notempty}")
-    @Min(value = 1, message="{giftcertificate.duration.min}")
+    //@NotNull(message="{giftcertificate.duration.notempty}")
+    //@Min(value = 1, message="{giftcertificate.duration.min}")
     private Integer duration;
 
     private LocalDateTime createDate;

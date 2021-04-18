@@ -28,15 +28,23 @@ public class TagDAOImpl implements TagDAO{
     }
 
     @Override
-    public Optional<Tag> findOne(long id) {
-         Tag tag = jdbcTemplate.queryForObject(SELECT_ONE_TAG,  new TagMapper(), id);
-         return Optional.ofNullable(tag);
+    public Optional<Tag> findOne(Long id) {
+         List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG,  new TagMapper(), id);
+         if (!tags.isEmpty()) {
+             return Optional.of(tags.get(0));
+         } else {
+             return Optional.empty();
+         }
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        Tag tag = jdbcTemplate.queryForObject(SELECT_ONE_TAG_BY_NAME,  new TagMapper(), name);
-        return Optional.ofNullable(tag);
+        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG_BY_NAME,  new TagMapper(), name);
+        if (!tags.isEmpty()) {
+            return Optional.of(tags.get(0));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -53,7 +61,7 @@ public class TagDAOImpl implements TagDAO{
             ps.setString(1, tag.getName());
             return ps;
         }, keyHolder);
-        long tagId = (long) keyHolder.getKey();
+        Long tagId = (Long) keyHolder.getKey();
         tag.setId(tagId);
         return tag;
     }
@@ -64,8 +72,8 @@ public class TagDAOImpl implements TagDAO{
     }
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update(DELETE_TAG, id);
+    public boolean delete(Long id) {
+        return jdbcTemplate.update(DELETE_TAG, id) == 1;
     }
 }
 

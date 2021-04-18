@@ -1,20 +1,17 @@
 package com.epam.esm.restapp.controller;
 
-import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.entity.GiftCertificate;
-
+import com.epam.esm.service.GiftCertificatesService;
+import com.epam.esm.service.QueryUtil;
+import com.epam.esm.service.dto.GiftCertificateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
-import javax.validation.constraints.Min;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
-@Validated
 @RequestMapping("/gift_certificates")
 public class GiftCertificatesController {
 
@@ -26,27 +23,31 @@ public class GiftCertificatesController {
     }
 
     @GetMapping
-    public List<GiftCertificate> getAll() {
-        return giftCertificatesService.findAll();
+    public List<GiftCertificateDTO> getAll(@RequestParam(required = false) Map<String, String> params) {
+        if (params.isEmpty()) {
+            return giftCertificatesService.findAll();
+        } else {
+            return giftCertificatesService.findByQuery(new QueryUtil(params));
+        }
     }
 
     @PostMapping
-    public GiftCertificate addGiftCertificate(@Valid @RequestBody GiftCertificate newCertificate) {
+    public GiftCertificateDTO addGiftCertificate(@RequestBody GiftCertificateDTO newCertificate) {
         return giftCertificatesService.add(newCertificate);
     }
 
     @GetMapping("/{id}")
-    public GiftCertificate getOne(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
+    public GiftCertificateDTO getOne(@PathVariable Long id) {
         return giftCertificatesService.find(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable @Min(value = 1, message = "{id.minvalue}") Long id) {
+    public void delete(@PathVariable Long id) {
         giftCertificatesService.delete(id);
     }
 
     @PatchMapping("/{id}")
-    public GiftCertificate update(@RequestBody GiftCertificate updatedCertificate, @PathVariable @Min(value = 1, message = "{id.minvalue}") Long id){
-        return giftCertificatesService.update(updatedCertificate, id);
+    public GiftCertificateDTO update(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id){
+        return giftCertificatesService.update(updatedCertificateDTO, id);
     }
 }

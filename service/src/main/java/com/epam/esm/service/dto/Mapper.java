@@ -3,11 +3,13 @@ package com.epam.esm.service.dto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DTOMapper {
+@Service
+public class Mapper {
 
     private final static String CREATE_DATE = "createDate";
     private final static String LAS_UPDATE_DATE = "lastUpdateDate";

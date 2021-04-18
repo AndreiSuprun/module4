@@ -10,10 +10,12 @@ import java.util.regex.Pattern;
  */
 public class RegExValidator implements Validator<String> {
 
+    private int minLength;
     private int maxLength;
     private Pattern pattern;
 
-    public RegExValidator(String regex, int maxLength) {
+    public RegExValidator(String regex, int minLength, int maxLength) {
+        this.minLength = minLength;
         this.maxLength = maxLength;
         this.pattern = Pattern.compile(regex);
     }
@@ -21,6 +23,7 @@ public class RegExValidator implements Validator<String> {
     @Override
     public boolean isValid(String str) {
         return Objects.nonNull(str)
+                && str.length() >= minLength
                 && str.length() <= maxLength
                 && pattern.matcher(str).matches();
     }

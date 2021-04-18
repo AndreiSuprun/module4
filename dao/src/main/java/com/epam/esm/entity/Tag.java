@@ -1,13 +1,12 @@
 package com.epam.esm.entity;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
 public class Tag {
 
     private Long id;
 
-    @NotEmpty(message = "{tag.name.notempty}")
+    //@NotEmpty(message = "{tag.name.notempty}")
     private String name;
 
     public Tag(String name) {

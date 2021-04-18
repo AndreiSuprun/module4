@@ -3,13 +3,20 @@ package com.epam.esm.service;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.dto.Mapper;
 import com.epam.esm.service.dto.GiftCertificateDTO;
+import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.validator.GiftCertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
@@ -22,20 +29,43 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     private static final String DELIMITER = ",";
 
     private GiftCertificateDAO giftCertificateDAO;
+    private TagService tagService;
+    private Mapper mapper;
+    private GiftCertificateValidator giftCertificateValidator;
 
     @Autowired
-    public GiftCertificatesServiceImpl(GiftCertificateDAO giftCertificateDAO) {
+    public GiftCertificatesServiceImpl(GiftCertificateDAO giftCertificateDAO, TagService tagService, Mapper mapper,
+            GiftCertificateValidator giftCertificateValidator) {
         this.giftCertificateDAO = giftCertificateDAO;
+        this.tagService = tagService;
+        this.mapper = mapper;
+        this.giftCertificateValidator = giftCertificateValidator;
     }
 
+    @Transactional
     @Override
-    public GiftCertificate add(GiftCertificateDTO giftCertificateDTO) {
-
-        return giftCertificateDAO.insert(giftCertificate);
+    public GiftCertificateDTO add(GiftCertificateDTO giftCertificateDTO) {
+        List<String> invalidFields = giftCertificateValidator.validate(giftCertificateDTO);
+        if (!invalidFields.isEmpty()){
+            throw new ProjectException(ErrorCode.CERTIFICATE_FIELD_INVALID, invalidFields.toString());
+        }
+        GiftCertificate giftCertificate = mapper.mapCertificateDTOtoEntity(giftCertificateDTO);
+        List<TagDTO> tags = giftCertificateDTO.getTags();
+        giftCertificate = giftCertificateDAO.insert(giftCertificate);
+        for (TagDTO tagDTO : tags) {
+            TagDTO tagInDB = tagService.findByName(tagDTO.getName());
+            if (tagInDB == null) {
+                tagInDB = tagService.add(tagDTO);
+            }
+            giftCertificateDAO.addTag(giftCertificate, mapper.mapTagDTOToEntity(tagInDB));
+        }
+        return mapper.mapCertificateEntityToDTO(giftCertificate);
     }
 
+    @Transactional
     @Override
-    public GiftCertificate update(GiftCertificate certificateDto, Long id) {
+    public GiftCertificateDTO update(GiftCertificateDTO certificateDto, Long id) {
+
         Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
         if (!certificateOptional.isPresent()) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
@@ -56,35 +86,56 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         }
         if (!certificateDto.getTags().isEmpty()) {
             certificateInDB.getTags().clear();
-            for (Tag tag : certificateDto.getTags()) {
-                certificateInDB.addTag(tag);
+            for (TagDTO tagDTO : certificateDto.getTags()) {
+                certificateInDB.addTag(mapper.mapTagDTOToEntity(tagDTO));
             }
         }
+        List<String> invalidFields = giftCertificateValidator.validate(certificateInDB);
+        if (!invalidFields.isEmpty()){
+            throw new ProjectException(ErrorCode.CERTIFICATE_FIELD_INVALID, invalidFields.toString());
+        }
+        if (!certificateDto.getTags().isEmpty()) {
+            giftCertificateDAO.clearTags(certificateInDB.getId());
+        }
         giftCertificateDAO.update(certificateInDB);
-        return certificateInDB;
+        return mapper.mapCertificateEntityToDTO(certificateInDB);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
-        giftCertificateDAO.delete(id);
+        if (giftCertificateDAO.delete(id)){
+            giftCertificateDAO.clearTags(id);
+        }
     }
 
     @Override
-    public GiftCertificate find(Long id) {
+    public GiftCertificateDTO find(Long id) {
         Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
         if (!certificateOptional.isPresent()) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
-        return certificateOptional.get();
+        GiftCertificate certificate = certificateOptional.get();
+        List<Tag> tags = giftCertificateDAO.getTags(certificate);
+        certificate.setTags(tags);
+        return mapper.mapCertificateEntityToDTO(certificate);
     }
 
     @Override
-    public List<GiftCertificate> findByQuery(Query query) {
-        return giftCertificateDAO.findByQuery(query);
+    public List<GiftCertificateDTO> findByQuery(QueryUtil query) {
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findByQuery(query.buildSQLQuery(), query.getQueryParams());
+        if (!giftCertificates.isEmpty()) {
+            return giftCertificates.stream().map(mapper::mapCertificateEntityToDTO).collect(Collectors.toList());
+        } else {return Collections.EMPTY_LIST;}
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateDAO.findAll();
+    public List<GiftCertificateDTO> findAll() {
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll();
+        for (GiftCertificate giftCertificate : giftCertificates){
+            List<Tag> tags = giftCertificateDAO.getTags(giftCertificate);
+            giftCertificate.setTags(tags);
+        }
+        return giftCertificates.stream().map(mapper::mapCertificateEntityToDTO).collect(Collectors.toList());
     }
 }

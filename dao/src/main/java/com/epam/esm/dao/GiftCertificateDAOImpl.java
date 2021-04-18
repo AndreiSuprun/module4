@@ -9,41 +9,25 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
-    final static String SELECT_ONE_GIFT_CERTIFICATE = "SELECT * FROM gift_certificates WHERE id=?";
-    final static String DELETE_GIFT_CERTIFICATE = "DELETE FROM gift_certificates WHERE id=?";
-    final static String INSERT_GIFT_CERTIFICATE = "INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
-    final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_time = ? WHERE id =?";
-    final static String SELECT_ALL_GIFT_CERTIFICATES = "SELECT * FROM gift_certificates  gs";
-    final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT INTO gift_certificate_tags VALUES (?, ?)";
-    final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
-            "ON t.id = gt.tags_id WHERE gt.gift_certificate_id = ?";
-    final static String SQL_SELECT_BY_TAG = " INNER JOIN gift_certificate_tags gt ON gs.id = gt.tags_id INNER JOIN tags t ON t.id = gt.tags_id WHERE t.name = ?";
-    final static String SQL_QUERY_BY_NAME = " AND WHERE gs.name LIKE %";
-    final static String SQL_QUERY_BY_DESCRIPTION = " AND gs.description LIKE %";
-    final static String SQL_QUERY_ORDER = " ORDER BY";
-    final static String SQL_QUERY_ORDER_BY_DATE = " gs.create_date";
-    final static String SQL_QUERY_ORDER_BY_NAME = " gs.name";
-    final static String PERCENT_SIGN = "%";
-    final static String SPLIT_SIGN = ";";
-    final static String TAG = "tag";
-    final static String NAME = "name";
-    final static String DESCRIPTION = "description";
-    final static String SORT = "sort";
-    final static String DATE = "date";
-
+    private final static String SELECT_ONE_GIFT_CERTIFICATE = "SELECT * FROM gift_certificates WHERE id=?";
+    private final static String DELETE_GIFT_CERTIFICATE = "DELETE FROM gift_certificates WHERE id=?";
+    private final static String INSERT_GIFT_CERTIFICATE = "INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
+    private final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_time = ? WHERE id =?";
+    private final static String SELECT_ALL_GIFT_CERTIFICATES = "SELECT * FROM gift_certificates  gs";
+    private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT INTO gift_certificate_tags VALUES (?, ?)";
+    private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE * FROM gift_certificate_tags WHERE gift_certificate_id=?";
+    private final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
+            "ON t.id = gt.tag_id WHERE gt.gift_certificate_id = ?";
 
     private JdbcTemplate jdbcTemplate;
-
 
     private TagDAO tagDAO;
 
@@ -54,28 +38,24 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public Optional<GiftCertificate> findOne(long id) {
-        GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateMapper(), id);
-        if (giftCertificate != null) {
+    public Optional<GiftCertificate> findOne(Long id) {
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateMapper(), id);
+        if (!giftCertificates.isEmpty()) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), id);
-            giftCertificate.setTags(tags);
+            giftCertificates.get(0).setTags(tags);
+            return Optional.of(giftCertificates.get(0));
         }
-        return Optional.ofNullable(giftCertificate);
+        return Optional.empty();
 }
-
     @Override
     public List<GiftCertificate> findAll() {
         List<GiftCertificate> list = jdbcTemplate.query(SELECT_ALL_GIFT_CERTIFICATES, new GiftCertificateMapper());
-        for (GiftCertificate certificate : list) {
-            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
-            certificate.setTags(tags);
-        }
         return list;
     }
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, id);
+    public boolean delete(Long id) {
+        return jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, id) == 1;
     }
 
     @Override
@@ -88,8 +68,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             preparedStatement.setString(2, certificate.getDescription());
             preparedStatement.setBigDecimal(3, certificate.getPrice());
             preparedStatement.setInt(4, certificate.getDuration());
-            preparedStatement.setDate(5, new Date(System.currentTimeMillis()));
-            preparedStatement.setDate(6, new Date(System.currentTimeMillis()));
+            preparedStatement.setObject(5, LocalDateTime.now());
+            preparedStatement.setObject(6, LocalDateTime.now());
             return preparedStatement;
         }, keyHolder);
         Long id = (Long) keyHolder.getKey();
@@ -98,11 +78,23 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         for (Tag tag : certificate.getTags()) {
             Optional<Tag> tagInDBOpt = tagDAO.findByName(tag.getName());
             if (!tagInDBOpt.isPresent()) {
-                tagInDB = tagDAO.insert(tag);
+                Tag tagInDB = tagDAO.insert(tag);
             }
-            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDB.getId());
+            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDBOpt.get().getId());
         }
         return certificate;
+    }
+
+    public void addTag(GiftCertificate giftCertificate, Tag tag){
+        jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, giftCertificate.getId(), tag.getId());
+    }
+
+    public List<Tag> getTags(GiftCertificate giftCertificate){
+        return jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), giftCertificate.getId());
+    }
+
+    public void clearTags(Long giftCertificateId){
+        jdbcTemplate.update(CLEAR_GIFT_CERTIFICATE_TAGS, giftCertificateId);
     }
 
     @Override
@@ -110,48 +102,22 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
                 certificate.getDuration(), certificate.getId());
         for (Tag tag : certificate.getTags()) {
-            Tag tagInDB = tagDAO.findByName(tag.getName());
-            if (tagInDB == null) {
-                tagInDB = tagDAO.insert(tag);
+            Optional<Tag> tagInDB = tagDAO.findByName(tag.getName());
+            if (!tagInDB.isPresent()) {
+                tagInDB = Optional.ofNullable(tagDAO.insert(tag));
             }
-            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, certificate.getId(), tagInDB.getId());
+            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, certificate.getId(), tagInDB.get().getId());
         }
         return certificate;
     }
 
     @Override
-    public List<GiftCertificate> findByQuery(Map<String, String> query) {
-        String sqlQuery = SELECT_ALL_GIFT_CERTIFICATES;
-        if (query.containsKey(TAG)) {
-            sqlQuery = sqlQuery.concat(SQL_SELECT_BY_TAG);
-        }
-        if (query.containsKey(NAME)) {
-            sqlQuery = sqlQuery.concat(SQL_QUERY_BY_NAME + query.get(NAME) + PERCENT_SIGN);
-        }
-        if (query.containsKey(DESCRIPTION)) {
-            sqlQuery = sqlQuery.concat(SQL_QUERY_BY_DESCRIPTION + query.get(DESCRIPTION) + PERCENT_SIGN);
-        }
-        if (query.containsKey(SORT)) {
-            sqlQuery = sqlQuery.concat(SQL_QUERY_ORDER);
-            String[] list = query.get(SORT).split(SPLIT_SIGN);
-            for (String string : list) {
-                if (string != null && string.contains(DATE)) {
-                    sqlQuery = sqlQuery.concat(SQL_QUERY_ORDER_BY_DATE);
-                } else {
-                    sqlQuery = sqlQuery.concat(SQL_QUERY_ORDER_BY_NAME);
-                }
-                if (list[0].startsWith("-")) {
-                    sqlQuery = sqlQuery.concat(" DESC");
-                } else {
-                    sqlQuery = sqlQuery.concat(" ASC");
-                }
-            }
-        }
-        List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateMapper());
+    public List<GiftCertificate> findByQuery(String sqlQuery, Object[] params) {
+        List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateMapper(), params);
         for (GiftCertificate certificate : certificateList) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
             certificate.setTags(tags);
         }
-        return certificateList;
+       return null;
     }
 }
