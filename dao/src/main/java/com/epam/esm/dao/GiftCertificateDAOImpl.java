@@ -118,6 +118,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
             certificate.setTags(tags);
         }
-       return null;
+       return certificateList;
     }
 }

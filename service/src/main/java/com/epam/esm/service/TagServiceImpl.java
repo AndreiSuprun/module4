@@ -46,7 +46,7 @@ public class TagServiceImpl implements TagService{
     public TagDTO find(Long id) {
         Optional<Tag> tagOptional = tagDAO.findOne(id);
         if (!tagOptional.isPresent()){
-            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, "id", id);
+            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, id);
         }
         return mapper.mapTagEntityToDTO(tagOptional.get());
     }
