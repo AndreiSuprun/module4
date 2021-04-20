@@ -1,8 +1,7 @@
 package com.epam.esm.restapp.controller;
 
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.GiftCertificatesService;
-import com.epam.esm.service.QueryUtil;
+import com.epam.esm.service.dto.QueryUtil;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

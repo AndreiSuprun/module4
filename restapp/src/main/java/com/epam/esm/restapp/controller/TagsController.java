@@ -34,11 +34,6 @@ public class TagsController {
         return tagService.find(id);
     }
 
-    @PutMapping("/{id}")
-    public TagDTO update(@RequestBody TagDTO updatedTag) {
-        return tagService.update(updatedTag);
-    }
-
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         tagService.delete(id);

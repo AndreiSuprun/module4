@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class TagMapper implements RowMapper<Tag> {
+public class TagRowMapper implements RowMapper<Tag> {
     public Tag mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Tag tag = new Tag();
         tag.setId(resultSet.getLong("id"));

@@ -39,9 +39,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public Optional<GiftCertificate> findOne(Long id) {
-        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateMapper(), id);
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateRowMapper(), id);
         if (!giftCertificates.isEmpty()) {
-            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), id);
+            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), id);
             giftCertificates.get(0).setTags(tags);
             return Optional.of(giftCertificates.get(0));
         }
@@ -49,7 +49,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 }
     @Override
     public List<GiftCertificate> findAll() {
-        List<GiftCertificate> list = jdbcTemplate.query(SELECT_ALL_GIFT_CERTIFICATES, new GiftCertificateMapper());
+        List<GiftCertificate> list = jdbcTemplate.query(SELECT_ALL_GIFT_CERTIFICATES, new GiftCertificateRowMapper());
         return list;
     }
 
@@ -90,7 +90,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     public List<Tag> getTags(GiftCertificate giftCertificate){
-        return jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), giftCertificate.getId());
+        return jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), giftCertificate.getId());
     }
 
     public void clearTags(Long giftCertificateId){
@@ -113,9 +113,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> findByQuery(String sqlQuery, Object[] params) {
-        List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateMapper(), params);
+        List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateRowMapper(), params);
         for (GiftCertificate certificate : certificateList) {
-            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagMapper(), certificate.getId());
+            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), certificate.getId());
             certificate.setTags(tags);
         }
        return certificateList;

@@ -29,7 +29,7 @@ public class TagDAOImpl implements TagDAO{
 
     @Override
     public Optional<Tag> findOne(Long id) {
-         List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG,  new TagMapper(), id);
+         List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG,  new TagRowMapper(), id);
          if (!tags.isEmpty()) {
              return Optional.of(tags.get(0));
          } else {
@@ -39,7 +39,7 @@ public class TagDAOImpl implements TagDAO{
 
     @Override
     public Optional<Tag> findByName(String name) {
-        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG_BY_NAME,  new TagMapper(), name);
+        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG_BY_NAME,  new TagRowMapper(), name);
         if (!tags.isEmpty()) {
             return Optional.of(tags.get(0));
         } else {
@@ -49,7 +49,7 @@ public class TagDAOImpl implements TagDAO{
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SELECT_ALL_TAGS,  new TagMapper());
+        return jdbcTemplate.query(SELECT_ALL_TAGS,  new TagRowMapper());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class TagDAOImpl implements TagDAO{
     }
 
     @Override
-    public Tag update(Tag tag) {
+    public Tag update(Tag obj) {
         throw new UnsupportedOperationException();
     }
 

@@ -6,6 +6,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,12 +34,12 @@ public class DBConfig {
 
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource());
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
     public PlatformTransactionManager txManager(DataSource dataSource) {
-        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource());
+        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         return transactionManager;
     }
 }

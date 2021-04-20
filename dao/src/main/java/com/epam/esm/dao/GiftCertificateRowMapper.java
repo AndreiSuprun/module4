@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
+public class GiftCertificateRowMapper implements RowMapper<GiftCertificate> {
 
     public GiftCertificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         GiftCertificate certificate = new GiftCertificate();
