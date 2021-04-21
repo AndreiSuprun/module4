@@ -1,7 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.QueryUtil;
+import com.epam.esm.service.dto.QueryDTO;
 
 import java.util.List;
 
@@ -15,8 +15,9 @@ public interface GiftCertificatesService {
 
     GiftCertificateDTO find(Long id);
 
-    List<GiftCertificateDTO> findByQuery(QueryUtil query);
+    List<GiftCertificateDTO> findByQuery(QueryDTO queryDTO);
 
     List<GiftCertificateDTO> findAll();
 
+    GiftCertificateDTO patch(GiftCertificateDTO updatedCertificateDTO, Long id);
 }

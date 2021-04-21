@@ -1,10 +1,7 @@
 package com.epam.esm.service.mapper;
 
-import org.springframework.stereotype.Service;
+public interface Mapper<T, S> {
 
-
-public interface Mapper<T, V> {
-
-    V mapEntityToDTO(T entity);
-    T mapDtoToEntity(V dto);
+    S mapEntityToDTO(T entity);
+    T mapDtoToEntity(S dto);
 }

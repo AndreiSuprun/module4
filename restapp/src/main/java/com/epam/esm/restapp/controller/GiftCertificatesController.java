@@ -1,6 +1,7 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
+import com.epam.esm.service.dto.QueryDTO;
 import com.epam.esm.service.dto.QueryUtil;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,8 @@ public class GiftCertificatesController {
     }
 
     @GetMapping
-    public List<GiftCertificateDTO> getAll(@RequestParam(required = false) Map<String, String> params) {
-        if (params.isEmpty()) {
-            return giftCertificatesService.findAll();
-        } else {
-            return giftCertificatesService.findByQuery(new QueryUtil(params));
-        }
+    public List<GiftCertificateDTO> getByQuery(@RequestParam(required = false) QueryDTO queryDTO) {
+            return giftCertificatesService.findByQuery(queryDTO);
     }
 
     @PostMapping
@@ -45,8 +42,13 @@ public class GiftCertificatesController {
         giftCertificatesService.delete(id);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public GiftCertificateDTO update(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id){
         return giftCertificatesService.update(updatedCertificateDTO, id);
+    }
+
+    @PatchMapping("/{id}")
+    public GiftCertificateDTO patch(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id){
+        return giftCertificatesService.patch(updatedCertificateDTO, id);
     }
 }

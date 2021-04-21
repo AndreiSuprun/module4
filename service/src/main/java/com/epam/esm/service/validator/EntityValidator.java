@@ -8,9 +8,9 @@ public abstract class EntityValidator<T> {
     public abstract void validate(T object);
 
     protected <V> void validateField(Validator<V> validator,
-                                     V field, String... params) {
+                                     V field, ErrorCode errorCode, String... params) {
         if (!validator.isValid(field)) {
-            throw new ProjectException(ErrorCode.CERTIFICATE_FIELD_INVALID, params);
+            throw new ProjectException(errorCode, params);
             }
         }
     }

@@ -8,7 +8,7 @@ public enum ErrorCode {
     TAG_FIELD_INVALID(40001, "tag.field.invalid", HttpStatus.BAD_REQUEST),
     TAG_ALREADY_IN_DB(40003, "tag.already.in.db", HttpStatus.BAD_REQUEST),
     CERTIFICATE_FIELD_INVALID(40002, "certificate.field.invalid", HttpStatus.BAD_REQUEST),
-    TAG_UPDATE_NOT_ALLOWED(40501, "tag.update.notallowed", HttpStatus.METHOD_NOT_ALLOWED),
+    QUERY_PARAMETER_INVALID(40004, "query.parameter.invalid", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private Integer code;

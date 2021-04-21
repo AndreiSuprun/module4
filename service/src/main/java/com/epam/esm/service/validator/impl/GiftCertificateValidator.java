@@ -2,6 +2,7 @@ package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.validator.EntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,19 +22,19 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
     @Override
     public void validate(GiftCertificate giftCertificate) {
         validateField(new NameValidator(),
-                giftCertificate.getName(),
+                giftCertificate.getName(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 NAME_FIELD, giftCertificate.getName());
         validateField(new DescriptionValidator(),
-                giftCertificate.getName(),
+                giftCertificate.getName(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DESCRIPTION_FIELD, giftCertificate.getDescription());
         validateField(new PriceValidator(),
-                giftCertificate.getPrice(),
+                giftCertificate.getPrice(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 PRICE_FIELD, giftCertificate.getPrice().toString());
         validateField(new DurationValidator(),
-                giftCertificate.getDuration(),
+                giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DURATION_FIELD, giftCertificate.getDuration().toString());
         validateField(new DurationValidator(),
-                giftCertificate.getDuration(),
+                giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DURATION_FIELD, giftCertificate.getDuration().toString());
         List<Tag> tags = giftCertificate.getTags();
         for (Tag tag : tags){

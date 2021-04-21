@@ -1,7 +1,12 @@
-package com.epam.esm.dao;
+package com.epam.esm.dao.impl;
 
+import com.epam.esm.dao.GiftCertificateDAO;
+import com.epam.esm.dao.rowmapper.GiftCertificateRowMapper;
+import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.GiftCertificate;
 
+import com.epam.esm.entity.Query;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -112,8 +117,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> findByQuery(String sqlQuery, Object[] params) {
-        List<GiftCertificate> certificateList = jdbcTemplate.query(sqlQuery, new GiftCertificateRowMapper(), params);
+    public List<GiftCertificate> findByQuery(Query query) {
+        List<GiftCertificate> certificateList = jdbcTemplate.query(query.buildSQLQuery(), new GiftCertificateRowMapper(), query.getQueryParams());
         for (GiftCertificate certificate : certificateList) {
             List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), certificate.getId());
             certificate.setTags(tags);

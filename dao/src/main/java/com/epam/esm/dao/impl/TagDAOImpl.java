@@ -1,5 +1,7 @@
-package com.epam.esm.dao;
+package com.epam.esm.dao.impl;
 
+import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TagDAOImpl implements TagDAO{
+public class TagDAOImpl implements TagDAO {
 
     final static String SELECT_ONE_TAG = "SELECT * FROM tags WHERE id=?";
     final static String SELECT_ONE_TAG_BY_NAME = "SELECT * FROM tags WHERE name=?";

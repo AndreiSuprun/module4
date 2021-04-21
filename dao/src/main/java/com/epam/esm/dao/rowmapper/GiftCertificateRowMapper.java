@@ -1,4 +1,4 @@
-package com.epam.esm.dao;
+package com.epam.esm.dao.rowmapper;
 
 import com.epam.esm.entity.GiftCertificate;
 

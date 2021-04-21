@@ -1,9 +1,10 @@
-package com.epam.esm.service.mapper;
+package com.epam.esm.service.mapper.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.TagDTO;
+import com.epam.esm.service.mapper.Mapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
