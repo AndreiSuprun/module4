@@ -7,7 +7,7 @@ public class OrderParameterValidator extends RegExValidator {
 
     private static final int MIN_LENGTH = 4;
     private static final int MAX_LENGTH = 12;
-    private static final String NAME_REGEX = ".?(\\+|-)+(?i)(name|date)*";
+    private static final String NAME_REGEX = ".*(name|date).*";
 
     public OrderParameterValidator() {
         super(NAME_REGEX, MIN_LENGTH, MAX_LENGTH);

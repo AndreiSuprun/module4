@@ -82,11 +82,11 @@ public class Query {
 
     private void buildSelectByNameOrDescription() {
         String sql = (tag != null)? SQL_QUERY_BY_NAME_OR_DESCRIPTION_WITH_TAG : SQL_QUERY_BY_NAME_OR_DESCRIPTION_WITHOUT_TAG;
-        if (name != null && description == null) {
+        if (description == null && name != null) {
             SQLQuery.append(sql).append(SQL_QUERY_BY_NAME);
             params.add(name);
         }
-        if (description != null && name == null) {
+        if (name == null && description != null) {
             SQLQuery.append(sql).append(SQL_QUERY_BY_DESCRIPTION);
             params.add(description);
         }
@@ -117,13 +117,11 @@ public class Query {
             if (list.length > 1) {
                 SQLQuery.append(COMA_SIGN);
                 if (list[1].contains(NAME)) {
-                    SQLQuery.append(SQL_QUERY_ORDER);
                     SQLQuery.append(SQL_QUERY_ORDER_BY_NAME);
                     if (list[0].startsWith(MINUS_SIGN)) {
                         SQLQuery.append(SQL_ORDER_DESC);
                     }
                 } else {
-                    SQLQuery.append(SQL_QUERY_ORDER);
                     SQLQuery.append(SQL_QUERY_ORDER_BY_DATE);
                     if (list[0].startsWith(MINUS_SIGN)) {
                         SQLQuery.append(SQL_ORDER_DESC);

@@ -17,8 +17,8 @@ public class QueryValidator extends EntityValidator<Query> {
     public void validate(Query query) {
         if (query.getTag() != null) {
             validateField(new NameValidator(),
-                    query.getName(), ErrorCode.QUERY_PARAMETER_INVALID,
-                    TAG_FIELD, query.getName());
+                    query.getTag(), ErrorCode.QUERY_PARAMETER_INVALID,
+                    TAG_FIELD, query.getTag());
         }
         if (query.getName() != null) {
             validateField(new NameValidator(),

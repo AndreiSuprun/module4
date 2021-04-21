@@ -23,8 +23,11 @@ public class GiftCertificatesController {
     }
 
     @GetMapping
-    public List<GiftCertificateDTO> getByQuery(@RequestParam(required = false) QueryDTO queryDTO) {
-            return giftCertificatesService.findByQuery(queryDTO);
+    public List<GiftCertificateDTO> getByQuery(@RequestParam(required = false) String tag,
+                                               @RequestParam(required = false) String name,
+                                               @RequestParam(required = false) String description,
+                                               @RequestParam(required = false) String order) {
+            return giftCertificatesService.findByQuery(new QueryDTO(tag, name, description, order));
     }
 
     @PostMapping

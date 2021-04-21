@@ -11,6 +11,16 @@ public class QueryDTO {
     private String description;
     private String order;
 
+    public QueryDTO() {}
+
+    public QueryDTO(String tag, String name, String description, String order) {
+        this.tag = tag;
+        this.name = name;
+        this.description = description;
+        this.order = order;
+    }
+
+
     public String getTag() {
         return tag;
     }
