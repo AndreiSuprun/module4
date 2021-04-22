@@ -35,7 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<CustomErrorResponse> handleProjectException(DataAccessException ex, WebRequest request) {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode(ErrorCode.INTERNAL_ERROR.getCode().toString());
-        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.INTERNAL_ERROR.getMessageCode(), null, Locale.getDefault()));
+        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.INTERNAL_ERROR.getMessageCode(), new Object[] {ex.toString()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.INTERNAL_ERROR.getHttpStatus());
     }
 }

@@ -1,5 +1,7 @@
 package com.epam.esm.service.validator;
 
+import java.util.Optional;
+
 /**
  * Interface for entity fields validation
  *

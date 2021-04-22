@@ -5,11 +5,13 @@ import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +20,11 @@ public class TagDAOImpl implements TagDAO {
 
     final static String SELECT_ONE_TAG = "SELECT * FROM tags WHERE id=?";
     final static String SELECT_ONE_TAG_BY_NAME = "SELECT * FROM tags WHERE name=?";
-    final static String DELETE_TAG = "DELETE FROM tag WHERE id=?";
+    final static String DELETE_TAG = "DELETE FROM tags WHERE id=?";
     final static String INSERT_TAG = "INSERT INTO tags (name) VALUES (?)";
     final static String SELECT_ALL_TAGS = "SELECT * FROM tags";
+    final static String SELECT_TAG_WITH_CERTIFICATE = "SELECT COUNT(*) FROM gift_certificate_tags " +
+            "WHERE tag_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -59,22 +63,25 @@ public class TagDAOImpl implements TagDAO {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
-                    .prepareStatement(INSERT_TAG);
+                    .prepareStatement(INSERT_TAG, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, tag.getName());
             return ps;
         }, keyHolder);
-        Long tagId = (Long) keyHolder.getKey();
+        Long tagId = keyHolder.getKey().longValue();
         tag.setId(tagId);
         return tag;
     }
 
     @Override
-    public Tag update(Tag obj) {
+    public Tag update(Tag obj, Long id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean delete(Long id) {
+
+        Integer count = jdbcTemplate.query(SELECT_TAG_WITH_CERTIFICATE, id);
+
         return jdbcTemplate.update(DELETE_TAG, id) == 1;
     }
 }

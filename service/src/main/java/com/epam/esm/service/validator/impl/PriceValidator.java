@@ -2,6 +2,8 @@ package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.service.validator.Validator;
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Class for validating periodical price
@@ -13,6 +15,7 @@ public class PriceValidator implements Validator<BigDecimal> {
 
     @Override
     public boolean isValid(BigDecimal price) {
-        return price != null && MIN_VALUE.compareTo(price) <= 0 && MAX_VALUE.compareTo(price) > 0;
+        return Objects.nonNull(price) && MIN_VALUE.compareTo(price) <= 0
+                && MAX_VALUE.compareTo(price) > 0;
     }
 }

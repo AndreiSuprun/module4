@@ -76,9 +76,9 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (!certificateDto.getTags().isEmpty()) {
             giftCertificateDAO.clearTags(certificateInDB.getId());
         }
-        certificateInDB = mapper.mapDtoToEntity(certificateDto);
-        validator.validate(certificateInDB);
-        giftCertificateDAO.update(certificateInDB);
+        GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
+        validator.validate(certificateInRequest);
+        certificateInDB = giftCertificateDAO.update(certificateInRequest, id);
         return mapper.mapEntityToDTO(certificateInDB);
     }
 
@@ -113,17 +113,18 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (!certificateDto.getTags().isEmpty()) {
             giftCertificateDAO.clearTags(certificateInDB.getId());
         }
-        giftCertificateDAO.update(certificateInDB);
+        certificateInDB = giftCertificateDAO.update(certificateInDB, id);
         return mapper.mapEntityToDTO(certificateInDB);
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        if (!giftCertificateDAO.delete(id)) {
+        if (find(id) == null) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
         giftCertificateDAO.clearTags(id);
+        giftCertificateDAO.delete(id);
     }
 
     @Override

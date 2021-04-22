@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +26,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private final static String SELECT_ONE_GIFT_CERTIFICATE = "SELECT * FROM gift_certificates WHERE id=?";
     private final static String DELETE_GIFT_CERTIFICATE = "DELETE FROM gift_certificates WHERE id=?";
     private final static String INSERT_GIFT_CERTIFICATE = "INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
-    private final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_time = ? WHERE id =?";
+    private final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id =?";
     private final static String SELECT_ALL_GIFT_CERTIFICATES = "SELECT * FROM gift_certificates  gs";
-    private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT INTO gift_certificate_tags VALUES (?, ?)";
-    private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE * FROM gift_certificate_tags WHERE gift_certificate_id=?";
+    private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT IGNORE INTO gift_certificate_tags VALUES (?, ?)";
+    private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE IGNORE FROM gift_certificate_tags WHERE gift_certificate_id=?";
     private final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
             "ON t.id = gt.tag_id WHERE gt.gift_certificate_id = ?";
 
@@ -68,16 +69,16 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                    .prepareStatement(INSERT_GIFT_CERTIFICATE);
+                    .prepareStatement(INSERT_GIFT_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, certificate.getName());
             preparedStatement.setString(2, certificate.getDescription());
             preparedStatement.setBigDecimal(3, certificate.getPrice());
             preparedStatement.setInt(4, certificate.getDuration());
-            preparedStatement.setObject(5, LocalDateTime.now());
-            preparedStatement.setObject(6, LocalDateTime.now());
+            preparedStatement.setTimestamp(5, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+            preparedStatement.setTimestamp(6, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
             return preparedStatement;
         }, keyHolder);
-        Long id = (Long) keyHolder.getKey();
+        Long id = keyHolder.getKey().longValue();
         certificate.setId(id);
 
         for (Tag tag : certificate.getTags()) {
@@ -87,7 +88,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             }
             jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDBOpt.get().getId());
         }
-        return certificate;
+        Optional<GiftCertificate> certificateInDB = findOne(id);
+        return certificateInDB.get();
     }
 
     public void addTag(GiftCertificate giftCertificate, Tag tag){
@@ -103,17 +105,18 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public GiftCertificate update(GiftCertificate certificate) {
+    public GiftCertificate update(GiftCertificate certificate, Long id) {
         jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
-                certificate.getDuration(), certificate.getId());
+                certificate.getDuration(), java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()), id);
         for (Tag tag : certificate.getTags()) {
             Optional<Tag> tagInDB = tagDAO.findByName(tag.getName());
             if (!tagInDB.isPresent()) {
                 tagInDB = Optional.ofNullable(tagDAO.insert(tag));
             }
-            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, certificate.getId(), tagInDB.get().getId());
+            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDB.get().getId());
         }
-        return certificate;
+        Optional<GiftCertificate> certificateInDB = findOne(id);
+        return certificateInDB.get();
     }
 
     @Override

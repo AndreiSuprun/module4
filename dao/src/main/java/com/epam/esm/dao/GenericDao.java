@@ -14,7 +14,7 @@ public interface GenericDao<T> {
 
      T insert(T obj);
 
-     T update(T obj);
+     T update(T obj, Long id);
 
      boolean delete(Long id);
 }

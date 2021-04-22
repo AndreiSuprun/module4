@@ -29,13 +29,10 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
                 DESCRIPTION_FIELD, giftCertificate.getDescription());
         validateField(new PriceValidator(),
                 giftCertificate.getPrice(), ErrorCode.CERTIFICATE_FIELD_INVALID,
-                PRICE_FIELD, giftCertificate.getPrice().toString());
+                PRICE_FIELD, giftCertificate.getPrice());
         validateField(new DurationValidator(),
                 giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
-                DURATION_FIELD, giftCertificate.getDuration().toString());
-        validateField(new DurationValidator(),
-                giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
-                DURATION_FIELD, giftCertificate.getDuration().toString());
+                DURATION_FIELD, giftCertificate.getDuration());
         List<Tag> tags = giftCertificate.getTags();
         for (Tag tag : tags){
             tagValidator.validate(tag);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 public class QueryValidator extends EntityValidator<Query> {
 
     private final static String TAG_FIELD = "tag";
+    private final static String CONTAINS_FIELD = "contains";
     private final static String NAME_FIELD = "name";
     private final static String DESCRIPTION_FIELD = "name";
     private final static String ORDER_FIELD = "order";
@@ -19,6 +20,11 @@ public class QueryValidator extends EntityValidator<Query> {
             validateField(new NameValidator(),
                     query.getTag(), ErrorCode.QUERY_PARAMETER_INVALID,
                     TAG_FIELD, query.getTag());
+        }
+        if (query.getContains() != null) {
+            validateField(new NameValidator(),
+                    query.getContains(), ErrorCode.QUERY_PARAMETER_INVALID,
+                    CONTAINS_FIELD, query.getContains());
         }
         if (query.getName() != null) {
             validateField(new NameValidator(),

@@ -3,6 +3,7 @@ package com.epam.esm.service.validator.impl;
 import com.epam.esm.service.validator.Validator;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Class for validating user password

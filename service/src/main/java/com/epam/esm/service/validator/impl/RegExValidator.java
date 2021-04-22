@@ -3,6 +3,7 @@ package com.epam.esm.service.validator.impl;
 import com.epam.esm.service.validator.Validator;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -21,10 +22,10 @@ public class RegExValidator implements Validator<String> {
     }
 
     @Override
-    public boolean isValid(String str) {
-        return Objects.nonNull(str)
-                && str.length() >= minLength
-                && str.length() <= maxLength
-                && pattern.matcher(str).matches();
+    public boolean isValid(String string) {
+        return Objects.nonNull(string)
+                && string.length() >= minLength
+                && string.length() <= maxLength
+                && pattern.matcher(string).matches();
     }
 }

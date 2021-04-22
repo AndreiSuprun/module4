@@ -5,6 +5,8 @@ import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.validator.EntityValidator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TagValidator extends EntityValidator<Tag> {
 

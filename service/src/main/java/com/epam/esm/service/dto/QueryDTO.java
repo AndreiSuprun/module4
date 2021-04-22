@@ -7,19 +7,20 @@ import java.util.Map;
 public class QueryDTO {
 
     private String tag;
+    private String contains;
     private String name;
     private String description;
     private String order;
 
     public QueryDTO() {}
 
-    public QueryDTO(String tag, String name, String description, String order) {
+    public QueryDTO(String tag, String contains, String name, String description, String order) {
         this.tag = tag;
+        this.contains = contains;
         this.name = name;
         this.description = description;
         this.order = order;
     }
-
 
     public String getTag() {
         return tag;
@@ -27,6 +28,14 @@ public class QueryDTO {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getContains() {
+        return contains;
+    }
+
+    public void setContains(String contains) {
+        this.contains = contains;
     }
 
     public String getName() {
