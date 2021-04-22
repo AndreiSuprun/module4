@@ -5,12 +5,14 @@ import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
@@ -35,17 +37,17 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public Optional<Tag> findOne(Long id) {
-         List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG,  new TagRowMapper(), id);
-         if (!tags.isEmpty()) {
-             return Optional.of(tags.get(0));
-         } else {
-             return Optional.empty();
-         }
+        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG, new TagRowMapper(), id);
+        if (!tags.isEmpty()) {
+            return Optional.of(tags.get(0));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG_BY_NAME,  new TagRowMapper(), name);
+        List<Tag> tags = jdbcTemplate.query(SELECT_ONE_TAG_BY_NAME, new TagRowMapper(), name);
         if (!tags.isEmpty()) {
             return Optional.of(tags.get(0));
         } else {
@@ -55,7 +57,7 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SELECT_ALL_TAGS,  new TagRowMapper());
+        return jdbcTemplate.query(SELECT_ALL_TAGS, new TagRowMapper());
     }
 
     @Override
@@ -77,11 +79,26 @@ public class TagDAOImpl implements TagDAO {
         throw new UnsupportedOperationException();
     }
 
+    private final static class OrderCountHandler implements RowCallbackHandler {
+        private Integer result=0;
+        Integer getResult(){
+            return result;
+        }
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            result += rs.getInt(1);
+        }
+    }
+
+    @Override
+    public Integer getCertificateCount(Long id){
+        OrderCountHandler handler = new OrderCountHandler();
+        jdbcTemplate.query(SELECT_TAG_WITH_CERTIFICATE, handler, id);
+        return handler.getResult();
+    }
+
     @Override
     public boolean delete(Long id) {
-
-        Integer count = jdbcTemplate.query(SELECT_TAG_WITH_CERTIFICATE, id);
-
         return jdbcTemplate.update(DELETE_TAG, id) == 1;
     }
 }

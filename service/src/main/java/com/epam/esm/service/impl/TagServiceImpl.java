@@ -73,6 +73,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void delete(Long id) {
+        if (tagDAO.getCertificateCount(id) != 0){
+            throw new ProjectException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
+        }
         if (!tagDAO.delete(id)){
             throw new ProjectException(ErrorCode.TAG_NOT_FOUND, ID, id);
         }

@@ -8,17 +8,13 @@ public class QueryDTO {
 
     private String tag;
     private String contains;
-    private String name;
-    private String description;
     private String order;
 
     public QueryDTO() {}
 
-    public QueryDTO(String tag, String contains, String name, String description, String order) {
+    public QueryDTO(String tag, String contains, String order) {
         this.tag = tag;
         this.contains = contains;
-        this.name = name;
-        this.description = description;
         this.order = order;
     }
 
@@ -36,22 +32,6 @@ public class QueryDTO {
 
     public void setContains(String contains) {
         this.contains = contains;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getOrder() {

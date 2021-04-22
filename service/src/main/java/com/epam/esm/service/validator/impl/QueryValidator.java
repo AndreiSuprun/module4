@@ -10,8 +10,6 @@ public class QueryValidator extends EntityValidator<Query> {
 
     private final static String TAG_FIELD = "tag";
     private final static String CONTAINS_FIELD = "contains";
-    private final static String NAME_FIELD = "name";
-    private final static String DESCRIPTION_FIELD = "name";
     private final static String ORDER_FIELD = "order";
 
     @Override
@@ -25,16 +23,6 @@ public class QueryValidator extends EntityValidator<Query> {
             validateField(new NameValidator(),
                     query.getContains(), ErrorCode.QUERY_PARAMETER_INVALID,
                     CONTAINS_FIELD, query.getContains());
-        }
-        if (query.getName() != null) {
-            validateField(new NameValidator(),
-                    query.getName(), ErrorCode.QUERY_PARAMETER_INVALID,
-                    NAME_FIELD, query.getName());
-        }
-        if (query.getDescription() != null) {
-            validateField(new DescriptionValidator(),
-                    query.getDescription(), ErrorCode.QUERY_PARAMETER_INVALID,
-                    DESCRIPTION_FIELD, query.getDescription());
         }
         if (query.getOrder() != null) {
             validateField(new OrderParameterValidator(),

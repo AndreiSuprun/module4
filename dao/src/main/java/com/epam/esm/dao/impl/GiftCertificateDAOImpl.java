@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +32,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
             "ON t.id = gt.tag_id WHERE gt.gift_certificate_id = ?";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    private TagDAO tagDAO;
+    private final TagDAO tagDAO;
 
     @Autowired
     public GiftCertificateDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {

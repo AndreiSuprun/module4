@@ -103,14 +103,14 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (certificateDto.getDuration()!=null) {
             certificateInDB.setDuration(certificateDto.getDuration());
         }
-        if (!certificateDto.getTags().isEmpty()) {
+        if (certificateDto.getTags() != null) {
             certificateInDB.getTags().clear();
             for (TagDTO tagDTO : certificateDto.getTags()) {
                 certificateInDB.addTag(tagMapper.mapDtoToEntity(tagDTO));
             }
         }
         validator.validate(certificateInDB);
-        if (!certificateDto.getTags().isEmpty()) {
+        if (certificateDto.getTags() != null) {
             giftCertificateDAO.clearTags(certificateInDB.getId());
         }
         certificateInDB = giftCertificateDAO.update(certificateInDB, id);

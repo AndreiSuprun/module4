@@ -8,4 +8,6 @@ public interface
 TagDAO extends GenericDao<Tag>{
 
     Optional<Tag> findByName(String name);
+
+    Integer getCertificateCount(Long id);
 }
