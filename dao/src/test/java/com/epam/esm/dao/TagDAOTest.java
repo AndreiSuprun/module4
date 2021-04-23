@@ -23,13 +23,13 @@ public class TagDAOTest {
     @Autowired
     private TagDAO tagDAO;
 
-    @Autowired @Qualifier("testTemplate")
-    NamedParameterJdbcTemplate namedParamJdbcTemplate;
-
-    @BeforeAll
-    public void setup() {
-        tagDAO.setNamedParamJdbcTemplate(namedParamJdbcTemplate);
-    }
+//    @Autowired @Qualifier("testTemplate")
+//    NamedParameterJdbcTemplate namedParamJdbcTemplate;
+//
+//    @BeforeAll
+//    public void setup() {
+//        tagDAO.setNamedParamJdbcTemplate(namedParamJdbcTemplate);
+//    }
 
     @Test
     @Transactional

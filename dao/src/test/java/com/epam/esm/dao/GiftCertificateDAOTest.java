@@ -23,13 +23,13 @@ public class GiftCertificateDAOTest {
     @Autowired
     private GiftCertificateDAO certificateDAO;
 
-    @Autowired @Qualifier("testTemplate")
-    NamedParameterJdbcTemplate namedParamJdbcTemplate;
+//    @Autowired @Qualifier("testTemplate")
+//    NamedParameterJdbcTemplate namedParamJdbcTemplate;
 
-    @BeforeAll
-    public void setup() {
-        certificateDAO.setNamedParamJdbcTemplate(namedParamJdbcTemplate);
-    }
+//    @BeforeAll
+//    public void setup() {
+//        certificateDAO.setNamedParamJdbcTemplate(namedParamJdbcTemplate);
+//    }
 
     @Test
     @Transactional
