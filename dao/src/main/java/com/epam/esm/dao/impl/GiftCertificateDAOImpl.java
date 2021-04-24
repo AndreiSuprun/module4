@@ -45,12 +45,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public Optional<GiftCertificate> findOne(Long id) {
         List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateRowMapper(), id);
-        if (!giftCertificates.isEmpty()) {
-            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), id);
-            giftCertificates.get(0).setTags(tags);
-            return Optional.of(giftCertificates.get(0));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(giftCertificates.get(0));
 }
     @Override
     public List<GiftCertificate> findAll() {
@@ -78,17 +73,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             return preparedStatement;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
-        certificate.setId(id);
-
-        for (Tag tag : certificate.getTags()) {
-            Optional<Tag> tagInDBOpt = tagDAO.findByName(tag.getName());
-            if (!tagInDBOpt.isPresent()) {
-                Tag tagInDB = tagDAO.insert(tag);
-            }
-            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDBOpt.get().getId());
-        }
-        Optional<GiftCertificate> certificateInDB = findOne(id);
-        return certificateInDB.get();
+        return findOne(id).get();
     }
 
     public void addTag(GiftCertificate giftCertificate, Tag tag){
@@ -107,15 +92,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate update(GiftCertificate certificate, Long id) {
         jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
                 certificate.getDuration(), java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()), id);
-        for (Tag tag : certificate.getTags()) {
-            Optional<Tag> tagInDB = tagDAO.findByName(tag.getName());
-            if (!tagInDB.isPresent()) {
-                tagInDB = Optional.ofNullable(tagDAO.insert(tag));
-            }
-            jdbcTemplate.update(ADD_TAG_TO_GIFT_CERTIFICATE, id, tagInDB.get().getId());
-        }
-        Optional<GiftCertificate> certificateInDB = findOne(id);
-        return certificateInDB.get();
+        return findOne(id).get();
     }
 
     @Override

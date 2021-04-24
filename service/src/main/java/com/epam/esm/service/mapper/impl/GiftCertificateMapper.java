@@ -29,16 +29,19 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
     public GiftCertificate mapDtoToEntity(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = new GiftCertificate();
         BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, CREATE_DATE, LAS_UPDATE_DATE, TAGS);
-        List<Tag> tags = giftCertificateDTO.getTags().stream().map(tagMapper::mapDtoToEntity).collect(Collectors.toList());
-        giftCertificate.setTags(tags);
+        if (giftCertificateDTO.getTags() != null){
+            List<Tag> tags = giftCertificateDTO.getTags().stream().map(tagMapper::mapDtoToEntity).collect(Collectors.toList());
+            giftCertificate.setTags(tags);}
         return giftCertificate;
     }
 
     public GiftCertificateDTO mapEntityToDTO(GiftCertificate giftCertificate) {
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
         BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, TAGS);
-        List<TagDTO> tagsDTO = giftCertificate.getTags().stream().map(tagMapper::mapEntityToDTO).collect(Collectors.toList());
-        giftCertificateDTO.setTags(tagsDTO);
+        if (giftCertificate.getTags() != null) {
+            List<TagDTO> tagsDTO = giftCertificate.getTags().stream().map(tagMapper::mapEntityToDTO).collect(Collectors.toList());
+            giftCertificateDTO.setTags(tagsDTO);
+        }
         return giftCertificateDTO;
     }
 }
