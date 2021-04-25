@@ -1,12 +1,8 @@
 package com.epam.esm.entity;
 
-import java.util.Set;
-
 public class Tag {
 
     private Long id;
-
-    //@NotEmpty(message = "{tag.name.notempty}")
     private String name;
 
     public Tag(String name) {
@@ -36,9 +32,7 @@ public class Tag {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Tag tag = (Tag) o;
-
         return name != null ? name.equals(tag.name) : tag.name == null;
     }
 

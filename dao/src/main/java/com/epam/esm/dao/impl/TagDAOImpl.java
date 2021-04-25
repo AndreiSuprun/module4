@@ -28,7 +28,7 @@ public class TagDAOImpl implements TagDAO {
     final static String SELECT_TAG_WITH_CERTIFICATE = "SELECT COUNT(*) FROM gift_certificate_tags " +
             "WHERE tag_id = ?";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public TagDAOImpl(JdbcTemplate jdbcTemplate) {
@@ -79,7 +79,7 @@ public class TagDAOImpl implements TagDAO {
         throw new UnsupportedOperationException();
     }
 
-    private final static class OrderCountHandler implements RowCallbackHandler {
+    private static final class OrderCountHandler implements RowCallbackHandler {
         private Integer result=0;
         Integer getResult(){
             return result;

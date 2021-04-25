@@ -8,21 +8,10 @@ import java.util.List;
 public class GiftCertificate {
 
     private Long id;
-
-    //@NotEmpty(message="{giftcertificate.name.notempty}")
     private String name;
-
-    //@NotEmpty(message="{giftcertificate.description.notempty}")
     private String description;
-
-    //@NotNull(message="{giftcertificate.price.notnull}")
-   // @DecimalMin(value = "1.00", message="{giftcertificate.price.min}")
     private BigDecimal price;
-
-    //@NotNull(message="{giftcertificate.duration.notempty}")
-    //@Min(value = 1, message="{giftcertificate.duration.min}")
     private Integer duration;
-
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
@@ -111,6 +100,33 @@ public class GiftCertificate {
             tags = new ArrayList<>();
         }
         this.tags.add(tag);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GiftCertificate that = (GiftCertificate) o;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (price != null ? !price.equals(that.price) : that.price != null) return false;
+        if (duration != null ? !duration.equals(that.duration) : that.duration != null) return false;
+        if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
+        if (lastUpdateDate != null ? !lastUpdateDate.equals(that.lastUpdateDate) : that.lastUpdateDate != null)
+            return false;
+        return tags != null ? tags.equals(that.tags) : that.tags == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (lastUpdateDate != null ? lastUpdateDate.hashCode() : 0);
+        result = 31 * result + (tags != null ? tags.hashCode() : 0);
+        return result;
     }
 
     @Override

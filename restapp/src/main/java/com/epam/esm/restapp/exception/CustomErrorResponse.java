@@ -3,7 +3,6 @@ package com.epam.esm.restapp.exception;
 public class CustomErrorResponse {
 
     private String errorMessage;
-
     private String errorCode;
 
     public String getErrorMessage() {
