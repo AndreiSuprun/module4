@@ -17,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class TagServiceTest {
@@ -149,5 +148,37 @@ public class TagServiceTest {
 
         assertEquals(listDTOExpected, actual);
         verify(tagDAO, times(1)).findAll();
+    }
+
+    @Test
+    void tagExistTest() {
+        TagDTO tagDTO = new TagDTO();
+        tagDTO.setName("Tag");
+        Tag tag = new Tag();
+        tag.setName("Tag");
+
+        when(mapper.mapDtoToEntity(tagDTO)).thenReturn(tag);
+        doNothing().when(validator).validate(tag);
+        when(tagDAO.findByName(tag.getName())).thenReturn(Optional.of(tag));
+        boolean isExist = tagService.exist(tagDTO);
+
+        assertTrue(isExist);
+        verify(tagDAO, times(1)).findByName(tag.getName());
+    }
+
+    @Test
+    void tagNotExistTest() {
+        TagDTO tagDTO = new TagDTO();
+        tagDTO.setName("Tag");
+        Tag tag = new Tag();
+        tag.setName("Tag");
+
+        when(mapper.mapDtoToEntity(tagDTO)).thenReturn(tag);
+        doNothing().when(validator).validate(tag);
+        when(tagDAO.findByName(tag.getName())).thenReturn(Optional.empty());
+        boolean isExist = tagService.exist(tagDTO);
+
+        assertFalse(isExist);
+        verify(tagDAO, times(1)).findByName(tag.getName());
     }
 }

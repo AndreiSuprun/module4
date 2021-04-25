@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
     CERTIFICATE_NOT_FOUND(40401, "certificate.not.found", HttpStatus.NOT_FOUND),
+    CERTIFICATES_NOT_FOUND(40405, "certificates.not.found", HttpStatus.NOT_FOUND),
     TAG_NOT_FOUND(40402, "tag.not.found", HttpStatus.NOT_FOUND),
     TAG_CANNOT_BE_DELETED(40005, "tag.cannot.be.deleted", HttpStatus.BAD_REQUEST),
     TAG_FIELD_INVALID(40001, "tag.field.invalid", HttpStatus.BAD_REQUEST),

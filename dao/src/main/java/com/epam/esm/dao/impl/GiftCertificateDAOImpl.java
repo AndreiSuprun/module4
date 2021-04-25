@@ -27,25 +27,25 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private final static String INSERT_GIFT_CERTIFICATE = "INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
     private final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id =?";
     private final static String SELECT_ALL_GIFT_CERTIFICATES = "SELECT * FROM gift_certificates  gs";
-    private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT IGNORE INTO gift_certificate_tags VALUES (?, ?)";
+    private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT INTO gift_certificate_tags VALUES (?, ?)";
     private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE IGNORE FROM gift_certificate_tags WHERE gift_certificate_id=?";
     private final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
             "ON t.id = gt.tag_id WHERE gt.gift_certificate_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final TagDAO tagDAO;
-
     @Autowired
-    public GiftCertificateDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
+    public GiftCertificateDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tagDAO = tagDAO;
     }
 
     @Override
     public Optional<GiftCertificate> findOne(Long id) {
         List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ONE_GIFT_CERTIFICATE, new GiftCertificateRowMapper(), id);
-        return Optional.ofNullable(giftCertificates.get(0));
+        if (!giftCertificates.isEmpty()) {
+            return Optional.of(giftCertificates.get(0));
+        }
+        return Optional.empty();
 }
     @Override
     public List<GiftCertificate> findAll() {
@@ -97,11 +97,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> findByQuery(Query query) {
-        List<GiftCertificate> certificateList = jdbcTemplate.query(query.buildSQLQuery(), new GiftCertificateRowMapper(), query.getQueryParams());
-        for (GiftCertificate certificate : certificateList) {
-            List<Tag> tags = jdbcTemplate.query(SQL_SELECT_TAGS, new TagRowMapper(), certificate.getId());
-            certificate.setTags(tags);
-        }
-       return certificateList;
+        return jdbcTemplate.query(query.buildSQLQuery(), new GiftCertificateRowMapper(), query.getQueryParams());
     }
 }

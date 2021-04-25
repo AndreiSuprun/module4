@@ -1,3 +1,5 @@
+set MODE MYSQL;
+
 create table if not exists gift_certificates
 (
     id int auto_increment

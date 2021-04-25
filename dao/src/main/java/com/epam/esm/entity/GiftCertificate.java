@@ -2,6 +2,7 @@ package com.epam.esm.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GiftCertificate {
@@ -106,6 +107,9 @@ public class GiftCertificate {
     }
 
     public void addTag(Tag tag){
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
         this.tags.add(tag);
     }
 

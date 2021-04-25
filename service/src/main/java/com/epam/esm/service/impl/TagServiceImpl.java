@@ -58,17 +58,19 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO update(TagDTO tagDTO) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TagDTO findByName(String name) {
         Optional<Tag> tagOptional = tagDAO.findByName(name);
         if (!tagOptional.isPresent()){
             throw new ProjectException(ErrorCode.TAG_NOT_FOUND, NAME, name);
         }
         return tagOptional.map(mapper::mapEntityToDTO).get();
+    }
+
+    @Override
+    public boolean exist(TagDTO tagDTO) {
+        Tag tag = mapper.mapDtoToEntity(tagDTO);
+        tagValidator.validate(tag);
+        return tagDAO.findByName(tag.getName()).isPresent();
     }
 
     @Override

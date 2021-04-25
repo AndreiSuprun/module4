@@ -134,6 +134,13 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         Query query = queryMapper.mapDtoToEntity(queryDTO);
         queryValidator.validate(query);
         List<GiftCertificate> giftCertificates = giftCertificateDAO.findByQuery(query);
+        if (giftCertificates.isEmpty()) {
+            throw new ProjectException(ErrorCode.CERTIFICATES_NOT_FOUND);
+        }
+        for (GiftCertificate giftCertificate : giftCertificates) {
+            List<Tag> tags = giftCertificateDAO.getTags(giftCertificate);
+            giftCertificate.setTags(tags);
+        }
         return giftCertificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 
@@ -150,11 +157,10 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     private void addTags(GiftCertificate giftCertificate, List<TagDTO> tags) {
         if (tags != null && giftCertificate != null) {
             for (TagDTO tagDTO : tags) {
-                TagDTO tagInDB = tagService.findByName(tagDTO.getName());
-                if (tagInDB == null) {
-                    tagInDB = tagService.add(tagDTO);
+                if (!tagService.exist(tagDTO)) {
+                    tagService.add(tagDTO);
                 }
-                giftCertificateDAO.addTag(giftCertificate, tagMapper.mapDtoToEntity(tagInDB));
+                giftCertificateDAO.addTag(giftCertificate, tagMapper.mapDtoToEntity(tagService.findByName(tagDTO.getName())));
             }
         }
     }

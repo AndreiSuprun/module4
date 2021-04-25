@@ -16,9 +16,9 @@ public interface TagService {
 
     List<TagDTO> findAll();
 
-    TagDTO update(TagDTO tagDTO);
-
     TagDTO findByName(String name);
+
+    boolean exist(TagDTO tagDTO);
 
     void delete(Long id);
 }

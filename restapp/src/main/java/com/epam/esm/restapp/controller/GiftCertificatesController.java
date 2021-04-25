@@ -2,13 +2,11 @@ package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.dto.QueryDTO;
-import com.epam.esm.service.dto.QueryUtil;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 
 @RestController

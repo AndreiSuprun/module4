@@ -44,7 +44,6 @@ public class DBConfig {
 
     @Bean
     public PlatformTransactionManager txManager(DataSource dataSource) {
-        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-        return transactionManager;
+        return new DataSourceTransactionManager(dataSource);
     }
 }
