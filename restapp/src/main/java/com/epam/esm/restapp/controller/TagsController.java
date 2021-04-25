@@ -1,10 +1,10 @@
 package com.epam.esm.restapp.controller;
 
-import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +45,7 @@ public class TagsController {
      * @return TagDTO tag dto of created in repository tag
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public TagDTO add(@RequestBody TagDTO newTag) {
         return tagService.add(newTag);
     }
@@ -69,6 +70,7 @@ public class TagsController {
      * certificates which consist this tag
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         tagService.delete(id);
     }

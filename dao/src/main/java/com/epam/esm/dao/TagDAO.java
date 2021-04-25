@@ -12,14 +12,6 @@ import java.util.Optional;
 public interface TagDAO extends GenericDao<Tag>{
 
     /**
-     * Retrieves tag from repository according to provided name.
-     *
-     * @param name name of tag to find in repository
-     * @return Optional<Tag> optional of tag from repository according to provided name
-     */
-    Optional<Tag> findByName(String name);
-
-    /**
      * Retrieves count of gift certificates from repository for tag with provided id.
      *
      * @param id id of tag for which is necessary to count gift certificates

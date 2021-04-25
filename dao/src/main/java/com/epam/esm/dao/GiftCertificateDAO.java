@@ -5,6 +5,7 @@ import com.epam.esm.entity.Query;
 import com.epam.esm.entity.Tag;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * DAO interface responsible for additional to CRUD handling operations for gift certificate entities
@@ -43,4 +44,5 @@ public interface GiftCertificateDAO extends GenericDao<GiftCertificate> {
      * @param id id of gift certificate for which is necessary to remove tags
      */
     void clearTags(Long id);
+
 }

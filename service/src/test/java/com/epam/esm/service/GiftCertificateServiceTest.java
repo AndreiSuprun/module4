@@ -25,7 +25,15 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GiftCertificateServiceTest {
 
@@ -59,7 +67,25 @@ public class GiftCertificateServiceTest {
         when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
         doThrow(ProjectException.class).when(validator).validate(expected);
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.add(expectedDTO);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.add(expectedDTO);
+        });
+        verify(giftCertificateDAO, never()).insert(any(GiftCertificate.class));
+    }
+
+    @Test
+    void addCertificateExistsTest() {
+        GiftCertificateDTO expectedDTO = new GiftCertificateDTO();
+        expectedDTO.setName("Certificate");
+        GiftCertificate expected = new GiftCertificate();
+        expected.setName("Certificate");
+
+        when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
+        doNothing().when(validator).validate(expected);
+        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(Optional.of(expected));
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.add(expectedDTO);
+        });
         verify(giftCertificateDAO, never()).insert(any(GiftCertificate.class));
     }
 
@@ -80,6 +106,7 @@ public class GiftCertificateServiceTest {
         when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
         doNothing().when(validator).validate(expected);
+        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(Optional.empty());
         when(giftCertificateDAO.insert(expected)).thenReturn(expected);
         when(tagService.findByName(tagDTO.getName())).thenReturn(tagDTO);
         doNothing().when(validator).validate(expected);
@@ -105,6 +132,7 @@ public class GiftCertificateServiceTest {
         doNothing().when(giftCertificateDAO).clearTags(id);
         when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
         doNothing().when(validator).validate(expected);
+        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(Optional.empty());
         when(giftCertificateDAO.update(expected, id)).thenReturn(expected);
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
         when(giftCertificateDAO.getTags(expected)).thenReturn(null);
@@ -123,7 +151,9 @@ public class GiftCertificateServiceTest {
 
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.empty());
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.update(certificateDTO, id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.update(certificateDTO, id);
+        });
         verify(giftCertificateDAO, never()).update(any(GiftCertificate.class), anyLong());
     }
 
@@ -138,11 +168,14 @@ public class GiftCertificateServiceTest {
         certificate.setName("Certificate1");
 
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.of(certificateInDB));
+        when(giftCertificateDAO.findByName(certificate.getName())).thenReturn(Optional.empty());
         doNothing().when(giftCertificateDAO).clearTags(id);
         when(mapper.mapDtoToEntity(certificateDTO)).thenReturn(certificate);
         doThrow(ProjectException.class).when(validator).validate(certificate);
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.update(certificateDTO, id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.update(certificateDTO, id);
+        });
         verify(giftCertificateDAO, never()).update(any(GiftCertificate.class), anyLong());
     }
 
@@ -172,7 +205,9 @@ public class GiftCertificateServiceTest {
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.empty());
         when(giftCertificateDAO.delete(id)).thenReturn(false);
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.delete(id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.delete(id);
+        });
         verify(giftCertificateDAO, times(0)).delete(id);
     }
 
@@ -182,7 +217,9 @@ public class GiftCertificateServiceTest {
 
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.empty());
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.find(id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.find(id);
+        });
         verify(giftCertificateDAO, times(1)).findOne(id);
     }
 
@@ -283,7 +320,9 @@ public class GiftCertificateServiceTest {
         when(queryMapper.mapDtoToEntity(queryDTO)).thenReturn(query);
         doThrow(ProjectException.class).when(queryValidator).validate(query);
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.findByQuery(queryDTO);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.findByQuery(queryDTO);
+        });
         verify(giftCertificateDAO, times(0)).findByQuery(query);
     }
 
@@ -299,6 +338,7 @@ public class GiftCertificateServiceTest {
 
         doNothing().when(giftCertificateDAO).clearTags(id);
         doNothing().when(validator).validate(expected);
+        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(Optional.empty());
         when(giftCertificateDAO.update(certificateInDB, id)).thenReturn(expected);
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.of(certificateInDB)).thenReturn(Optional.of(expected));
@@ -316,7 +356,9 @@ public class GiftCertificateServiceTest {
 
         when(giftCertificateDAO.findOne(id)).thenReturn(Optional.empty());
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.patch(expectedDTO, id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.patch(expectedDTO, id);
+        });
         verify(giftCertificateDAO, never()).update(any(GiftCertificate.class), anyLong());
     }
 
@@ -331,12 +373,15 @@ public class GiftCertificateServiceTest {
         certificate.setName("Certificate1");
 
         when(giftCertificateDAO.findOne(any(Long.class))).thenReturn(Optional.of(certificateInDB));
+        when(giftCertificateDAO.findByName(certificate.getName())).thenReturn(Optional.empty());
         when(giftCertificateDAO.update(certificate, id)).thenReturn(certificate);
         doNothing().when(giftCertificateDAO).clearTags(any(Long.class));
         when(mapper.mapDtoToEntity(certificateDTO)).thenReturn(certificate);
         doThrow(ProjectException.class).when(validator).validate(certificateInDB);
 
-        assertThrows(ProjectException.class, () -> {giftCertificateService.patch(certificateDTO, id);});
+        assertThrows(ProjectException.class, () -> {
+            giftCertificateService.patch(certificateDTO, id);
+        });
         verify(giftCertificateDAO, never()).update(any(GiftCertificate.class), anyLong());
     }
 }

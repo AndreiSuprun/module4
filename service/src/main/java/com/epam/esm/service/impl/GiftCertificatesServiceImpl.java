@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +54,9 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public GiftCertificateDTO add(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = mapper.mapDtoToEntity(giftCertificateDTO);
         validator.validate(giftCertificate);
+        if (giftCertificateDAO.findByName(giftCertificate.getName()).isPresent()){
+            throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, giftCertificate.getName());
+        }
         List<TagDTO> tags = giftCertificateDTO.getTags();
         giftCertificate = giftCertificateDAO.insert(giftCertificate);
         addTags(giftCertificate, tags);
@@ -62,11 +66,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional
     @Override
     public GiftCertificateDTO update(GiftCertificateDTO certificateDto, Long id) {
-        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
-        if (!certificateOptional.isPresent()) {
-            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
-        }
-        GiftCertificate certificateInDB = certificateOptional.get();
+        GiftCertificate certificateInDB = checkCertificateAlreadyInDb(certificateDto, id);
         if (certificateDto.getTags() != null) {
             giftCertificateDAO.clearTags(certificateInDB.getId());
         }
@@ -83,11 +83,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional
     @Override
     public GiftCertificateDTO patch(GiftCertificateDTO certificateDto, Long id) {
-        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
-        if (!certificateOptional.isPresent()) {
-            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
-        }
-        GiftCertificate certificateInDB = certificateOptional.get();
+        GiftCertificate certificateInDB = checkCertificateAlreadyInDb(certificateDto, id);
         if (certificateDto.getName() != null) {
             certificateInDB.setName(certificateDto.getName());
         }
@@ -156,12 +152,26 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     private void addTags(GiftCertificate giftCertificate, List<TagDTO> tags) {
         if (tags != null && giftCertificate != null) {
-            for (TagDTO tagDTO : tags) {
+            List<TagDTO> distinctTags = tags.stream().distinct().collect(Collectors.toList());
+            for (TagDTO tagDTO : distinctTags) {
                 if (!tagService.exist(tagDTO)) {
                     tagService.add(tagDTO);
                 }
                 giftCertificateDAO.addTag(giftCertificate, tagMapper.mapDtoToEntity(tagService.findByName(tagDTO.getName())));
             }
         }
+    }
+
+    private GiftCertificate checkCertificateAlreadyInDb(GiftCertificateDTO certificateDto, Long id) {
+        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
+        if (!certificateOptional.isPresent()) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
+        Optional<GiftCertificate> certificateByNameOptional = giftCertificateDAO.findByName(certificateDto.getName());
+        if (certificateByNameOptional.isPresent() &&
+                !certificateByNameOptional.get().getId().equals(certificateDto.getId())) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
+        }
+        return certificateOptional.get();
     }
 }

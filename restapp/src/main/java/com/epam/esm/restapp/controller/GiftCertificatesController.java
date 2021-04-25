@@ -5,6 +5,7 @@ import com.epam.esm.service.dto.QueryDTO;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.List;
 public class GiftCertificatesController {
 
     private final GiftCertificatesService giftCertificatesService;
-
 
     @Autowired
     public GiftCertificatesController(GiftCertificatesService giftCertificateService) {
@@ -54,6 +54,7 @@ public class GiftCertificatesController {
      * @return GiftCertificateDTO gift certificate dto of created in repository gift certificate
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDTO addGiftCertificate(@RequestBody GiftCertificateDTO newCertificate) {
         return giftCertificatesService.add(newCertificate);
     }
@@ -77,6 +78,7 @@ public class GiftCertificatesController {
      * @throws ProjectException if gift certificate with provided id is not present in repository
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         giftCertificatesService.delete(id);
     }

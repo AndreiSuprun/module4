@@ -28,6 +28,14 @@ public interface GenericDao<T> {
      List<T> findAll() ;
 
      /**
+      * Retrieves entity from repository according to provided name.
+      *
+      * @param name name of entity to find in repository
+      * @return Optional<T> optional of entity from repository according to provided name
+      */
+     Optional<T> findByName(String name);
+
+     /**
       * Adds entity object to repository.
       *
       * @param obj of entity to add to repository

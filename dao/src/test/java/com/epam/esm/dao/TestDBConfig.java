@@ -22,9 +22,6 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/database.properties")
 public class TestDBConfig {
 
-    @Autowired
-    private Environment env;
-
     @Value("${database.driver}") String driver;
     @Value("${database.name}") String name;
     @Value("${database.encoding}") String encoding;

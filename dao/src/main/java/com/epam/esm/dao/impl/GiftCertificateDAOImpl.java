@@ -2,10 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.rowmapper.GiftCertificateRowMapper;
-import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.GiftCertificate;
-
 import com.epam.esm.entity.Query;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +17,17 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
-
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     private final static String SELECT_ONE_GIFT_CERTIFICATE = "SELECT * FROM gift_certificates WHERE id=?";
+    private final static String SELECT_GIFT_CERTIFICATE_BY_NAME = "SELECT * FROM gift_certificates WHERE name=?";
     private final static String DELETE_GIFT_CERTIFICATE = "DELETE FROM gift_certificates WHERE id=?";
     private final static String INSERT_GIFT_CERTIFICATE = "INSERT INTO gift_certificates (name, description, price, duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
     private final static String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id =?";
     private final static String SELECT_ALL_GIFT_CERTIFICATES = "SELECT * FROM gift_certificates  gs";
     private final static String ADD_TAG_TO_GIFT_CERTIFICATE = "INSERT INTO gift_certificate_tags VALUES (?, ?)";
-    private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE IGNORE FROM gift_certificate_tags WHERE gift_certificate_id=?";
+    private final static String CLEAR_GIFT_CERTIFICATE_TAGS = "DELETE FROM gift_certificate_tags WHERE gift_certificate_id=?";
     private final static String SQL_SELECT_TAGS = "SELECT * FROM tags t INNER JOIN gift_certificate_tags gt " +
             "ON t.id = gt.tag_id WHERE gt.gift_certificate_id = ?";
 
@@ -47,7 +45,18 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             return Optional.of(giftCertificates.get(0));
         }
         return Optional.empty();
-}
+    }
+
+    @Override
+    public Optional<GiftCertificate> findByName(String name) {
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_GIFT_CERTIFICATE_BY_NAME,
+                new GiftCertificateRowMapper(), name);
+        if (!giftCertificates.isEmpty()) {
+            return Optional.of(giftCertificates.get(0));
+        }
+        return Optional.empty();
+    }
+
     @Override
     public List<GiftCertificate> findAll() {
         List<GiftCertificate> list = jdbcTemplate.query(SELECT_ALL_GIFT_CERTIFICATES, new GiftCertificateRowMapper());
