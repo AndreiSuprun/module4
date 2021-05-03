@@ -11,4 +11,6 @@ import java.util.List;
 public interface UserService{
 
     public List<UserDTO> searchUsers(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
+
+    UserDTO find(Long id);
 }

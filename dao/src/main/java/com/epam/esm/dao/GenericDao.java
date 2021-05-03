@@ -18,14 +18,14 @@ public interface GenericDao<T> {
       * @param id id of entity to find
       * @return Optional<T> of entity with provided id in repository
       */
-     Optional<T> findOne(Long id);
+     T findOne(Long id);
 
      /**
       * Returns list of objects of all entities from repository.
       *
       * @return List of entities in repository
       */
-     List<T> findAll() ;
+     List<T> findAll(Integer page, Integer size) ;
 
      /**
       * Retrieves entities from repository according to provided query.
@@ -44,7 +44,7 @@ public interface GenericDao<T> {
       * @param name name of entity to find in repository
       * @return Optional<T> optional of entity from repository according to provided name
       */
-     Optional<T> findByName(String name);
+     T findByName(String name);
 
      /**
       * Counts entity in repository according to provided search params or if params are not provided counts

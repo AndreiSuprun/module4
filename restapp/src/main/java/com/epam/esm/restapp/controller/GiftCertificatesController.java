@@ -2,11 +2,16 @@ package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.QueryDTO;
+import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.search.OrderCriteriaBuilder;
+import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,19 +60,21 @@ public class GiftCertificatesController {
      *                          are not present in repository
      */
     @GetMapping
-    public CollectionModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(required = false) String tag,
-                                                                       @RequestParam(required = false) String contains,
-                                                                       @RequestParam(required = false) String order) {
-        QueryDTO queryDTO = new QueryDTO(tag, contains, order);
-        List<EntityModel<GiftCertificateDTO>> giftCertificates = giftCertificatesService.
-                findByQuery(queryDTO).stream()
-                .map(certificate -> EntityModel.of(certificate,
-                        linkTo(methodOn(GiftCertificatesController.class).getOne(certificate.getId())).withSelfRel(),
-                        linkTo(methodOn(GiftCertificatesController.class).getByQuery(tag, contains, order)).withRel("gift_certificates")))
+    public CollectionModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Integer page,
+                                                                       @RequestParam(value = "size", required = false) Integer size,
+                                                                       @RequestParam(value = "search", required = false) String searchParameters,
+                                                                       @RequestParam(value = "order", required = false) String orderParameters) {
+        SearchCriteriaBuilder searchCriteriaBuilder = new SearchCriteriaBuilder(searchParameters);
+        OrderCriteriaBuilder orderCriteriaBuilder = new OrderCriteriaBuilder(orderParameters);
+        PaginationDTO paginationDTO = new PaginationDTO(page, size);
+        List<GiftCertificateDTO> certificateDTOs = giftCertificatesService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
+                paginationDTO);
+        List<EntityModel<GiftCertificateDTO>> entityModels = certificateDTOs.stream()
+                .map(certificateDTO -> EntityModel.of(certificateDTO,
+                        linkTo(methodOn(GiftCertificatesController.class).getOne(certificateDTO.getId())).withSelfRel()))
                 .collect(Collectors.toList());
-
-        return CollectionModel.of(giftCertificates, linkTo(methodOn(GiftCertificatesController.class).
-                getByQuery(tag, contains, order)).withSelfRel());
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
+        return PagedModel.of(entityModels, pageMetadata);
     }
 
     /**

@@ -11,11 +11,11 @@ import java.util.Optional;
  */
 public interface TagDAO extends GenericDao<Tag>{
 
-    /**
-     * Retrieves count of gift certificates from repository for tag with provided id.
-     *
-     * @param id id of tag for which is necessary to count gift certificates
-     * @return Integer count of gift certificates for tag with provided id
-     */
-    Integer getCertificateCount(Long id);
+//    /**
+//     * Retrieves count of gift certificates from repository for tag with provided id.
+//     *
+//     * @param id id of tag for which is necessary to count gift certificates
+//     * @return Integer count of gift certificates for tag with provided id
+//     */
+//    Integer getCertificateCount(Long id);
 }

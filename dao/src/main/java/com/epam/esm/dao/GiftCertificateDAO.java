@@ -16,27 +16,27 @@ public interface GiftCertificateDAO extends GenericDao<GiftCertificate> {
 
 
 
-    /**
-     * Retrieves from repository tags for provided gift certificate
-     *
-     * @param giftCertificate gift certificate for which is necessary to find tags
-     * @return List<Tag> list of tags from repository for provided gift certificate
-     */
-    List<Tag> getTags(GiftCertificate giftCertificate);
-
-    /**
-     * Adds to repository provided tag for provided gift certificate
-     *
-     * @param giftCertificate gift certificate for which is necessary to add tag
-     * @param tag tag to add to provided gift certificate
-     */
-    void addTag(GiftCertificate giftCertificate, Tag tag);
-
-    /**
-     * Removes from repository all tags for gift certificate with provided id
-     *
-     * @param id id of gift certificate for which is necessary to remove tags
-     */
-    void clearTags(Long id);
+//    /**
+//     * Retrieves from repository tags for provided gift certificate
+//     *
+//     * @param giftCertificate gift certificate for which is necessary to find tags
+//     * @return List<Tag> list of tags from repository for provided gift certificate
+//     */
+//    List<Tag> getTags(GiftCertificate giftCertificate);
+//
+//    /**
+//     * Adds to repository provided tag for provided gift certificate
+//     *
+//     * @param giftCertificate gift certificate for which is necessary to add tag
+//     * @param tag tag to add to provided gift certificate
+//     */
+//    void addTag(GiftCertificate giftCertificate, Tag tag);
+//
+//    /**
+//     * Removes from repository all tags for gift certificate with provided id
+//     *
+//     * @param id id of gift certificate for which is necessary to remove tags
+//     */
+//    void clearTags(Long id);
 
 }

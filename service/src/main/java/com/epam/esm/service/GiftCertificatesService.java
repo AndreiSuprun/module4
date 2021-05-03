@@ -1,8 +1,11 @@
 package com.epam.esm.service;
 
 import com.epam.esm.service.dto.GiftCertificateDTO;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.QueryDTO;
 import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.search.OrderCriteria;
+import com.epam.esm.service.search.SearchCriteria;
 
 import java.util.List;
 
@@ -60,7 +63,7 @@ public interface GiftCertificatesService {
      * are not present in repository
      * @return List<GiftCertificates> list of gift certificates from repository according to provided query
      */
-    List<GiftCertificateDTO> findByQuery(QueryDTO queryDTO);
+    List<GiftCertificateDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
 
     /**
      * Returns all GiftCertificateDTO objects of gift certificates from repository.

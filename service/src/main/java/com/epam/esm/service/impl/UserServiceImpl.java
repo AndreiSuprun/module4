@@ -1,6 +1,8 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDao;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UserServiceImpl implements UserService {
@@ -50,5 +53,14 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public UserDTO find(Long id) {
+        Optional<User> userOptional = userDao.findOne(id);
+        if (!userOptional.isPresent()) {
+            throw new ProjectException(ErrorCode.USER_NOT_FOUND, id);
+        }
+        User user = userOptional.get();
+        return mapper.mapEntityToDTO(user);
+    }
 
 }
