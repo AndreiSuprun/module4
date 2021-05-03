@@ -57,7 +57,7 @@ public class UserController {
     public EntityModel<UserDTO> getOne(@PathVariable Long id) {
         UserDTO userDTO = userService.find(id);
         return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(GiftCertificatesController.class).findAll()).withRel("users"));
+                linkTo(methodOn(UserController.class).findAll()).withRel("users"));
     }
 
     @GetMapping
@@ -86,4 +86,9 @@ public class UserController {
         return PagedModel.of(entityModels, pageMetadata);
     }
 
+    @GetMapping("/{userId}/orders/{orderId}")
+    public EntityModel<OrderDTO> getOrder(@PathVariable(value = "userId") Long userId, @PathVariable(value = "orderId") Long orderId) {
+        OrderDTO orderDTO = userService.findOrder(userId, orderId);
+        return EntityModel.of(orderDTO, linkTo(methodOn(UserController.class).getOrder(userId, orderId)).withSelfRel());
+    }
 }
