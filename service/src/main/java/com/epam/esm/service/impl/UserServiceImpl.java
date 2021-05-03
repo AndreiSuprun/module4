@@ -55,11 +55,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO find(Long id) {
-        Optional<User> userOptional = userDao.findOne(id);
-        if (!userOptional.isPresent()) {
+        User user = userDao.findOne(id);
+        if (user == null) {
             throw new ProjectException(ErrorCode.USER_NOT_FOUND, id);
         }
-        User user = userOptional.get();
         return mapper.mapEntityToDTO(user);
     }
 

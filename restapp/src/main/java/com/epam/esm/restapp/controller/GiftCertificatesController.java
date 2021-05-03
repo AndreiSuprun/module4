@@ -60,7 +60,7 @@ public class GiftCertificatesController {
      *                          are not present in repository
      */
     @GetMapping
-    public CollectionModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Integer page,
+    public PagedModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Integer page,
                                                                        @RequestParam(value = "size", required = false) Integer size,
                                                                        @RequestParam(value = "search", required = false) String searchParameters,
                                                                        @RequestParam(value = "order", required = false) String orderParameters) {
@@ -87,8 +87,10 @@ public class GiftCertificatesController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDTO addGiftCertificate(@RequestBody GiftCertificateDTO newCertificate) {
-        return giftCertificatesService.add(newCertificate);
+    public EntityModel<GiftCertificateDTO> addGiftCertificate(@RequestBody GiftCertificateDTO newCertificate) {
+        GiftCertificateDTO giftCertificateDTO = giftCertificatesService.add(newCertificate);
+        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
+                getOne(giftCertificateDTO.getId())).withSelfRel());
     }
 
     /**
@@ -101,8 +103,7 @@ public class GiftCertificatesController {
     @GetMapping("/{id}")
     public EntityModel<GiftCertificateDTO> getOne(@PathVariable Long id) {
         GiftCertificateDTO certificateDTO = giftCertificatesService.find(id);
-        return EntityModel.of(certificateDTO, linkTo(methodOn(GiftCertificatesController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(GiftCertificatesController.class).getByQuery()).withRel("gift_certificates"));
+        return EntityModel.of(certificateDTO, linkTo(methodOn(GiftCertificatesController.class).getOne(id)).withSelfRel());
     }
 
     /**
@@ -128,8 +129,10 @@ public class GiftCertificatesController {
      *                          id is not present in repository
      */
     @PutMapping("/{id}")
-    public GiftCertificateDTO update(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
-        return giftCertificatesService.update(updatedCertificateDTO, id);
+    public EntityModel<GiftCertificateDTO> update(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
+        GiftCertificateDTO giftCertificateDTO = giftCertificatesService.update(updatedCertificateDTO, id);
+        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
+                getOne(giftCertificateDTO.getId())).withSelfRel());
     }
 
     /**
@@ -142,7 +145,9 @@ public class GiftCertificatesController {
      *                          id is not present in repository
      */
     @PatchMapping("/{id}")
-    public GiftCertificateDTO patch(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
-        return giftCertificatesService.patch(updatedCertificateDTO, id);
+    public EntityModel<GiftCertificateDTO> patch(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
+        GiftCertificateDTO giftCertificateDTO = giftCertificatesService.patch(updatedCertificateDTO, id);
+        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
+                getOne(giftCertificateDTO.getId())).withSelfRel());
     }
 }

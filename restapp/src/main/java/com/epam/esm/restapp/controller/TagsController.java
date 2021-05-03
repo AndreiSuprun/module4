@@ -1,13 +1,21 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
+import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Provide a centralized request handling mechanism to
@@ -32,8 +40,16 @@ public class TagsController {
      * @return list of TagDTO objects of retrieved tags
      */
     @GetMapping
-    public List<TagDTO> findAll() {
-        return tagService.findAll();
+    public PagedModel<EntityModel<TagDTO>> findAll(@RequestParam(value = "page", required = false) Integer page,
+        @RequestParam(value = "size", required = false) Integer size) {
+            PaginationDTO paginationDTO = new PaginationDTO(page, size);
+            List<TagDTO> tagDTOs = tagService.findAll(paginationDTO);
+            List<EntityModel<TagDTO>> entityModels = tagDTOs.stream()
+                    .map(tagDTO -> EntityModel.of(tagDTO,
+                            linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel()))
+                    .collect(Collectors.toList());
+            PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
+            return PagedModel.of(entityModels, pageMetadata);
     }
 
     /**
@@ -46,8 +62,9 @@ public class TagsController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO add(@RequestBody TagDTO newTag) {
-        return tagService.add(newTag);
+    public EntityModel<TagDTO> add(@RequestBody TagDTO newTag) {
+        TagDTO tagDTO = tagService.add(newTag);
+        return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel());
     }
 
     /**
@@ -58,8 +75,9 @@ public class TagsController {
      * @return TagDTO object of tag with provided id in repository
      */
     @GetMapping("/{id}")
-    public TagDTO find(@PathVariable Long id) {
-        return tagService.find(id);
+    public EntityModel<TagDTO> find(@PathVariable Long id) {
+        TagDTO tagDTO = tagService.find(id);
+        return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel());
     }
 
     /**

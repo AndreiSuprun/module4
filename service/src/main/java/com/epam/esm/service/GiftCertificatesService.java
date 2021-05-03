@@ -70,7 +70,7 @@ public interface GiftCertificatesService {
      *
      * @return list of GiftCertificatesDTO objects of retrieved gift certificates
      */
-    List<GiftCertificateDTO> findAll();
+    List<GiftCertificateDTO> findAll(PaginationDTO paginationDTO);
 
     /**
      * Updates gift certificate fields according to provided dto object.

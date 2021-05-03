@@ -112,20 +112,15 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional
     @Override
     public void delete(Long id) {
-        find(id);
-        giftCertificateDAO.clearTags(id);
         giftCertificateDAO.delete(id);
     }
 
     @Override
     public GiftCertificateDTO find(Long id) {
-        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
-        if (!certificateOptional.isPresent()) {
+        GiftCertificate certificate = giftCertificateDAO.findOne(id);
+        if (certificate == null) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
-        GiftCertificate certificate = certificateOptional.get();
-        List<Tag> tags = giftCertificateDAO.getTags(certificate);
-        certificate.setTags(tags);
         return mapper.mapEntityToDTO(certificate);
     }
 
@@ -148,37 +143,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     }
 
     @Override
-    public List<GiftCertificateDTO> findAll() {
-        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll();
-        for (GiftCertificate giftCertificate : giftCertificates) {
-            List<Tag> tags = giftCertificateDAO.getTags(giftCertificate);
-            giftCertificate.setTags(tags);
-        }
+    public List<GiftCertificateDTO> findAll(PaginationDTO paginationDTO) {
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll(paginationDTO.getPage(), paginationDTO.getSize());
         return giftCertificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
-    }
-
-    private void addTags(GiftCertificate giftCertificate, List<TagDTO> tags) {
-        if (tags != null && giftCertificate != null) {
-            List<TagDTO> distinctTags = tags.stream().distinct().collect(Collectors.toList());
-            for (TagDTO tagDTO : distinctTags) {
-                if (!tagService.exist(tagDTO)) {
-                    tagService.add(tagDTO);
-                }
-                giftCertificateDAO.addTag(giftCertificate, tagMapper.mapDtoToEntity(tagService.findByName(tagDTO.getName())));
-            }
-        }
-    }
-
-    private GiftCertificate checkCertificateAlreadyInDb(GiftCertificateDTO certificateDto, Long id) {
-        Optional<GiftCertificate> certificateOptional = giftCertificateDAO.findOne(id);
-        if (!certificateOptional.isPresent()) {
-            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
-        }
-        Optional<GiftCertificate> certificateByNameOptional = giftCertificateDAO.findByName(certificateDto.getName());
-        if (certificateByNameOptional.isPresent() &&
-                !certificateByNameOptional.get().getId().equals(certificateDto.getId())) {
-            throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
-        }
-        return certificateOptional.get();
     }
 }

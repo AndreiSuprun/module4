@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ProjectException;
 
@@ -36,7 +37,7 @@ public interface TagService {
      *
      * @return list of TagDTO objects of retrieved tags
      */
-    List<TagDTO> findAll();
+    List<TagDTO> findAll(PaginationDTO paginationDTO);
 
     /**
      * Retrieves TagDTO object for tag with provided name from repository.
