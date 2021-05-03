@@ -1,8 +1,8 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.service.search.SearchCriteria;
+import com.epam.esm.service.search.OrderCriteria;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 /**
@@ -28,12 +28,32 @@ public interface GenericDao<T> {
      List<T> findAll() ;
 
      /**
+      * Retrieves entities from repository according to provided query.
+      *
+      * @param searchParams search params for building search query
+      * @param sortParams sort params for building search query
+      * @param page number of page
+      * @param size size of page
+      * @return List<T> list of entities from repository according to provided query
+      */
+     List<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Integer page, Integer size);
+
+     /**
       * Retrieves entity from repository according to provided name.
       *
       * @param name name of entity to find in repository
       * @return Optional<T> optional of entity from repository according to provided name
       */
      Optional<T> findByName(String name);
+
+     /**
+      * Counts entity in repository according to provided search params or if params are not provided counts
+      * all entities in repository.
+      *
+      * @param searchParams search params to count entities in repository
+      * @return Long number of entities in repository according to provided search params
+      */
+     Long count(List<SearchCriteria>... searchParams);
 
      /**
       * Adds entity object to repository.

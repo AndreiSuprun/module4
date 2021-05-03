@@ -14,13 +14,7 @@ import java.util.Optional;
  */
 public interface GiftCertificateDAO extends GenericDao<GiftCertificate> {
 
-    /**
-     * Retrieves gift certificates from repository according to provided query.
-     *
-     * @param query object for building search query
-     * @return List<GiftCertificate> list of gift certificates from repository according to provided query
-     */
-    List<GiftCertificate> findByQuery(Query query);
+
 
     /**
      * Retrieves from repository tags for provided gift certificate
