@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO placeOrder(Long userId, OrderDTO orderDTO) {
         find(userId);
         BigDecimal totalPrice = orderDTO.getOrderItemDTOs().stream().
-                mapToInt(item -> item.getGiftCertificateDTO().getPrice() * item.getQuantity()).sum();
+                mapToInt(item -> item.getGiftCertificateDTO().getPrice().item.getQuantity()).sum();
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setCreateDate(LocalDateTime.now());
         User user = userDao.addOrder(userId, orderMapper.mapDtoToEntity(orderDTO));
