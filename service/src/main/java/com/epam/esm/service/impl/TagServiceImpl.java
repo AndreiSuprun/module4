@@ -1,8 +1,12 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ProjectException;
@@ -12,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +38,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO add(TagDTO tagDTO) {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
         tagValidator.validate(tag);
-        if (tagDAO.findByName(tag.getName()).isPresent()){
+        if (tagDAO.findByName(tag.getName()) == null){
             throw new ProjectException(ErrorCode.TAG_ALREADY_IN_DB, tag.getName());
         }
         Tag tagInDB = tagDAO.insert(mapper.mapDtoToEntity(tagDTO));
@@ -44,38 +47,47 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO find(Long id) {
-        Optional<Tag> tagOptional = tagDAO.findOne(id);
-        if (!tagOptional.isPresent()){
+        Tag tag = tagDAO.findOne(id);
+        if (tag == null){
             throw new ProjectException(ErrorCode.TAG_NOT_FOUND, id);
         }
-        return mapper.mapEntityToDTO(tagOptional.get());
+        return mapper.mapEntityToDTO(tag);
     }
 
     @Override
-    public List<TagDTO> findAll() {
-        List<Tag> tags = tagDAO.findAll();
+    public List<TagDTO> findAll(PaginationDTO paginationDTO) {
+        List<Tag> tags = tagDAO.findAll(paginationDTO.getPage(), paginationDTO.getSize());
+        return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
+        List<Tag> tags;
+        Long count = tagDAO.count(searchParams);
+        checkPageNumber(paginationDTO, count);
+        tags = tagDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
         return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 
     @Override
     public TagDTO findByName(String name) {
-        Optional<Tag> tagOptional = tagDAO.findByName(name);
-        if (!tagOptional.isPresent()){
+        Tag tag = tagDAO.findByName(name);
+        if (tag == null){
             throw new ProjectException(ErrorCode.TAG_NOT_FOUND, NAME, name);
         }
-        return tagOptional.map(mapper::mapEntityToDTO).get();
+        return mapper.mapEntityToDTO(tag);
     }
 
     @Override
     public boolean exist(TagDTO tagDTO) {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
         tagValidator.validate(tag);
-        return tagDAO.findByName(tag.getName()).isPresent();
+        return tagDAO.findByName(tag.getName()) != null;
     }
 
     @Override
     public void delete(Long id) {
-        if (tagDAO.getCertificateCount(id) != 0){
+        if (find(id) != null){
             throw new ProjectException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
         }
         if (!tagDAO.delete(id)){

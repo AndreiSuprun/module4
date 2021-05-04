@@ -1,7 +1,5 @@
 package com.epam.esm.dao.criteria;
 
-import com.epam.esm.service.search.SearchCriteria;
-import com.epam.esm.service.search.OrderCriteria;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;

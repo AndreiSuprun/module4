@@ -15,6 +15,7 @@ import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,8 +81,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO placeOrder(Long userId, OrderDTO orderDTO) {
         find(userId);
-        BigDecimal totalPrice = orderDTO.getOrderItemDTOs().stream().
-                mapToInt(item -> item.getGiftCertificateDTO().getPrice().item.getQuantity()).sum();
+        BigDecimal totalPrice = BigDecimal.valueOf(orderDTO.getOrderItemDTOs().stream().
+                mapToInt(item -> item.getGiftCertificateDTO().getPrice().intValue() * item.getQuantity()).sum());
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setCreateDate(LocalDateTime.now());
         User user = userDao.addOrder(userId, orderMapper.mapDtoToEntity(orderDTO));

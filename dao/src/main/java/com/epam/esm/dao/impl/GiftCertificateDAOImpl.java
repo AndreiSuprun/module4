@@ -1,14 +1,12 @@
 package com.epam.esm.dao.impl;
 
+import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.GiftCertificateDAO;
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.service.search.OrderCriteria;
-import com.epam.esm.service.search.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,6 +23,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Autowired
     private CriteriaUtil<GiftCertificate> criteriaUtil;
 
+    @Autowired
+    private TagDAO tagDAO;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -40,7 +41,11 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         final Root<GiftCertificate> root = query.from(GiftCertificate.class);
         query.select(root).where(builder.equal(root.get("name"), name));
         TypedQuery<GiftCertificate> typedQuery = entityManager.createQuery(query);
-        return typedQuery.getSingleResult();
+        List<GiftCertificate> giftCertificates = typedQuery.getResultList();
+        if (!giftCertificates.isEmpty()){
+            return giftCertificates.iterator().next();
+        }
+        return null;
     }
 
     @Override
@@ -80,6 +85,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate insert(GiftCertificate certificate) {
         certificate.setCreateDate(java.time.LocalDateTime.now());
         certificate.setLastUpdateDate(java.time.LocalDateTime.now());
+        certificate.getTags().forEach(tagDAO::insert);
         entityManager.persist(certificate);
         return certificate;
     }
@@ -88,8 +94,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate update(GiftCertificate certificate, Long id) {
         certificate.setLastUpdateDate(java.time.LocalDateTime.now());
         certificate.setId(id);
-        entityManager.merge(certificate);
-        return certificate;
+        certificate.getTags().forEach(tagDAO::insert);
+        return entityManager.merge(certificate);
     }
 
     @Override

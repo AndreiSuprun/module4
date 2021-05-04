@@ -7,11 +7,14 @@ import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.naming.OperationNotSupportedException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -53,6 +56,11 @@ public class UserDaoImpl implements UserDao {
         return typedQuery.getResultList();
     }
 
+    @Override
+    public User findByName(String name) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<Order> getOrders(Long userId) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> criteria = builder.createQuery(Order.class);
@@ -63,12 +71,16 @@ public class UserDaoImpl implements UserDao {
     }
 
     public Order getOrder(Long userId, Long orderId) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Order> criteria = builder.createQuery(Order.class);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> criteria = criteriaBuilder.createQuery(Order.class);
+        Root<Order> orderRoot = criteria.from(Order.class);
         Root<User> userRoot = criteria.from(User.class);
-        criteria.select(userRoot.get("orders"));
-        criteria.where(builder.equal(userRoot.get("id"), userId));
-        return entityManager.createQuery(criteria).getResultList();
+        criteria.where(criteriaBuilder.and(
+                criteriaBuilder.equal(userRoot.get("id"), userId),
+                criteriaBuilder.equal(orderRoot.get("id"), orderId)));
+        criteria.select(orderRoot);
+        List<Order> orders = entityManager.createQuery(criteria).getResultList();
+        return orders.iterator().next();
     }
 
     public User addOrder(Long userId, Order order){
@@ -87,6 +99,21 @@ public class UserDaoImpl implements UserDao {
         }
         query.select(builder.count(query.from(User.class)));
         return entityManager.createQuery(query).getSingleResult();
+    }
+
+    @Override
+    public User insert(User obj) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public User update(User obj, Long id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        throw new UnsupportedOperationException();
     }
 }
  

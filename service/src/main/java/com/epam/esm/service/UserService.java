@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
 
@@ -31,5 +32,5 @@ public interface UserService extends GenericService<UserDTO> {
      */
     List<OrderDTO> findOrders(Long userId, PaginationDTO paginationDTO);
 
-    OrderDTO placeOrder(Long userId, OrderDTO orderDTO);
+    UserDTO placeOrder(Long userId, OrderDTO orderDTO);
 }

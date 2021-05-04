@@ -52,36 +52,39 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     public GiftCertificateDTO add(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = mapper.mapDtoToEntity(giftCertificateDTO);
         validator.validate(giftCertificate);
-        if (giftCertificateDAO.findByName(giftCertificate.getName()).isPresent()){
+        if (giftCertificateDAO.findByName(giftCertificate.getName()) != null){
             throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, giftCertificate.getName());
         }
-        List<TagDTO> tags = giftCertificateDTO.getTags();
         giftCertificate = giftCertificateDAO.insert(giftCertificate);
-        addTags(giftCertificate, tags);
-        return find(giftCertificate.getId());
+        return mapper.mapEntityToDTO(giftCertificate);
     }
 
     @Transactional
     @Override
     public GiftCertificateDTO update(GiftCertificateDTO certificateDto, Long id) {
-        GiftCertificate certificateInDB = checkCertificateAlreadyInDb(certificateDto, id);
-        if (certificateDto.getTags() != null) {
-            giftCertificateDAO.clearTags(certificateInDB.getId());
+        GiftCertificate certificateInDB = giftCertificateDAO.findOne(id);
+        if (certificateInDB == null) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
+        if (certificateDto.getName() != null && giftCertificateDAO.findByName(certificateDto.getName()) != null){
+            throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
         }
         GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
         validator.validate(certificateInRequest);
         certificateInDB = giftCertificateDAO.update(certificateInRequest, id);
-        if (certificateDto.getTags() != null) {
-            giftCertificateDAO.clearTags(certificateInDB.getId());
-            addTags(certificateInDB, certificateDto.getTags());
-        }
-        return find(id);
+        return mapper.mapEntityToDTO(certificateInDB);
     }
 
     @Transactional
     @Override
     public GiftCertificateDTO patch(GiftCertificateDTO certificateDto, Long id) {
-        GiftCertificate certificateInDB = checkCertificateAlreadyInDb(certificateDto, id);
+        GiftCertificate certificateInDB = giftCertificateDAO.findOne(id);
+        if (certificateInDB == null) {
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
+        if (certificateDto.getName() != null && giftCertificateDAO.findByName(certificateDto.getName()) != null){
+            throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
+        }
         if (certificateDto.getName() != null) {
             certificateInDB.setName(certificateDto.getName());
         }
@@ -96,11 +99,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         }
         validator.validate(certificateInDB);
         certificateInDB = giftCertificateDAO.update(certificateInDB, id);
-        if (certificateDto.getTags() != null) {
-            giftCertificateDAO.clearTags(certificateInDB.getId());
-            addTags(certificateInDB, certificateDto.getTags());
-        }
-        return find(id);
+        return mapper.mapEntityToDTO(certificateInDB);
     }
 
     @Transactional
@@ -121,14 +120,11 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Override
     public List<GiftCertificateDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
         checkPagination(paginationDTO);
-        List<GiftCertificate> users;
+        List<GiftCertificate> certificates;
         Long count = giftCertificateDAO.count(searchParams);
-        if(((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) < count) {
-            users = giftCertificateDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
-        } else {
-            throw new ProjectException(ErrorCode.BAD_REQUEST);
-        }
-        return users.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
+        checkPageNumber(paginationDTO, count);
+        certificates = giftCertificateDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
+        return certificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 
     @Override

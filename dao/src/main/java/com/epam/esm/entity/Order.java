@@ -24,7 +24,6 @@ public class Order {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @Column(name = "user")
     private User user;
     @Column(name = "total_price")
     private BigDecimal totalPrice;

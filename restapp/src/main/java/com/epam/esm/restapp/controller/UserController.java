@@ -9,11 +9,8 @@ import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +52,7 @@ public class UserController {
     public EntityModel<UserDTO> getOne(@PathVariable Long id) {
         UserDTO userDTO = userService.find(id);
         return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).findAll(1, 10)).withRel("users"));
+                linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("users"));
     }
 
     @GetMapping
@@ -95,6 +92,6 @@ public class UserController {
     public EntityModel<UserDTO> placeOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
         UserDTO userDTO = userService.placeOrder(id, orderDTO);
         return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAll()).withRel("user"));
+                linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("user"));
     }
 }

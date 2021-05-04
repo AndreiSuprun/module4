@@ -1,42 +1,34 @@
 package com.epam.esm.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="gift_certificates")
+@Table(name="certificates")
 public class GiftCertificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "name", unique = true)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
-    @Column(name = "duration")
+    @Column(name = "duration", nullable = false)
     private Integer duration;
     @Column(name = "create_date")
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany(cascade= CascadeType.ALL, orphanRemoval=false)
-    @JoinTable(name = "gift_certificate_tags",
-            joinColumns = @JoinColumn(name = "gift_certificate_id"),
+    @ManyToMany(mappedBy = "certificates", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "certificates_tags",
+            joinColumns = @JoinColumn(name = "certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
