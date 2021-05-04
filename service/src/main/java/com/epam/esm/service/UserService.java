@@ -1,18 +1,35 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entity.User;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
-import com.epam.esm.service.search.SearchCriteria;
-import com.epam.esm.service.search.OrderCriteria;
 
 import java.util.List;
 
-public interface UserService{
+/**
+ * Service class responsible for processing user-related operations
+ *
+ * @author Andrei Suprun
+ */
+public interface UserService extends GenericService<UserDTO> {
 
-    public List<UserDTO> searchUsers(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
+    /**
+     * Finds order with provided id for user with provided id.
+     *
+     * @param userId id of user to find order
+     * @param orderId id of order for provided user
+     * @throws ProjectException if user or order are not found in repository
+     * @return OrderDTO order dto of retrived order
+     */
+    OrderDTO findOrder(Long userId, Long orderId);
 
-    UserDTO find(Long id);
+    /**
+     * Finds orders for user with provided id.
+     *
+     * @param userId id of user to find orders
+     * @throws ProjectException if user is not found in repository
+     * @return List<OrderDTO> List of orders dto of retrived orders
+     */
+    List<OrderDTO> findOrders(Long userId, PaginationDTO paginationDTO);
 
-
+    OrderDTO placeOrder(Long userId, OrderDTO orderDTO);
 }

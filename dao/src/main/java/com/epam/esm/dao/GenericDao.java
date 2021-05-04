@@ -1,5 +1,7 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.service.search.SearchCriteria;
 import com.epam.esm.service.search.OrderCriteria;
 

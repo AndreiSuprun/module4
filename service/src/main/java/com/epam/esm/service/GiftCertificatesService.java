@@ -1,20 +1,14 @@
 package com.epam.esm.service;
 
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.QueryDTO;
 import com.epam.esm.service.exception.ProjectException;
-import com.epam.esm.service.search.OrderCriteria;
-import com.epam.esm.service.search.SearchCriteria;
-
-import java.util.List;
 
 /**
  * Service class responsible for processing gift certificate-related operations
  *
  * @author Andrei Suprun
  */
-public interface GiftCertificatesService {
+public interface GiftCertificatesService extends GenericService<GiftCertificateDTO>{
 
     /**
      * Adds gift certificate to repository according to provided dto object.
@@ -45,32 +39,6 @@ public interface GiftCertificatesService {
      * @throws ProjectException if gift certificate with provided id is not present in repository
      */
     void delete(Long id);
-
-    /**
-     * Returns GiftCertificate object for gift certificate with provided id from repository.
-     *
-     * @param id id of gift certificate to find
-     * @throws ProjectException if gift certificate with provided id is not present in repository
-     * @return GiftCertificateDTO object og gift certificate with provided id in repository
-     */
-    GiftCertificateDTO find(Long id);
-
-    /**
-     * Retrieves gift certificates from repository according to provided query.
-     *
-     * @param queryDTO QueryDTO object for building search query
-     * @throws ProjectException if provided query is not valid or gift certificates according to provided query
-     * are not present in repository
-     * @return List<GiftCertificates> list of gift certificates from repository according to provided query
-     */
-    List<GiftCertificateDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
-
-    /**
-     * Returns all GiftCertificateDTO objects of gift certificates from repository.
-     *
-     * @return list of GiftCertificatesDTO objects of retrieved gift certificates
-     */
-    List<GiftCertificateDTO> findAll(PaginationDTO paginationDTO);
 
     /**
      * Updates gift certificate fields according to provided dto object.

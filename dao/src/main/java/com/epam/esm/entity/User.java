@@ -22,7 +22,7 @@ public class User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @OneToMany(mappedBy = "users", cascade= CascadeType.ALL, orphanRemoval=true)
     private List<Order> orders;
@@ -71,6 +71,12 @@ public class User {
 
     public List<Order> getOrders() {
         return orders;
+    }
+
+    public void addOrder(Order order) {
+        if(orders == null){
+            orders = new ArrayList<>();}
+        orders.add(order);
     }
 
     public void setOrders(List<Order> orders) {

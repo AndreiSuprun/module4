@@ -2,22 +2,18 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Query;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.QueryDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.mapper.impl.GiftCertificateMapper;
 import com.epam.esm.service.mapper.impl.QueryMapper;
 import com.epam.esm.service.mapper.impl.TagMapper;
-import com.epam.esm.service.search.OrderCriteria;
-import com.epam.esm.service.search.SearchCriteria;
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.service.validator.impl.GiftCertificateValidator;
 import com.epam.esm.service.validator.impl.QueryValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -126,12 +120,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
     @Override
     public List<GiftCertificateDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
-        if (paginationDTO.getPage() == null || paginationDTO.getPage() <= 0){
-            paginationDTO.setPage(PaginationDTO.FIRST_PAGE);
-        }
-        if (paginationDTO.getSize() == null || paginationDTO.getSize() <= 0){
-            paginationDTO.setPage(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
-        }
+        checkPagination(paginationDTO);
         List<GiftCertificate> users;
         Long count = giftCertificateDAO.count(searchParams);
         if(((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) < count) {

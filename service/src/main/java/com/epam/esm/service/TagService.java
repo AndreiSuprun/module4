@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ProjectException;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author Andrei Suprun
  */
-public interface TagService {
+public interface TagService extends GenericService<TagDTO>{
 
     /**
      * Adds tag to repository according to provided dto object.
@@ -22,22 +23,6 @@ public interface TagService {
      * @return TagDTO tag dto of created in repository tag
      */
     TagDTO add(TagDTO tagDTO);
-
-    /**
-     * Returns TagDTO object for tag with provided id from repository.
-     *
-     * @param id id of tag to find
-     * @throws ProjectException if tag with provided id is not present in repository
-     * @return TagDTO object of tag with provided id in repository
-     */
-    TagDTO find(Long id);
-
-    /**
-     * Returns all TagDTO objects of tags from repository.
-     *
-     * @return list of TagDTO objects of retrieved tags
-     */
-    List<TagDTO> findAll(PaginationDTO paginationDTO);
 
     /**
      * Retrieves TagDTO object for tag with provided name from repository.

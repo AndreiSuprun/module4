@@ -11,4 +11,5 @@ public interface UserDao extends GenericDao<User>{
 
     List<Order> getOrders(Long userId);
 
+    User addOrder(Long userId, Order order);
 }

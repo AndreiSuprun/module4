@@ -1,4 +1,4 @@
-package com.epam.esm.dao;
+package com.epam.esm.dao.criteria;
 
 import com.epam.esm.service.search.SearchCriteria;
 import com.epam.esm.service.search.OrderCriteria;

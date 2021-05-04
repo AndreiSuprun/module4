@@ -1,13 +1,12 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.CriteriaUtil;
+import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.UserDao;
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
-import com.epam.esm.service.search.OrderCriteria;
-import com.epam.esm.service.search.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -70,6 +69,13 @@ public class UserDaoImpl implements UserDao {
         criteria.select(userRoot.get("orders"));
         criteria.where(builder.equal(userRoot.get("id"), userId));
         return entityManager.createQuery(criteria).getResultList();
+    }
+
+    public User addOrder(Long userId, Order order){
+        User user = findOne(userId);
+        user.addOrder(order);
+        entityManager.merge(user);
+        return user;
     }
 
     public Long count(List<SearchCriteria>... searchParams) {

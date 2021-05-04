@@ -30,7 +30,7 @@ public class Order {
     private BigDecimal totalPrice;
     @Column(name = "create_date")
     private LocalDateTime createDate;
-    @ElementCollection @OrderColumn
+    @ElementCollection() @OrderColumn
     private List<OrderItem> orderItems;
 
     public Order() {}

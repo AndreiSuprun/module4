@@ -22,7 +22,7 @@ public class GiftCertificate {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
     @Column(name = "description")
     private String description;
@@ -34,7 +34,7 @@ public class GiftCertificate {
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany
+    @ManyToMany(cascade= CascadeType.ALL, orphanRemoval=false)
     @JoinTable(name = "gift_certificate_tags",
             joinColumns = @JoinColumn(name = "gift_certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))

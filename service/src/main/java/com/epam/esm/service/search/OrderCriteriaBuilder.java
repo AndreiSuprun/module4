@@ -1,5 +1,8 @@
 package com.epam.esm.service.search;
 
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

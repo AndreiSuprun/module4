@@ -1,4 +1,4 @@
-package com.epam.esm.service.search;
+package com.epam.esm.dao.criteria;
 
 public class OrderCriteria {
 

@@ -1,13 +1,8 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.CriteriaUtil;
+import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.rowmapper.GiftCertificateRowMapper;
-import com.epam.esm.dao.rowmapper.TagRowMapper;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Query;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.search.OrderCriteria;
 import com.epam.esm.service.search.SearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +17,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
