@@ -14,12 +14,14 @@ import com.epam.esm.service.mapper.impl.UserMapper;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     private UserDao userDao;

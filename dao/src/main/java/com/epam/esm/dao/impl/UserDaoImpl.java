@@ -7,6 +7,7 @@ import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.naming.OperationNotSupportedException;
 import javax.persistence.EntityManager;
@@ -18,6 +19,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
+@Repository
 public class UserDaoImpl implements UserDao {
 
     @Autowired
