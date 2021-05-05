@@ -25,7 +25,7 @@ public class User {
     private String lastName;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    @OneToMany(mappedBy = "users", cascade= CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade= CascadeType.ALL)
     private List<Order> orders;
 
     public User() {

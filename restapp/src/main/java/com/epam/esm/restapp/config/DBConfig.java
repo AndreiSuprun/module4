@@ -52,7 +52,7 @@ public class DBConfig {
     public LocalContainerEntityManagerFactoryBean getEntityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan("com.epam.esm.dao.entity");
+        entityManagerFactoryBean.setPackagesToScan("com.epam.esm.entity");
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return entityManagerFactoryBean;
     }

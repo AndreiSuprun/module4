@@ -51,22 +51,22 @@ public class UserController {
     @GetMapping("/{id}")
     public EntityModel<UserDTO> getOne(@PathVariable Long id) {
         UserDTO userDTO = userService.find(id);
-        return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("users"));
+        return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel());
+                //linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("users"));
     }
 
-    @GetMapping
-    public PagedModel<EntityModel<UserDTO>> getAll(@RequestParam(value = "page", required = false) Integer page,
-                                                       @RequestParam(value = "size", required = false) Integer size) {
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<UserDTO> userDTOs = userService.findAll(paginationDTO);
-        List<EntityModel<UserDTO>> entityModels = userDTOs.stream()
-                .map(userDTO -> EntityModel.of(userDTO,
-                        linkTo(methodOn(UserController.class).getOne(userDTO.getId())).withSelfRel()))
-                .collect(Collectors.toList());
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
-        return PagedModel.of(entityModels, pageMetadata);
-    }
+//    @GetMapping
+//    public PagedModel<EntityModel<UserDTO>> getAll(@RequestParam(value = "page", required = false) Integer page,
+//                                                       @RequestParam(value = "size", required = false) Integer size) {
+//        PaginationDTO paginationDTO = new PaginationDTO(page, size);
+//        List<UserDTO> userDTOs = userService.findAll(paginationDTO);
+//        List<EntityModel<UserDTO>> entityModels = userDTOs.stream()
+//                .map(userDTO -> EntityModel.of(userDTO,
+//                        linkTo(methodOn(UserController.class).getOne(userDTO.getId())).withSelfRel()))
+//                .collect(Collectors.toList());
+//        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
+//        return PagedModel.of(entityModels, pageMetadata);
+//    }
 
     @GetMapping("/{id}/orders")
     public PagedModel<EntityModel<OrderDTO>> getOrders(@PathVariable Long id, @RequestParam(value = "page", required = false) Integer page,
@@ -91,7 +91,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<UserDTO> placeOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
         UserDTO userDTO = userService.placeOrder(id, orderDTO);
-        return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("user"));
+        return EntityModel.of(userDTO, linkTo(methodOn(UserController.class).getOne(id)).withSelfRel());
+                //linkTo(methodOn(UserController.class).getAll(1, 10)).withRel("user"));
     }
 }
