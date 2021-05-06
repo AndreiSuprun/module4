@@ -95,6 +95,7 @@ public class TagsController {
 
     private EntityModel<TagDTO> getEntityModel(TagDTO tagDTO){
         return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel(),
+                linkTo(methodOn(TagsController.class).add(tagDTO)).withRel("add"),
                 linkTo(methodOn(TagsController.class).delete(tagDTO.getId())).withRel("delete"),
                 linkTo(methodOn(TagsController.class).
                         findAll(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE)).withRel("tags"));
@@ -104,18 +105,19 @@ public class TagsController {
         List<EntityModel<TagDTO>> entityModels = tagDTOs.stream()
                 .map(tagDTO -> EntityModel.of(tagDTO,
                         linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel(),
+                        linkTo(methodOn(TagsController.class).add(tagDTO)).withRel("add"),
                         linkTo(methodOn(TagsController.class).delete(tagDTO.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getTotalPages() > 2 && paginationDTO.getPage() > 2){
+        if (paginationDTO.getPage() > 2){
             links.add(linkTo(methodOn(TagsController.class).findAll(PaginationDTO.FIRST_PAGE, paginationDTO.getSize()))
                     .withRel(IanaLinkRelations.FIRST));
         }
-        if (paginationDTO.getTotalPages() > 1 && paginationDTO.getPage() > 1){
+        if (paginationDTO.getPage() > 1){
             links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getPage() - 1 , paginationDTO.getSize()))
                     .withRel(IanaLinkRelations.PREV));
         }
-        links.add(linkTo(methodOn(TagsController.class).findAll(PaginationDTO.FIRST_PAGE, paginationDTO.getSize()))
+        links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getPage(), paginationDTO.getSize()))
                     .withRel(IanaLinkRelations.SELF));
         if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
             links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getPage() + 1, paginationDTO.getSize()))

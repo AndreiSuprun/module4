@@ -24,6 +24,8 @@ public interface TagService extends GenericService<TagDTO>{
      */
     TagDTO add(TagDTO tagDTO);
 
+    List<TagDTO> findAll(PaginationDTO paginationDTO);
+
     /**
      * Retrieves TagDTO object for tag with provided name from repository.
      *
@@ -33,14 +35,6 @@ public interface TagService extends GenericService<TagDTO>{
      */
     TagDTO findByName(String name);
 
-    /**
-     * Checks if tag that corresponds to provided TagDTO object exists in repository.
-     *
-     * @param tagDTO TagDTO object of tag to find
-     * @return true if tag that corresponds to provided TagDTO object exists in repository,
-     * otherwise returns false
-     */
-    boolean exist(TagDTO tagDTO);
 
     /**
      * Removes tag with provided id from repository.

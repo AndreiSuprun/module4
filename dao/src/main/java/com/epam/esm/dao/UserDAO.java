@@ -5,6 +5,6 @@ import com.epam.esm.entity.User;
 
 import java.util.List;
 
-public interface OrderDao extends GenericDao<Order>{
+public interface UserDAO extends GenericDAO<User> {
 
 }

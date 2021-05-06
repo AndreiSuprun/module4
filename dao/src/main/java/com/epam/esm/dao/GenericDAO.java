@@ -10,7 +10,7 @@ import java.util.Optional;
  *
  * @author Andrei Suprun
  */
-public interface GenericDao<T> {
+public interface GenericDAO<T> {
 
      /**
       * Returns Optional of object for entity with provided id from repository.
@@ -19,13 +19,6 @@ public interface GenericDao<T> {
       * @return Optional<T> of entity with provided id in repository
       */
      T findOne(Long id);
-
-     /**
-      * Returns list of objects of all entities from repository.
-      *
-      * @return List of entities in repository
-      */
-     List<T> findAll(Long page, Integer size) ;
 
      /**
       * Retrieves entities from repository according to provided query.

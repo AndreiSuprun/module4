@@ -49,18 +49,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> findAll(Long page, Integer size) {
-        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
-        final Root<GiftCertificate> root = query.from(GiftCertificate.class);
-        query.select(root);
-        TypedQuery<GiftCertificate> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult((int) ((page - 1) * size));
-        typedQuery.setMaxResults(size);
-        return typedQuery.getResultList();
-    }
-
-    @Override
     public boolean delete(Long id) {
         GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
         if(giftCertificate != null) {
@@ -70,6 +58,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         return false;
     }
 
+    @Override
     public Long count(List<SearchCriteria>... searchParams) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> query = builder.createQuery(Long.class);

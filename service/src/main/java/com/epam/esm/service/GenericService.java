@@ -22,13 +22,6 @@ public interface GenericService<T> {
     T find(Long id);
 
     /**
-     * Returns all DTO objects of entities from repository.
-     *
-     * @return list of DTO objects of retrieved entities
-     */
-    List<T> findAll(PaginationDTO paginationDTO);
-
-    /**
      * Retrieves entities from repository according to provided query.
      *
      * @param searchParams params for search query

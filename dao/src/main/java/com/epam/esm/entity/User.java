@@ -25,17 +25,14 @@ public class User {
     private String lastName;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    @OneToMany(mappedBy = "user", cascade= CascadeType.ALL)
-    private List<Order> orders;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, List<Order> orders) {
+    public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.orders = orders;
     }
 
     public Long getId() {
@@ -70,29 +67,16 @@ public class User {
         this.email = email;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void addOrder(Order order) {
-        if(orders == null){
-            orders = new ArrayList<>();}
-        orders.add(order);
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
+
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
         if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
-        if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        return orders != null ? orders.equals(user.orders) : user.orders == null;
+        return email != null ? email.equals(user.email) : user.email == null;
     }
 
     @Override
@@ -100,7 +84,6 @@ public class User {
         int result = firstName != null ? firstName.hashCode() : 0;
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (orders != null ? orders.hashCode() : 0);
         return result;
     }
 
@@ -111,7 +94,6 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", orders=" + orders +
                 '}';
     }
 }

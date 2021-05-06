@@ -82,13 +82,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public boolean exist(TagDTO tagDTO) {
-        Tag tag = mapper.mapDtoToEntity(tagDTO);
-        tagValidator.validate(tag);
-        return tagDAO.findByName(tag.getName()) != null;
-    }
-
-    @Override
     public void delete(Long id) {
         if (find(id) != null){
             throw new ProjectException(ErrorCode.TAG_CANNOT_BE_DELETED, id);

@@ -1,18 +1,14 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
-import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.QueryDTO;
-import com.epam.esm.service.dto.UserDTO;
+import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +57,7 @@ public class GiftCertificatesController {
      *                          are not present in repository
      */
     @GetMapping
-    public PagedModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Long page,
+    public PagedModel<EntityModel<GiftCertificateDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
                                                                        @RequestParam(value = "size", required = false) Integer size,
                                                                        @RequestParam(value = "search", required = false) String searchParameters,
                                                                        @RequestParam(value = "order", required = false) String orderParameters) {
@@ -69,12 +66,7 @@ public class GiftCertificatesController {
         PaginationDTO paginationDTO = new PaginationDTO(page, size);
         List<GiftCertificateDTO> certificateDTOs = giftCertificatesService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
                 paginationDTO);
-        List<EntityModel<GiftCertificateDTO>> entityModels = certificateDTOs.stream()
-                .map(certificateDTO -> EntityModel.of(certificateDTO,
-                        linkTo(methodOn(GiftCertificatesController.class).getOne(certificateDTO.getId())).withSelfRel()))
-                .collect(Collectors.toList());
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
-        return PagedModel.of(entityModels, pageMetadata);
+        return getPagedModel(certificateDTOs, paginationDTO, searchParameters, orderParameters);
     }
 
     /**
@@ -89,8 +81,7 @@ public class GiftCertificatesController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<GiftCertificateDTO> addGiftCertificate(@RequestBody GiftCertificateDTO newCertificate) {
         GiftCertificateDTO giftCertificateDTO = giftCertificatesService.add(newCertificate);
-        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
-                getOne(giftCertificateDTO.getId())).withSelfRel());
+        return getEntityModel(giftCertificateDTO);
     }
 
     /**
@@ -101,9 +92,9 @@ public class GiftCertificatesController {
      * @throws ProjectException if gift certificate with provided id is not present in repository
      */
     @GetMapping("/{id}")
-    public EntityModel<GiftCertificateDTO> getOne(@PathVariable Long id) {
+    public EntityModel<GiftCertificateDTO> find(@PathVariable Long id) {
         GiftCertificateDTO certificateDTO = giftCertificatesService.find(id);
-        return EntityModel.of(certificateDTO, linkTo(methodOn(GiftCertificatesController.class).getOne(id)).withSelfRel());
+        return getEntityModel(certificateDTO);
     }
 
     /**
@@ -114,8 +105,9 @@ public class GiftCertificatesController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         giftCertificatesService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -131,8 +123,7 @@ public class GiftCertificatesController {
     @PutMapping("/{id}")
     public EntityModel<GiftCertificateDTO> update(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
         GiftCertificateDTO giftCertificateDTO = giftCertificatesService.update(updatedCertificateDTO, id);
-        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
-                getOne(giftCertificateDTO.getId())).withSelfRel());
+        return getEntityModel(giftCertificateDTO);
     }
 
     /**
@@ -147,7 +138,54 @@ public class GiftCertificatesController {
     @PatchMapping("/{id}")
     public EntityModel<GiftCertificateDTO> patch(@RequestBody GiftCertificateDTO updatedCertificateDTO, @PathVariable Long id) {
         GiftCertificateDTO giftCertificateDTO = giftCertificatesService.patch(updatedCertificateDTO, id);
-        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).
-                getOne(giftCertificateDTO.getId())).withSelfRel());
+        return getEntityModel(giftCertificateDTO);
+    }
+
+    private EntityModel<GiftCertificateDTO> getEntityModel(GiftCertificateDTO giftCertificateDTO){
+        return EntityModel.of(giftCertificateDTO, linkTo(methodOn(GiftCertificatesController.class).find(giftCertificateDTO.getId())).withSelfRel(),
+                linkTo(methodOn(GiftCertificatesController.class).addGiftCertificate(giftCertificateDTO)).withRel("add"),
+                linkTo(methodOn(GiftCertificatesController.class).delete(giftCertificateDTO.getId())).withRel("delete"),
+                linkTo(methodOn(GiftCertificatesController.class).update(giftCertificateDTO, giftCertificateDTO.getId())).withRel("update"),
+                linkTo(methodOn(GiftCertificatesController.class).
+                        findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).
+                        withRel("gift_certificates"));
+    }
+
+    private PagedModel<EntityModel<GiftCertificateDTO>> getPagedModel(List<GiftCertificateDTO> orderDTOs, PaginationDTO paginationDTO,
+                                                            String searchParameters, String orderParameters){
+        List<EntityModel<GiftCertificateDTO>> entityModels = orderDTOs.stream()
+                .map(certificateDTO -> EntityModel.of(certificateDTO,
+                        linkTo(methodOn(GiftCertificatesController.class).find(certificateDTO.getId())).withSelfRel(),
+                        linkTo(methodOn(GiftCertificatesController.class).addGiftCertificate(certificateDTO)).withRel("add"),
+                        linkTo(methodOn(GiftCertificatesController.class).delete(certificateDTO.getId())).withRel("delete"),
+                        linkTo(methodOn(GiftCertificatesController.class).update(certificateDTO, certificateDTO.getId())).withRel("update")))
+                .collect(Collectors.toList());
+        List<Link> links = new ArrayList<>();
+        if (paginationDTO.getTotalPages() > 2 && paginationDTO.getPage() > 2){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(PaginationDTO.FIRST_PAGE,
+                    paginationDTO.getSize(),searchParameters, orderParameters))
+                    .withRel(IanaLinkRelations.FIRST));
+        }
+        if (paginationDTO.getTotalPages() > 1 && paginationDTO.getPage() > 1){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getPage() - 1 ,
+                    paginationDTO.getSize(),searchParameters, orderParameters))
+                    .withRel(IanaLinkRelations.PREV));
+        }
+        links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(PaginationDTO.FIRST_PAGE, paginationDTO.getSize(),
+                searchParameters, orderParameters))
+                .withRel(IanaLinkRelations.SELF));
+        if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getPage() + 1,
+                    paginationDTO.getSize(), searchParameters, orderParameters))
+                    .withRel(IanaLinkRelations.NEXT));
+        }
+        if (paginationDTO.getTotalPages() > paginationDTO.getPage() - 1){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getTotalPages(),
+                    paginationDTO.getSize(), searchParameters, orderParameters))
+                    .withRel(IanaLinkRelations.LAST));
+        }
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getSize(),
+                paginationDTO.getPage(), paginationDTO.getTotalCount());
+        return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

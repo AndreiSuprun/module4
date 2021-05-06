@@ -19,31 +19,15 @@ import java.util.stream.Collectors;
 @Service
 public class UserMapper implements Mapper<User, UserDTO> {
 
-    private final static String ORDERS = "orders";
-
-    private final OrderMapper orderMapper;
-
-    @Autowired
-    public UserMapper(OrderMapper orderMapper) {
-        this.orderMapper = orderMapper;
-    }
-
     public User mapDtoToEntity(UserDTO userDTO) {
         User user = new User();
-        BeanUtils.copyProperties(userDTO, user, ORDERS);
-        if (userDTO.getOrders() != null){
-            List<Order> orders = userDTO.getOrders().stream().map(orderMapper::mapDtoToEntity).collect(Collectors.toList());
-            user.setOrders(orders);}
+        BeanUtils.copyProperties(userDTO, user);
         return user;
     }
 
     public UserDTO mapEntityToDTO(User user) {
         UserDTO userDTO = new UserDTO();
-        BeanUtils.copyProperties(user, userDTO, ORDERS);
-        if (user.getOrders() != null) {
-            List<OrderDTO> ordersDTO = user.getOrders().stream().map(orderMapper::mapEntityToDTO).collect(Collectors.toList());
-            userDTO.setOrders(ordersDTO);
-        }
+        BeanUtils.copyProperties(user, userDTO);
         return userDTO;
     }
 }

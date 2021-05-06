@@ -126,10 +126,4 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         certificates = giftCertificateDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
         return certificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
-
-    @Override
-    public List<GiftCertificateDTO> findAll(PaginationDTO paginationDTO) {
-        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll(paginationDTO.getPage(), paginationDTO.getSize());
-        return giftCertificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
-    }
 }
