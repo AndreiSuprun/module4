@@ -64,12 +64,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiResponse, ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH.getHttpStatus());
     }
 
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<CustomErrorResponse> handleProjectException(Exception ex) {
-        CustomErrorResponse apiResponse = new CustomErrorResponse();
-        apiResponse.setErrorCode(ErrorCode.BAD_REQUEST.getCode().toString());
-        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
-        return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
-    }
+//    @ExceptionHandler({Exception.class})
+//    public ResponseEntity<CustomErrorResponse> handleProjectException(Exception ex) {
+//        CustomErrorResponse apiResponse = new CustomErrorResponse();
+//        apiResponse.setErrorCode(ErrorCode.BAD_REQUEST.getCode().toString());
+//        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
+//                new Object[] {}, Locale.getDefault()));
+//        return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
+//    }
 }

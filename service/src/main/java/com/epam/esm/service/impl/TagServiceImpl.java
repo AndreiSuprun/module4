@@ -56,6 +56,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> findAll(PaginationDTO paginationDTO) {
+        checkPagination(paginationDTO);
+        Long count = tagDAO.count();
+        checkPageNumber(paginationDTO, count);
         List<Tag> tags = tagDAO.findAll(paginationDTO.getPage(), paginationDTO.getSize());
         return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }

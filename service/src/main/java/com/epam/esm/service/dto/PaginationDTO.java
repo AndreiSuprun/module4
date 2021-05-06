@@ -2,25 +2,26 @@ package com.epam.esm.service.dto;
 
 public class PaginationDTO {
     public static final Integer DEFAULT_RECORDS_PER_PAGE = 10;
-    public static final Integer FIRST_PAGE = 1;
+    public static final Long FIRST_PAGE = 1L;
 
-    private Integer page;
+    private Long page;
     private Integer size;
     private Long totalCount;
+    private Long totalPages;
 
     public PaginationDTO() {
     }
 
-    public PaginationDTO(Integer page, Integer size) {
+    public PaginationDTO(Long page, Integer size) {
         this.page = page;
         this.size = size;
     }
 
-    public Integer getPage() {
+    public Long getPage() {
         return page;
     }
 
-    public void setPage(Integer page) {
+    public void setPage(Long page) {
         this.page = page;
     }
 
@@ -38,5 +39,13 @@ public class PaginationDTO {
 
     public void setTotalCount(Long totalCount) {
         this.totalCount = totalCount;
+    }
+
+    public Long getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(Long totalPages) {
+        this.totalPages = totalPages;
     }
 }

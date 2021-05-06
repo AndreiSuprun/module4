@@ -60,7 +60,7 @@ public class GiftCertificatesController {
      *                          are not present in repository
      */
     @GetMapping
-    public PagedModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Integer page,
+    public PagedModel<EntityModel<GiftCertificateDTO>> getByQuery(@RequestParam(value = "page", required = false) Long page,
                                                                        @RequestParam(value = "size", required = false) Integer size,
                                                                        @RequestParam(value = "search", required = false) String searchParameters,
                                                                        @RequestParam(value = "order", required = false) String orderParameters) {

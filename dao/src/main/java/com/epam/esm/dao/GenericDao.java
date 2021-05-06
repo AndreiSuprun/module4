@@ -25,7 +25,7 @@ public interface GenericDao<T> {
       *
       * @return List of entities in repository
       */
-     List<T> findAll(Integer page, Integer size) ;
+     List<T> findAll(Long page, Integer size) ;
 
      /**
       * Retrieves entities from repository according to provided query.
@@ -36,7 +36,7 @@ public interface GenericDao<T> {
       * @param size size of page
       * @return List<T> list of entities from repository according to provided query
       */
-     List<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Integer page, Integer size);
+     List<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Long page, Integer size);
 
      /**
       * Retrieves entity from repository according to provided name.

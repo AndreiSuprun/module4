@@ -49,13 +49,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> findAll(Integer page, Integer size) {
+    public List<GiftCertificate> findAll(Long page, Integer size) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
         final Root<GiftCertificate> root = query.from(GiftCertificate.class);
         query.select(root);
         TypedQuery<GiftCertificate> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult((page - 1) * size);
+        typedQuery.setFirstResult((int) ((page - 1) * size));
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
     }
@@ -99,7 +99,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Integer page, Integer size) {
+    public List<GiftCertificate> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Long page, Integer size) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> root = query.from(GiftCertificate.class);
@@ -107,7 +107,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         query.where(criteriaUtil.buildSearchCriteriaPredicate(searchParams, builder, root));
         query.orderBy(criteriaUtil.addSortCriteria(sortParams, builder, root));
         TypedQuery<GiftCertificate> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult((page - 1) * size);
+        typedQuery.setFirstResult((int) ((page - 1) * size));
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
     }

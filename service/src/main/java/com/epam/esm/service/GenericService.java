@@ -45,7 +45,7 @@ public interface GenericService<T> {
             paginationDTO.setPage(PaginationDTO.FIRST_PAGE);
         }
         if (paginationDTO.getSize() == null || paginationDTO.getSize() <= 0) {
-            paginationDTO.setPage(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
+            paginationDTO.setSize(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
         }
     }
 
@@ -53,6 +53,10 @@ public interface GenericService<T> {
         if (((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) > count) {
             throw new ProjectException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getPage());
         }
+        paginationDTO.setTotalCount(count);
+        long totalPages = count % paginationDTO.getSize() > 0 ? count / paginationDTO.getSize() + 1 :
+                count / paginationDTO.getSize();
+        paginationDTO.setTotalPages(totalPages);
     }
 }
 

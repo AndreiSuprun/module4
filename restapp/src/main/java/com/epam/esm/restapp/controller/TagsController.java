@@ -7,10 +7,14 @@ import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ProjectException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/tags")
 public class TagsController {
 
-    private TagService tagService;
+    private final TagService tagService;
 
     @Autowired
     public TagsController(TagService tagService) {
@@ -40,16 +44,11 @@ public class TagsController {
      * @return list of TagDTO objects of retrieved tags
      */
     @GetMapping
-    public PagedModel<EntityModel<TagDTO>> findAll(@RequestParam(value = "page", required = false) Integer page,
+    public PagedModel<EntityModel<TagDTO>> findAll(@RequestParam(value = "page", required = false) Long page,
         @RequestParam(value = "size", required = false) Integer size) {
             PaginationDTO paginationDTO = new PaginationDTO(page, size);
             List<TagDTO> tagDTOs = tagService.findAll(paginationDTO);
-            List<EntityModel<TagDTO>> entityModels = tagDTOs.stream()
-                    .map(tagDTO -> EntityModel.of(tagDTO,
-                            linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel()))
-                    .collect(Collectors.toList());
-            PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getPage(), paginationDTO.getSize(), paginationDTO.getTotalCount());
-            return PagedModel.of(entityModels, pageMetadata);
+            return getPagedModel(tagDTOs, paginationDTO);
     }
 
     /**
@@ -64,7 +63,7 @@ public class TagsController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<TagDTO> add(@RequestBody TagDTO newTag) {
         TagDTO tagDTO = tagService.add(newTag);
-        return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel());
+        return getEntityModel(tagDTO);
     }
 
     /**
@@ -77,7 +76,7 @@ public class TagsController {
     @GetMapping("/{id}")
     public EntityModel<TagDTO> find(@PathVariable Long id) {
         TagDTO tagDTO = tagService.find(id);
-        return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel());
+        return getEntityModel(tagDTO);
     }
 
     /**
@@ -89,7 +88,44 @@ public class TagsController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         tagService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private EntityModel<TagDTO> getEntityModel(TagDTO tagDTO){
+        return EntityModel.of(tagDTO, linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel(),
+                linkTo(methodOn(TagsController.class).delete(tagDTO.getId())).withRel("delete"),
+                linkTo(methodOn(TagsController.class).
+                        findAll(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE)).withRel("tags"));
+    }
+
+    private PagedModel<EntityModel<TagDTO>> getPagedModel(List<TagDTO> tagDTOs, PaginationDTO paginationDTO){
+        List<EntityModel<TagDTO>> entityModels = tagDTOs.stream()
+                .map(tagDTO -> EntityModel.of(tagDTO,
+                        linkTo(methodOn(TagsController.class).find(tagDTO.getId())).withSelfRel(),
+                        linkTo(methodOn(TagsController.class).delete(tagDTO.getId())).withRel("delete")))
+                .collect(Collectors.toList());
+        List<Link> links = new ArrayList<>();
+        if (paginationDTO.getTotalPages() > 2 && paginationDTO.getPage() > 2){
+            links.add(linkTo(methodOn(TagsController.class).findAll(PaginationDTO.FIRST_PAGE, paginationDTO.getSize()))
+                    .withRel(IanaLinkRelations.FIRST));
+        }
+        if (paginationDTO.getTotalPages() > 1 && paginationDTO.getPage() > 1){
+            links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getPage() - 1 , paginationDTO.getSize()))
+                    .withRel(IanaLinkRelations.PREV));
+        }
+        links.add(linkTo(methodOn(TagsController.class).findAll(PaginationDTO.FIRST_PAGE, paginationDTO.getSize()))
+                    .withRel(IanaLinkRelations.SELF));
+        if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
+            links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getPage() + 1, paginationDTO.getSize()))
+                    .withRel(IanaLinkRelations.NEXT));
+        }
+        if (paginationDTO.getTotalPages() > paginationDTO.getPage() - 1){
+            links.add(linkTo(methodOn(TagsController.class).findAll(paginationDTO.getTotalPages(), paginationDTO.getSize()))
+                    .withRel(IanaLinkRelations.LAST));
+        }
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getSize(), paginationDTO.getPage(), paginationDTO.getTotalCount());
+        return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

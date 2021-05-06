@@ -44,13 +44,13 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public List<Tag> findAll(Integer page, Integer size) {
+    public List<Tag> findAll(Long page, Integer size) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
         final Root<Tag> root = query.from(Tag.class);
         query.select(root);
         TypedQuery<Tag> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult((page - 1) * size);
+        typedQuery.setFirstResult(page > 1 ? (int) ((page - 1) * size) : 0);
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
     }
@@ -91,7 +91,7 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public List<Tag> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Integer page, Integer size) {
+    public List<Tag> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> sortParams, Long page, Integer size) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
         Root<Tag> root = query.from(Tag.class);
@@ -99,7 +99,7 @@ public class TagDAOImpl implements TagDAO {
         query.where(criteriaUtil.buildSearchCriteriaPredicate(searchParams, builder, root));
         query.orderBy(criteriaUtil.addSortCriteria(sortParams, builder, root));
         TypedQuery<Tag> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult((page - 1) * size);
+        typedQuery.setFirstResult((int) ((page - 1) * size));
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
     }
