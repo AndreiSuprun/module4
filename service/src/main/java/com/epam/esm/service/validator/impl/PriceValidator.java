@@ -1,6 +1,8 @@
 package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.service.validator.Validator;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,6 +10,7 @@ import java.util.Optional;
 /**
  * Class for validating periodical price
  */
+@Component
 public class PriceValidator implements Validator<BigDecimal> {
 
     private final static BigDecimal MIN_VALUE = new BigDecimal(1.00);

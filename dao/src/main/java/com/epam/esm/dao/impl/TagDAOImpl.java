@@ -38,7 +38,7 @@ public class TagDAOImpl implements TagDAO {
         TypedQuery<Tag> typedQuery = entityManager.createQuery(query);
         List<Tag> tags = typedQuery.getResultList();
         if (!tags.isEmpty()){
-            return tags.iterator().next();
+            return tags.get(0);
         }
         return null;
     }
@@ -57,7 +57,7 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public Tag insert(Tag tag) {
-        if (findByName(tag.getName()) != null){
+        if (findByName(tag.getName()) == null){
             entityManager.persist(tag);
             return tag;
         }

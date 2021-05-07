@@ -11,6 +11,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(40406, "user.not.found", HttpStatus.NOT_FOUND),
     ORDER_NOT_FOUND(40407, "order.not.found", HttpStatus.NOT_FOUND),
     TAG_NOT_FOUND(40402, "tag.not.found", HttpStatus.NOT_FOUND),
+    TAG_IS_EMPTY(40009, "tag.is.empty", HttpStatus.BAD_REQUEST),
     TAG_CANNOT_BE_DELETED(40006, "tag.cannot.be.deleted", HttpStatus.BAD_REQUEST),
     TAG_FIELD_INVALID(40001, "tag.field.invalid", HttpStatus.BAD_REQUEST),
     TAG_ALREADY_IN_DB(40003, "tag.already.in.db", HttpStatus.BAD_REQUEST),

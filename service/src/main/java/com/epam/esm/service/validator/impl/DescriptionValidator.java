@@ -1,8 +1,11 @@
 package com.epam.esm.service.validator.impl;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Class for validating periodical description
  */
+@Component
 public class DescriptionValidator extends RegExValidator {
 
     private static final int MIN_LENGTH = 5;

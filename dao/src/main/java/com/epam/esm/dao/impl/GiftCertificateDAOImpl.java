@@ -16,6 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -76,14 +77,20 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         certificate.setCreateDate(java.time.LocalDateTime.now());
         certificate.setLastUpdateDate(java.time.LocalDateTime.now());
         List<Tag> tags = certificate.getTags();
-        certificate.getTags().clear();
+        List<Tag> tagsInDB = new ArrayList<>();
         for(Tag tag : tags){
             Tag tagInDB = tagDAO.insert(tag);
             if(tagInDB != null){
-                certificate.addTag(tagInDB);
+                tagsInDB.add(tagInDB);
+            } else {
+                if (tag.getId() == null){
+                    tag = tagDAO.findByName(tag.getName());
+                }
+                tagsInDB.add(tagDAO.findByName(tag.getName()));
             }
-            certificate.addTag(tag);
         }
+        certificate.getTags().clear();
+        certificate.setTags(tagsInDB);
         entityManager.persist(certificate);
         return certificate;
     }
@@ -92,7 +99,21 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate update(GiftCertificate certificate, Long id) {
         certificate.setLastUpdateDate(java.time.LocalDateTime.now());
         certificate.setId(id);
-        certificate.getTags().forEach(tagDAO::insert);
+        List<Tag> tags = certificate.getTags();
+        List<Tag> tagsInDB = new ArrayList<>();
+        for(Tag tag : tags){
+            Tag tagInDB = tagDAO.insert(tag);
+            if(tagInDB != null){
+                tagsInDB.add(tagInDB);
+            } else {
+                if (tag.getId() == null){
+                    tag = tagDAO.findByName(tag.getName());
+                }
+                tagsInDB.add(tagDAO.findByName(tag.getName()));
+            }
+        }
+        certificate.getTags().clear();
+        certificate.setTags(tagsInDB);
         return entityManager.merge(certificate);
     }
 

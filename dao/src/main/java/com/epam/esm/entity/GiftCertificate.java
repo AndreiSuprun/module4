@@ -27,10 +27,13 @@ public class GiftCertificate {
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
     @JoinTable(name = "certificates_tags",
-            joinColumns = @JoinColumn(name = "certificate"),
-            inverseJoinColumns = @JoinColumn(name = "tag"))
+            joinColumns = @JoinColumn(name = "certificate_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
     public GiftCertificate(String name, String description, BigDecimal price, int duration, LocalDateTime createDate,

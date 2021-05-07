@@ -1,8 +1,11 @@
 package com.epam.esm.service.validator.impl;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Class for validating order parameter of query
  */
+@Component
 public class OrderParameterValidator extends RegExValidator {
 
     private static final int MIN_LENGTH = 4;

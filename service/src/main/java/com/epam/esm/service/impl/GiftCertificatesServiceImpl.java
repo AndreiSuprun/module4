@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,11 +67,13 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (certificateInDB == null) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
-        if (certificateDto.getName() != null && giftCertificateDAO.findByName(certificateDto.getName()) != null){
+        if (certificateDto.getName() != null && !(giftCertificateDAO.findByName(certificateDto.getName())).getId().equals(id)){
             throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
         }
         GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
         validator.validate(certificateInRequest);
+        certificateInRequest.setCreateDate(certificateInDB.getCreateDate());
+        certificateInRequest.setLastUpdateDate(LocalDateTime.now());
         certificateInDB = giftCertificateDAO.update(certificateInRequest, id);
         return mapper.mapEntityToDTO(certificateInDB);
     }
@@ -82,7 +85,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (certificateInDB == null) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
-        if (certificateDto.getName() != null && giftCertificateDAO.findByName(certificateDto.getName()) != null){
+        if (certificateDto.getName() != null && !(giftCertificateDAO.findByName(certificateDto.getName())).getId().equals(id)){
             throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
         }
         if (certificateDto.getName() != null) {

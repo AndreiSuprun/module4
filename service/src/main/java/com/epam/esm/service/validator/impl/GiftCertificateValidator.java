@@ -13,6 +13,8 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
     private final static String PRICE_FIELD = "price";
     private final static String DURATION_FIELD = "duration";
 
+
+
     @Override
     public void validate(GiftCertificate giftCertificate) {
         validateField(new NameValidator(),
@@ -27,5 +29,8 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
         validateField(new DurationValidator(),
                 giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DURATION_FIELD, giftCertificate.getDuration());
+        TagValidator tagValidator = new TagValidator();
+        giftCertificate.getTags().forEach(tagValidator::validate);
         }
+
 }

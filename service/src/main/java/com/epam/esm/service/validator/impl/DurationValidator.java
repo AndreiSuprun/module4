@@ -1,6 +1,7 @@
 package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.service.validator.Validator;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.Optional;
 /**
  * Class for validating user password
  */
+@Component
 public class DurationValidator implements Validator<Integer> {
 
     private final static int DURATION_MIN_VALUE = 1;

@@ -1,5 +1,8 @@
 package com.epam.esm.service.validator.impl;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserNameValidator extends RegExValidator {
 
     private static final int MIN_LENGTH = 2;

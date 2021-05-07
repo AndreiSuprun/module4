@@ -1,8 +1,11 @@
 package com.epam.esm.service.validator.impl;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Class for validating name
  */
+@Component
 public class NameValidator extends RegExValidator {
 
     private static final int MIN_LENGTH = 1;
