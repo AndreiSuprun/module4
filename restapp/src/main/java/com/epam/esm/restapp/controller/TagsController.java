@@ -109,7 +109,7 @@ public class TagsController {
                         linkTo(methodOn(TagsController.class).delete(tagDTO.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getPage() > 2){
+        if (paginationDTO.getPage() > 1){
             links.add(linkTo(methodOn(TagsController.class).findAll(PaginationDTO.FIRST_PAGE, paginationDTO.getSize()))
                     .withRel(IanaLinkRelations.FIRST));
         }

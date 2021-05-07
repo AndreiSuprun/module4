@@ -6,6 +6,7 @@ import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -74,7 +75,15 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public GiftCertificate insert(GiftCertificate certificate) {
         certificate.setCreateDate(java.time.LocalDateTime.now());
         certificate.setLastUpdateDate(java.time.LocalDateTime.now());
-        certificate.getTags().forEach(tagDAO::insert);
+        List<Tag> tags = certificate.getTags();
+        certificate.getTags().clear();
+        for(Tag tag : tags){
+            Tag tagInDB = tagDAO.insert(tag);
+            if(tagInDB != null){
+                certificate.addTag(tagInDB);
+            }
+            certificate.addTag(tag);
+        }
         entityManager.persist(certificate);
         return certificate;
     }

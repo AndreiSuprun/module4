@@ -94,17 +94,17 @@ public class OrdersController {
                         linkTo(methodOn(OrdersController.class).delete(orderDTO.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getTotalPages() > 2 && paginationDTO.getPage() > 2){
+        if (paginationDTO.getPage() > 1){
             links.add(linkTo(methodOn(OrdersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
                     paginationDTO.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));
         }
-        if (paginationDTO.getTotalPages() > 1 && paginationDTO.getPage() > 1){
+        if (paginationDTO.getPage() > 1){
             links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getPage() - 1 ,
                     paginationDTO.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.PREV));
         }
-        links.add(linkTo(methodOn(OrdersController.class).findByQuery(PaginationDTO.FIRST_PAGE, paginationDTO.getSize(),
+        links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getPage(), paginationDTO.getSize(),
                 searchParameters, orderParameters))
                 .withRel(IanaLinkRelations.SELF));
         if (paginationDTO.getTotalPages() > paginationDTO.getPage()){

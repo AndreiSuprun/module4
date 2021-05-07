@@ -12,7 +12,7 @@ import java.util.Objects;
 public class GiftCertificate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "name", unique = true, nullable = false)
@@ -27,10 +27,10 @@ public class GiftCertificate {
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "certificates_tags",
-            joinColumns = @JoinColumn(name = "certificate_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+            joinColumns = @JoinColumn(name = "certificate"),
+            inverseJoinColumns = @JoinColumn(name = "tag"))
     private List<Tag> tags;
 
     public GiftCertificate(String name, String description, BigDecimal price, int duration, LocalDateTime createDate,
