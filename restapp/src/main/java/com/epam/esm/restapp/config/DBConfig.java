@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -27,8 +28,8 @@ public class DBConfig {
     @Value("${dev.database.password}") String password;
 
     @Bean
-    //@Profile("prod")
-    public DataSource getDataSource() {
+    @Profile("prod")
+    public DataSource getProdDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(driver);
         dataSource.setUrl(databaseUrl);
@@ -37,16 +38,16 @@ public class DBConfig {
         return dataSource;
     }
 
-//    @Bean
-//    //@Profile("dev")
-//    public DataSource dataSource() {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName(driver);
-//        dataSource.setUrl(databaseUrl);
-//        dataSource.setUsername(userName);
-//        dataSource.setPassword(password);
-//        return dataSource;
-//    }
+    @Bean
+    @Profile("dev")
+    public DataSource dataDevDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driver);
+        dataSource.setUrl(databaseUrl);
+        dataSource.setUsername(userName);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean getEntityManagerFactory(DataSource dataSource) {

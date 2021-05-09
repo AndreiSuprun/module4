@@ -106,7 +106,7 @@ public class CriteriaUtil<T> {
     public List<Order> addSortCriteria(List<OrderCriteria> sortCriteriaList, CriteriaBuilder builder, Root<T> root){
         List<Order> orders = new ArrayList<>();
         for (OrderCriteria criteria : sortCriteriaList){
-            if(criteria.getDirection().equalsIgnoreCase("decs")){
+            if(criteria.getDirection().equalsIgnoreCase("desc")){
                 orders.add(builder.desc(root.get(criteria.getKey())));
             } else {
                 orders.add(builder.asc(root.get(criteria.getKey())));

@@ -65,7 +65,7 @@ public class UsersController {
                         linkTo(methodOn(UsersController.class).findOne(user.getId())).withSelfRel()))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (pagination.getPage() > 1){
+        if (pagination.getPage() > 0){
             links.add(linkTo(methodOn(UsersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
                     pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));

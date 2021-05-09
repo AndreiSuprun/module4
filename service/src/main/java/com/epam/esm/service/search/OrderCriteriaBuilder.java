@@ -24,7 +24,6 @@ public class OrderCriteriaBuilder {
 
     public List<OrderCriteria> build() {
         params = new ArrayList<>();
-        String operationSet = String.join("|", SearchOperation.SIMPLE_OPERATION_SET);
         Pattern pattern = Pattern.compile("(\\w+?)(,)(\\w+?);");
         Matcher matcher = pattern.matcher(sortParameters + ";");
         while (matcher.find()) {

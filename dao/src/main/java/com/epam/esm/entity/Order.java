@@ -21,7 +21,7 @@ public class Order {
     private BigDecimal totalPrice;
     @Column(name = "create_date")
     private LocalDateTime createDate;
-    @OneToMany(mappedBy = "order", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private List<OrderItem> orderItems = new ArrayList<>();
 
     public Order() {}

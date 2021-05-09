@@ -94,7 +94,7 @@ public class OrdersController {
                         linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (pagination.getPage() > 1){
+        if (pagination.getPage() > 0){
             links.add(linkTo(methodOn(OrdersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
                     pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));
