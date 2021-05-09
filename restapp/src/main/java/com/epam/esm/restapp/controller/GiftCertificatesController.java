@@ -48,10 +48,10 @@ public class GiftCertificatesController {
     /**
      * Retrieves gift certificates from repository according to provided request parameters.
      *
-     * @param tag      (optional) request parameter for search by tag
-     * @param contains (optional) request parameter for search by phrase contained in name or description of gift
+     * @param page      (optional) request parameter for search by tag
+     * @param size (optional) request parameter for search by phrase contained in name or description of gift
      *                 certificate
-     * @param order    (optional) request parameter for sorting by name or date, ascending or descending
+     * @param searchParameters    (optional) request parameter for sorting by name or date, ascending or descending
      * @return List<GiftCertificate> list of gift certificates from repository according to provided query
      * @throws ProjectException if provided query is not valid or gift certificates according to provided query
      *                          are not present in repository
@@ -151,41 +151,41 @@ public class GiftCertificatesController {
                         withRel("gift_certificates"));
     }
 
-    private PagedModel<EntityModel<GiftCertificateDTO>> getPagedModel(List<GiftCertificateDTO> orderDTOs, PaginationDTO paginationDTO,
+    private PagedModel<EntityModel<GiftCertificateDTO>> getPagedModel(List<GiftCertificateDTO> certificates, PaginationDTO pagination,
                                                             String searchParameters, String orderParameters){
-        List<EntityModel<GiftCertificateDTO>> entityModels = orderDTOs.stream()
-                .map(certificateDTO -> EntityModel.of(certificateDTO,
-                        linkTo(methodOn(GiftCertificatesController.class).find(certificateDTO.getId())).withSelfRel(),
-                        linkTo(methodOn(GiftCertificatesController.class).addGiftCertificate(certificateDTO)).withRel("add"),
-                        linkTo(methodOn(GiftCertificatesController.class).delete(certificateDTO.getId())).withRel("delete"),
-                        linkTo(methodOn(GiftCertificatesController.class).update(certificateDTO, certificateDTO.getId())).withRel("update")))
+        List<EntityModel<GiftCertificateDTO>> entityModels = certificates.stream()
+                .map(certificate -> EntityModel.of(certificate,
+                        linkTo(methodOn(GiftCertificatesController.class).find(certificate.getId())).withSelfRel(),
+                        linkTo(methodOn(GiftCertificatesController.class).addGiftCertificate(certificate)).withRel("add"),
+                        linkTo(methodOn(GiftCertificatesController.class).delete(certificate.getId())).withRel("delete"),
+                        linkTo(methodOn(GiftCertificatesController.class).update(certificate, certificate.getId())).withRel("update")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getPage() > 1){
+        if (pagination.getPage() > 1){
             links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(PaginationDTO.FIRST_PAGE,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));
         }
-        if (paginationDTO.getPage() > 1){
-            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getPage() - 1 ,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+        if (pagination.getPage() > 1){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(pagination.getPage() - 1 ,
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.PREV));
         }
-        links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getPage(), paginationDTO.getSize(),
+        links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(pagination.getPage(), pagination.getSize(),
                 searchParameters, orderParameters))
                 .withRel(IanaLinkRelations.SELF));
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
-            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getPage() + 1,
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage()){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(pagination.getPage() + 1,
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.NEXT));
         }
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage() - 1){
-            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(paginationDTO.getTotalPages(),
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage() - 1){
+            links.add(linkTo(methodOn(GiftCertificatesController.class).findByQuery(pagination.getTotalPages(),
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.LAST));
         }
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getSize(),
-                paginationDTO.getPage(), paginationDTO.getTotalCount());
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(pagination.getSize(),
+                pagination.getPage(), pagination.getTotalCount());
         return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

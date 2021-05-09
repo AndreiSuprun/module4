@@ -5,9 +5,8 @@ import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.User;
+import com.epam.esm.entity.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -58,7 +57,12 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public Order insert(Order order){
         entityManager.persist(order);
-        return order;
+        for(OrderItem orderItem : order.getOrderCertificates()){
+            orderItem.setOrder(order);
+            entityManager.persist(orderItem);
+            order.addOrderCertificate(orderItem);
+        };
+        return entityManager.merge(order);
     }
 
     @Override

@@ -10,7 +10,6 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private List<OrderDTO> orders;
 
     public UserDTO() {
     }
@@ -45,13 +44,5 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public List<OrderDTO> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<OrderDTO> orders) {
-        this.orders = orders;
     }
 }

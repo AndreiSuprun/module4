@@ -17,6 +17,8 @@ public enum ErrorCode {
     TAG_ALREADY_IN_DB(40003, "tag.already.in.db", HttpStatus.BAD_REQUEST),
     CERTIFICATE_ALREADY_IN_DB(40004, "certificate.already.in.db", HttpStatus.BAD_REQUEST),
     CERTIFICATE_FIELD_INVALID(40002, "certificate.field.invalid", HttpStatus.BAD_REQUEST),
+    ORDER_FIELD_INVALID(40011, "order.field.invalid", HttpStatus.BAD_REQUEST),
+    CERTIFICATES_NOT_ADDED(40012, "certificates.not.added", HttpStatus.BAD_REQUEST),
     QUERY_PARAMETER_INVALID(40005, "query.parameter.invalid", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
 

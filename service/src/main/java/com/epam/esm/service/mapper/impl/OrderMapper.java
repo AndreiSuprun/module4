@@ -1,12 +1,10 @@
 package com.epam.esm.service.mapper.impl;
 
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.OrderItem;
 import com.epam.esm.entity.User;
-import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.OrderItemDTO;
+import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.mapper.Mapper;
 import org.springframework.beans.BeanUtils;
@@ -19,31 +17,39 @@ import java.util.stream.Collectors;
 @Service
 public class OrderMapper implements Mapper<Order, OrderDTO> {
 
+    private final static String USER = "user";
     private final static String ORDER_ITEMS = "orderItems";
 
     private final OrderItemMapper orderItemMapper;
+    private final UserMapper userMapper;
 
     @Autowired
-    public OrderMapper(OrderItemMapper orderItemMapper) {
+    public OrderMapper(OrderItemMapper orderItemMapper, UserMapper userMapper) {
         this.orderItemMapper = orderItemMapper;
+        this.userMapper = userMapper;
     }
 
     public Order mapDtoToEntity(OrderDTO orderDTO) {
         Order order = new Order();
-        BeanUtils.copyProperties(orderDTO, order, ORDER_ITEMS);
-        if (orderDTO.getOrderItemDTOs() != null){
-            List<OrderItem> orderItems = orderDTO.getOrderItemDTOs().stream().map(orderItemMapper::mapDtoToEntity).collect(Collectors.toList());
-            order.setOrderItems(orderItems);}
+        order.setId(orderDTO.getId());
+        order.setCreateDate(orderDTO.getCreateDate());
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        if (orderDTO.getUser() != null) {
+            User user = userMapper.mapDtoToEntity(orderDTO.getUser());
+            order.setUser(user);
+        }
         return order;
     }
 
     public OrderDTO mapEntityToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
-        BeanUtils.copyProperties(order, orderDTO, ORDER_ITEMS);
-        if (order.getOrderItems() != null) {
-            List<OrderItemDTO> orderItemDTOs = order.getOrderItems().stream().map(orderItemMapper::mapEntityToDTO).collect(Collectors.toList());
-            orderDTO.setOrderItemDTOs(orderItemDTOs);
-        }
+        BeanUtils.copyProperties(order, orderDTO, USER, ORDER_ITEMS);
+        UserDTO userDTO = userMapper.mapEntityToDTO(order.getUser());
+        orderDTO.setUser(userDTO);
+        List<OrderItemDTO> orderItemDTOs = order.getOrderCertificates().stream().
+                map(orderItemMapper::mapEntityToDTO).collect(Collectors.toList());
+        orderItemDTOs.forEach(orderCertificateDTO -> orderCertificateDTO.setOrderDTO(orderDTO));
+        orderDTO.setCertificates(orderItemDTOs);
         return orderDTO;
     }
 }

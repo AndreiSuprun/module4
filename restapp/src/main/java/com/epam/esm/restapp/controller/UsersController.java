@@ -52,44 +52,44 @@ public class UsersController {
         return getEntityModel(userDTO);
     }
 
-    private EntityModel<UserDTO> getEntityModel(UserDTO userDTO){
-        return EntityModel.of(userDTO, linkTo(methodOn(UsersController.class).findOne(userDTO.getId())).withSelfRel(),
+    private EntityModel<UserDTO> getEntityModel(UserDTO user){
+        return EntityModel.of(user, linkTo(methodOn(UsersController.class).findOne(user.getId())).withSelfRel(),
                 linkTo(methodOn(UsersController.class).
                         findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).withRel("users"));
     }
 
-    private PagedModel<EntityModel<UserDTO>> getPagedModel(List<UserDTO> userDTOs, PaginationDTO paginationDTO,
+    private PagedModel<EntityModel<UserDTO>> getPagedModel(List<UserDTO> users, PaginationDTO pagination,
                                                            String searchParameters, String orderParameters){
-        List<EntityModel<UserDTO>> entityModels = userDTOs.stream()
-                .map(userDTO -> EntityModel.of(userDTO,
-                        linkTo(methodOn(UsersController.class).findOne(userDTO.getId())).withSelfRel()))
+        List<EntityModel<UserDTO>> entityModels = users.stream()
+                .map(user -> EntityModel.of(user,
+                        linkTo(methodOn(UsersController.class).findOne(user.getId())).withSelfRel()))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getPage() > 1){
+        if (pagination.getPage() > 1){
             links.add(linkTo(methodOn(UsersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));
         }
-        if (paginationDTO.getPage() > 1){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(paginationDTO.getPage() - 1 ,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+        if (pagination.getPage() > 1){
+            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage() - 1 ,
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.PREV));
         }
-        links.add(linkTo(methodOn(UsersController.class).findByQuery(paginationDTO.getPage(), paginationDTO.getSize(),
+        links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage(), pagination.getSize(),
                 searchParameters, orderParameters))
                 .withRel(IanaLinkRelations.SELF));
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(paginationDTO.getPage() + 1,
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage()){
+            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage() + 1,
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.NEXT));
         }
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage() - 1){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(paginationDTO.getTotalPages(),
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage() - 1){
+            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getTotalPages(),
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.LAST));
         }
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getSize(),
-                paginationDTO.getPage(), paginationDTO.getTotalCount());
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(pagination.getSize(),
+                pagination.getPage(), pagination.getTotalCount());
         return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

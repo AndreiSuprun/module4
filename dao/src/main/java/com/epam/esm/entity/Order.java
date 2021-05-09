@@ -1,17 +1,9 @@
 package com.epam.esm.entity;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +11,7 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @ManyToOne
@@ -29,8 +21,8 @@ public class Order {
     private BigDecimal totalPrice;
     @Column(name = "create_date")
     private LocalDateTime createDate;
-    @ElementCollection() @OrderColumn
-    private List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     public Order() {}
 
@@ -73,22 +65,29 @@ public class Order {
         this.createDate = createDate;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public List<OrderItem> getOrderCertificates() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderCertificates(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public void addOrderCertificate(OrderItem orderItem){
+        orderItems.add(orderItem);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Order order = (Order) o;
+
         if (user != null ? !user.equals(order.user) : order.user != null) return false;
         if (totalPrice != null ? !totalPrice.equals(order.totalPrice) : order.totalPrice != null) return false;
-        return createDate != null ? createDate.equals(order.createDate) : order.createDate == null;
+        if (createDate != null ? !createDate.equals(order.createDate) : order.createDate != null) return false;
+        return orderItems != null ? orderItems.equals(order.orderItems) : order.orderItems == null;
     }
 
     @Override
@@ -96,6 +95,7 @@ public class Order {
         int result = user != null ? user.hashCode() : 0;
         result = 31 * result + (totalPrice != null ? totalPrice.hashCode() : 0);
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
         return result;
     }
 
@@ -106,6 +106,8 @@ public class Order {
                 ", user=" + user +
                 ", totalPrice=" + totalPrice +
                 ", createDate=" + createDate +
+                ", orderCertificates=" + orderItems +
                 '}';
     }
 }
+

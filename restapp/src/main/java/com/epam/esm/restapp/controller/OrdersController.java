@@ -74,51 +74,51 @@ public class OrdersController {
         return ResponseEntity.noContent().build();
     }
 
-    private EntityModel<OrderDTO> getEntityModel(OrderDTO orderDTO){
-        return EntityModel.of(orderDTO, linkTo(methodOn(OrdersController.class).findOne(orderDTO.getId())).withSelfRel(),
-                linkTo(methodOn(OrdersController.class).placeOrder(orderDTO)).withRel("place_order"),
-                linkTo(methodOn(OrdersController.class).update(orderDTO, orderDTO.getId())).withRel("update"),
-                linkTo(methodOn(OrdersController.class).delete(orderDTO.getId())).withRel("delete"),
+    private EntityModel<OrderDTO> getEntityModel(OrderDTO order){
+        return EntityModel.of(order, linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
+                linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
+                linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
+                linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete"),
                 linkTo(methodOn(OrdersController.class).
                         findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).
                         withRel("users"));
     }
 
-    private PagedModel<EntityModel<OrderDTO>> getPagedModel(List<OrderDTO> orderDTOs, PaginationDTO paginationDTO,
+    private PagedModel<EntityModel<OrderDTO>> getPagedModel(List<OrderDTO> orders, PaginationDTO pagination,
                                                            String searchParameters, String orderParameters){
-        List<EntityModel<OrderDTO>> entityModels = orderDTOs.stream()
-                .map(orderDTO -> EntityModel.of(orderDTO,
-                        linkTo(methodOn(OrdersController.class).findOne(orderDTO.getId())).withSelfRel(),
-                        linkTo(methodOn(OrdersController.class).placeOrder(orderDTO)).withRel("place_order"),
-                        linkTo(methodOn(OrdersController.class).update(orderDTO, orderDTO.getId())).withRel("update"),
-                        linkTo(methodOn(OrdersController.class).delete(orderDTO.getId())).withRel("delete")))
+        List<EntityModel<OrderDTO>> entityModels = orders.stream()
+                .map(order -> EntityModel.of(order,
+                        linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
+                        linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
+                        linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
+                        linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();
-        if (paginationDTO.getPage() > 1){
+        if (pagination.getPage() > 1){
             links.add(linkTo(methodOn(OrdersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.FIRST));
         }
-        if (paginationDTO.getPage() > 1){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getPage() - 1 ,
-                    paginationDTO.getSize(),searchParameters, orderParameters))
+        if (pagination.getPage() > 1){
+            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage() - 1 ,
+                    pagination.getSize(),searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.PREV));
         }
-        links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getPage(), paginationDTO.getSize(),
+        links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage(), pagination.getSize(),
                 searchParameters, orderParameters))
                 .withRel(IanaLinkRelations.SELF));
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage()){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getPage() + 1,
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage()){
+            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage() + 1,
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.NEXT));
         }
-        if (paginationDTO.getTotalPages() > paginationDTO.getPage() - 1){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(paginationDTO.getTotalPages(),
-                    paginationDTO.getSize(), searchParameters, orderParameters))
+        if (pagination.getTotalPages() > pagination.getPage() - 1){
+            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getTotalPages(),
+                    pagination.getSize(), searchParameters, orderParameters))
                     .withRel(IanaLinkRelations.LAST));
         }
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(paginationDTO.getSize(),
-                paginationDTO.getPage(), paginationDTO.getTotalCount());
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(pagination.getSize(),
+                pagination.getPage(), pagination.getTotalCount());
         return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

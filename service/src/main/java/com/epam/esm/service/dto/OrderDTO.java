@@ -1,18 +1,20 @@
 package com.epam.esm.service.dto;
 
-import com.epam.esm.entity.OrderItem;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDTO {
 
     private Long id;
-    private Long userId;
+    private UserDTO user;
     private BigDecimal totalPrice;
     private LocalDateTime createDate;
-    private List<OrderItemDTO> orderItemDTOs;
+    private List<OrderItemDTO> certificates = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -22,13 +24,14 @@ public class OrderDTO {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public UserDTO getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
+
 
     public BigDecimal getTotalPrice() {
         return totalPrice;
@@ -46,11 +49,12 @@ public class OrderDTO {
         this.createDate = createDate;
     }
 
-    public List<OrderItemDTO> getOrderItemDTOs() {
-        return orderItemDTOs;
+    @JsonManagedReference
+    public List<OrderItemDTO> getCertificates() {
+        return certificates;
     }
 
-    public void setOrderItemDTOs(List<OrderItemDTO> orderItemDTOs) {
-        this.orderItemDTOs = orderItemDTOs;
+    public void setCertificates(List<OrderItemDTO> certificates) {
+        this.certificates = certificates;
     }
 }
