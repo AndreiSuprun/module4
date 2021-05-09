@@ -62,13 +62,14 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public Long count(List<SearchCriteria>... searchParams) {
-        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<GiftCertificate> root = query.from(GiftCertificate.class);
         if (searchParams.length > 0)  {
             query.where(criteriaUtil.buildSearchCriteriaPredicate(searchParams[0], builder,
-                    builder.createQuery().from(GiftCertificate.class)));
+                    root));
         }
-        query.select(builder.count(query.from(GiftCertificate.class)));
+        query.select(builder.count(root));
         return entityManager.createQuery(query).getSingleResult();
     }
 

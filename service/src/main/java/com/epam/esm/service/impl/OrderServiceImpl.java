@@ -80,7 +80,6 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemDTO> orderItemDTOList = orderDTO.getCertificates();
         Order order = mapper.mapDtoToEntity(orderDTO);
         orderDAO.insert(order);
-
         for (OrderItemDTO orderItemDTO : orderItemDTOList){
             OrderItem orderItem = orderItemMapper.mapDtoToEntity(orderItemDTO);
             GiftCertificate certificate = orderItem.getCertificate();

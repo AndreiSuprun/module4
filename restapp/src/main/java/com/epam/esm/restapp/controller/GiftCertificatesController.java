@@ -35,7 +35,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Andrei Suprun
  */
 @RestController
-@RequestMapping("/gift_certificates")
+@RequestMapping("/certificates")
 public class GiftCertificatesController {
 
     private final GiftCertificatesService giftCertificatesService;

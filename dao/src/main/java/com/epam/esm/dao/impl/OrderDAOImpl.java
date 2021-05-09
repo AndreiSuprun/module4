@@ -5,6 +5,7 @@ import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +70,12 @@ public class OrderDAOImpl implements OrderDAO {
     public Long count(List<SearchCriteria>... searchParams) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<Order> root = query.from(Order.class);
         if (searchParams.length > 0) {
             query.where(criteriaUtil.buildSearchCriteriaPredicate(searchParams[0], builder,
-                    builder.createQuery().from(Order.class)));
+                    root));
         }
-        query.select(builder.count(query.from(Order.class)));
+        query.select(builder.count(root));
         return entityManager.createQuery(query).getSingleResult();
     }
 

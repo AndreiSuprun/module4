@@ -2,10 +2,13 @@ package com.epam.esm.dao.criteria;
 
 public class SearchCriteria {
 
+    private static String UNDERSCORE_SIGN = "_";
+
     private String key;
     private SearchOperation operation;
     private Object value;
     private boolean orPredicate;
+    private boolean isNestedProperty;
 
     public SearchCriteria() {
     }
@@ -14,6 +17,7 @@ public class SearchCriteria {
         this.key = key;
         this.operation = operation;
         this.value = value;
+        this.isNestedProperty = key.contains(UNDERSCORE_SIGN);
     }
 
     public SearchCriteria(final String orPredicate, final String key, final SearchOperation operation, final Object value) {
@@ -21,6 +25,7 @@ public class SearchCriteria {
         this.key = key;
         this.operation = operation;
         this.value = value;
+        this.isNestedProperty = key.contains(UNDERSCORE_SIGN);
     }
 
     public SearchCriteria(String key, String searchOperation, String prefix, String value, String suffix) {
@@ -42,6 +47,7 @@ public class SearchCriteria {
         this.key = key;
         this.operation = operation;
         this.value = value;
+        this.isNestedProperty = key.contains(UNDERSCORE_SIGN);
     }
 
     public String getKey() {
@@ -74,5 +80,13 @@ public class SearchCriteria {
 
     public void setOrPredicate(boolean orPredicate) {
         this.orPredicate = orPredicate;
+    }
+
+    public boolean isNestedProperty() {
+        return isNestedProperty;
+    }
+
+    public void setNestedProperty(boolean nestedProperty) {
+        isNestedProperty = nestedProperty;
     }
 }
