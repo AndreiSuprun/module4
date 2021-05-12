@@ -48,11 +48,11 @@ public class GiftCertificatesController {
     /**
      * Retrieves gift certificates from repository according to provided request parameters.
      *
-     * @param page      (optional) request parameter for search by tag
-     * @param size (optional) request parameter for search by phrase contained in name or description of gift
-     *                 certificate
-     * @param searchParameters    (optional) request parameter for sorting by name or date, ascending or descending
-     * @return List<GiftCertificate> list of gift certificates from repository according to provided query
+     * @param page (optional) request parameter for page number
+     * @param size (optional) request parameter for page size
+     * @param searchParameters (optional) request parameter for searching
+     * @param sortParameters (optional) request parameter for sorting, ascending or descending
+     * @return PagedModel<EntityModel<GiftCertificateDTO>> object of gift certificates for returned page from repository
      * @throws ProjectException if provided query is not valid or gift certificates according to provided query
      *                          are not present in repository
      */
@@ -74,7 +74,7 @@ public class GiftCertificatesController {
      *
      * @param newCertificate GiftCertificateDTO object on basis of which is created new gift certificate
      *                       in repository
-     * @return GiftCertificateDTO gift certificate dto of created in repository gift certificate
+     * @return EntityModel<GiftCertificateDTO> object for gift certificate dto of created in repository gift certificate
      * @throws ProjectException if fields in provided GiftCertificateDTO object is not valid
      */
     @PostMapping
@@ -88,7 +88,7 @@ public class GiftCertificatesController {
      * Returns GiftCertificateDTO object for gift certificate with provided id from repository.
      *
      * @param id id of gift certificate to find
-     * @return GiftCertificateDTO object og gift certificate with provided id in repository
+     * @return EntityModel<GiftCertificateDTO> object of gift certificate with provided id in repository
      * @throws ProjectException if gift certificate with provided id is not present in repository
      */
     @GetMapping("/{id}")
@@ -116,7 +116,7 @@ public class GiftCertificatesController {
      * @param updatedCertificateDTO GiftCertificateDTO object according to which is necessary to update gift certificate
      *                              in repository
      * @param id                    id of updated gift certificate
-     * @return GiftCertificateDTO gift certificate dto of updated gift certificate in repository
+     * @return EntityModel<GiftCertificateDTO> object of gift certificate dto of updated gift certificate in repository
      * @throws ProjectException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
      *                          id is not present in repository
      */
@@ -131,7 +131,7 @@ public class GiftCertificatesController {
      *
      * @param updatedCertificateDTO GiftCertificateDTO object which consist fields to update
      * @param id                    id of updated gift certificate
-     * @return GiftCertificateDTO gift certificate dto of updated certificate
+     * @return EntityModel<GiftCertificateDTO> object of gift certificate dto of updated certificate
      * @throws ProjectException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
      *                          id is not present in repository
      */

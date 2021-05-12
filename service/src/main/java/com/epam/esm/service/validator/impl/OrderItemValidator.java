@@ -11,18 +11,15 @@ public class OrderItemValidator extends EntityValidator<OrderItem> {
 
     private final static String QUANTITY_FIELD = "quantity";
 
-    private GiftCertificateValidator certificateValidator;
     private QuantityValidator quantityValidator;
 
     @Autowired
-    public OrderItemValidator(GiftCertificateValidator certificateValidator, QuantityValidator quantityValidator){
-        this.certificateValidator = certificateValidator;
+    public OrderItemValidator(QuantityValidator quantityValidator){
         this.quantityValidator = quantityValidator;
     }
 
     @Override
     public void validate(OrderItem orderItem) {
-        certificateValidator.validate(orderItem.getCertificate());
         validateField(quantityValidator,
                 orderItem.getQuantity(), ErrorCode.ORDER_FIELD_INVALID,
                 QUANTITY_FIELD, orderItem.getQuantity());

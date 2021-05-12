@@ -5,6 +5,7 @@ import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.dto.UserDTO;
+import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,17 @@ public class UsersController {
         this.userService = userService;
     }
 
+    /**
+     * Retrieves users from repository according to provided request parameters.
+     *
+     * @param page (optional) request parameter for page number
+     * @param size (optional) request parameter for page size
+     * @param searchParameters (optional) request parameter for searching
+     * @param orderParameters (optional) request parameter for sorting, ascending or descending
+     * @return PagedModel<EntityModel<UserDTO>> object of users for returned page from repository
+     * @throws ProjectException if provided query is not valid or users according to provided query
+     *                          are not present in repository
+     */
     @GetMapping()
     public PagedModel<EntityModel<UserDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
                                      @RequestParam(value = "size", required = false) Integer size,
@@ -46,6 +58,13 @@ public class UsersController {
         return  getPagedModel(users, paginationDTO, searchParameters, orderParameters);
     }
 
+    /**
+     * Returns UserDTO object for user with provided id from repository.
+     *
+     * @param id id of user to find
+     * @return EntityModel<UserDTO> object of user with provided id in repository
+     * @throws ProjectException if user with provided id is not present in repository
+     */
     @GetMapping("/{id}")
     public EntityModel<UserDTO> findOne(@PathVariable Long id) {
         UserDTO userDTO = userService.find(id);

@@ -1,5 +1,9 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.dao.audit.Audit;
+import com.epam.esm.dao.audit.AuditListener;
+import com.epam.esm.dao.audit.Auditable;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,7 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name="orders")
-public class Order {
+@EntityListeners(AuditListener.class)
+public class Order implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,18 +24,17 @@ public class Order {
     private User user;
     @Column(name = "total_price")
     private BigDecimal totalPrice;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private List<OrderItem> orderItems = new ArrayList<>();
+    @Embedded
+    private Audit audit;
 
     public Order() {}
 
-    public Order(User user, List<OrderItem> orderItems, BigDecimal totalPrice, LocalDateTime createDate) {
+    public Order(User user, List<OrderItem> orderItems, BigDecimal totalPrice) {
         this.user = user;
         this.orderItems = orderItems;
         this.totalPrice = totalPrice;
-        this.createDate = createDate;
     }
 
     public Long getId() {
@@ -57,14 +61,6 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
     public List<OrderItem> getOrderCertificates() {
         return orderItems;
     }
@@ -78,6 +74,16 @@ public class Order {
     }
 
     @Override
+    public Audit getAudit() {
+        return audit;
+    }
+
+    @Override
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -86,7 +92,6 @@ public class Order {
 
         if (user != null ? !user.equals(order.user) : order.user != null) return false;
         if (totalPrice != null ? !totalPrice.equals(order.totalPrice) : order.totalPrice != null) return false;
-        if (createDate != null ? !createDate.equals(order.createDate) : order.createDate != null) return false;
         return orderItems != null ? orderItems.equals(order.orderItems) : order.orderItems == null;
     }
 
@@ -94,7 +99,6 @@ public class Order {
     public int hashCode() {
         int result = user != null ? user.hashCode() : 0;
         result = 31 * result + (totalPrice != null ? totalPrice.hashCode() : 0);
-        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
         result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
         return result;
     }
@@ -105,7 +109,6 @@ public class Order {
                 "id=" + id +
                 ", user=" + user +
                 ", totalPrice=" + totalPrice +
-                ", createDate=" + createDate +
                 ", orderCertificates=" + orderItems +
                 '}';
     }

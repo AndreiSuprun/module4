@@ -1,10 +1,15 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.dao.audit.Audit;
+import com.epam.esm.dao.audit.AuditListener;
+import com.epam.esm.dao.audit.Auditable;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="orders_certificates")
-public class OrderItem {
+@EntityListeners(AuditListener.class)
+public class OrderItem implements Auditable {
 
     @EmbeddedId
     private OrderItemId id;
@@ -18,9 +23,10 @@ public class OrderItem {
     @MapsId("certificate")
     @JoinColumn(name = "certificate_id")
     private GiftCertificate certificate;
-
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+    @Embedded
+    private Audit audit;
 
     public OrderItem(){
         id = new OrderItemId();
@@ -59,6 +65,16 @@ public class OrderItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public Audit getAudit() {
+        return audit;
+    }
+
+    @Override
+    public void setAudit(Audit audit) {
+        this.audit = audit;
     }
 
     @Override

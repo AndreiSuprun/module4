@@ -1,5 +1,9 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.dao.audit.Audit;
+import com.epam.esm.dao.audit.AuditListener;
+import com.epam.esm.dao.audit.Auditable;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,7 +13,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name="certificates")
-public class GiftCertificate {
+@EntityListeners(AuditListener.class)
+public class GiftCertificate implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +28,6 @@ public class GiftCertificate {
     private BigDecimal price;
     @Column(name = "duration", nullable = false)
     private Integer duration;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "last_update_date")
-    private LocalDateTime lastUpdateDate;
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -35,15 +36,14 @@ public class GiftCertificate {
             joinColumns = @JoinColumn(name = "certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
+    @Embedded
+    Audit audit;
 
-    public GiftCertificate(String name, String description, BigDecimal price, int duration, LocalDateTime createDate,
-                           LocalDateTime lastUpdateDate, List<Tag> tags) {
+    public GiftCertificate(String name, String description, BigDecimal price, int duration, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
         this.tags = tags;
     }
 
@@ -90,22 +90,6 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDateTime getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
-    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
-        this.lastUpdateDate = lastUpdateDate;
-    }
-
     public List<Tag> getTags() {
         return tags;
     }
@@ -122,6 +106,16 @@ public class GiftCertificate {
     }
 
     @Override
+    public Audit getAudit() {
+        return audit;
+    }
+
+    @Override
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -130,9 +124,6 @@ public class GiftCertificate {
         if (!Objects.equals(description, that.description)) return false;
         if (!Objects.equals(price, that.price)) return false;
         if (!Objects.equals(duration, that.duration)) return false;
-        if (!Objects.equals(createDate, that.createDate)) return false;
-        if (!Objects.equals(lastUpdateDate, that.lastUpdateDate))
-            return false;
         return Objects.equals(tags, that.tags);
     }
 
@@ -142,8 +133,6 @@ public class GiftCertificate {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (duration != null ? duration.hashCode() : 0);
-        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
-        result = 31 * result + (lastUpdateDate != null ? lastUpdateDate.hashCode() : 0);
         result = 31 * result + (tags != null ? tags.hashCode() : 0);
         return result;
     }
@@ -156,8 +145,6 @@ public class GiftCertificate {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", duration=" + duration +
-                ", createDate=" + createDate +
-                ", lastUpdateDate=" + lastUpdateDate +
                 ", tags=" + tags +
                 '}';
     }

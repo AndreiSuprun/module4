@@ -68,24 +68,28 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDTO placeOrder(OrderDTO orderDTO) {
+        if (orderDTO.getUser() == null || orderDTO.getUser().getId() == null){
+                throw new ProjectException(ErrorCode.USER_NOT_ADDED);
+            }
         UserDTO user = userService.find(orderDTO.getUser().getId());
-        if (orderDTO.getCertificates().isEmpty()) {
-            throw new ProjectException(ErrorCode.CERTIFICATES_NOT_ADDED);
+        if (orderDTO.getCertificates().isEmpty()){
+            throw new ProjectException(ErrorCode.ORDER_ITEMS_NOT_ADDED);
         }
-        BigDecimal totalPrice = BigDecimal.valueOf(orderDTO.getCertificates().stream().
-                mapToInt(item -> item.getGiftCertificateDTO().getPrice().intValue() * item.getQuantity()).sum());
+        for(OrderItemDTO orderItemDTO : orderDTO.getCertificates()){
+            if (orderItemDTO.getGiftCertificateDTO() == null || orderItemDTO.getGiftCertificateDTO().getId() == null){
+                throw new ProjectException(ErrorCode.CERTIFICATES_NOT_ADDED);
+            }
+        }
+        BigDecimal totalPrice = orderDTO.getCertificates().stream().
+                map(item -> certificatesService.find(item.getGiftCertificateDTO().getId()).getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).
+                reduce(BigDecimal.ZERO, BigDecimal::add);
         orderDTO.setTotalPrice(totalPrice);
-        orderDTO.setCreateDate(LocalDateTime.now());
         orderDTO.setUser(user);
         List<OrderItemDTO> orderItemDTOList = orderDTO.getCertificates();
         Order order = mapper.mapDtoToEntity(orderDTO);
         orderDAO.insert(order);
         for (OrderItemDTO orderItemDTO : orderItemDTOList){
             OrderItem orderItem = orderItemMapper.mapDtoToEntity(orderItemDTO);
-            GiftCertificate certificate = orderItem.getCertificate();
-            if(certificatesService.find(certificate.getId()) == null){
-                throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, certificate.getId());
-            }
             orderItemValidator.validate(orderItem);
             orderItem.setOrder(order);
             order.addOrderCertificate(orderItem);
@@ -102,7 +106,6 @@ public class OrderServiceImpl implements OrderService {
             throw new ProjectException(ErrorCode.ORDER_NOT_FOUND, id);
         }
         Order orderInRequest = mapper.mapDtoToEntity(orderDto);
-       // validator.validate(orderInRequest);
         order = orderDAO.update(orderInRequest, id);
         return mapper.mapEntityToDTO(order);
     }

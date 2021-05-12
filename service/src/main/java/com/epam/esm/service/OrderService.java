@@ -9,7 +9,7 @@ import com.epam.esm.service.exception.ProjectException;
 import java.util.List;
 
 /**
- * Service class responsible for processing user-related operations
+ * Service class responsible for processing order-related operations
  *
  * @author Andrei Suprun
  */

@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
 @ControllerAdvice
@@ -64,12 +66,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiResponse, ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH.getHttpStatus());
     }
 
-//    @ExceptionHandler({Exception.class})
-//    public ResponseEntity<CustomErrorResponse> handleProjectException(Exception ex) {
-//        CustomErrorResponse apiResponse = new CustomErrorResponse();
-//        apiResponse.setErrorCode(ErrorCode.BAD_REQUEST.getCode().toString());
-//        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
-//                new Object[] {}, Locale.getDefault()));
-//        return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
-//    }
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<CustomErrorResponse> handleProjectException(Exception ex) {
+        CustomErrorResponse apiResponse = new CustomErrorResponse();
+        apiResponse.setErrorCode(ErrorCode.BAD_REQUEST.getCode().toString());
+        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
+                new Object[] {}, Locale.getDefault()));
+        return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
+    }
 }

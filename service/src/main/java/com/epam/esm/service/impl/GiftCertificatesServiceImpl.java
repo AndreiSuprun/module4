@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
@@ -72,8 +73,6 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         }
         GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
         validator.validate(certificateInRequest);
-        certificateInRequest.setCreateDate(certificateInDB.getCreateDate());
-        certificateInRequest.setLastUpdateDate(LocalDateTime.now());
         certificateInDB = giftCertificateDAO.update(certificateInRequest, id);
         return mapper.mapEntityToDTO(certificateInDB);
     }
@@ -111,7 +110,12 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional
     @Override
     public void delete(Long id) {
-        giftCertificateDAO.delete(id);
+        if (!giftCertificateDAO.getOrdersForCertificates(id).isEmpty()){
+            throw new ProjectException(ErrorCode.CERTIFICATE_CANNOT_BE_DELETED, id);
+        }
+        if(!giftCertificateDAO.delete(id)){
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        };
     }
 
     @Override
@@ -126,10 +130,9 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Override
     public List<GiftCertificateDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
         checkPagination(paginationDTO);
-        List<GiftCertificate> certificates;
         Long count = giftCertificateDAO.count(searchParams);
         checkPageNumber(paginationDTO, count);
-        certificates = giftCertificateDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
+        List<GiftCertificate> certificates = giftCertificateDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
         return certificates.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 }

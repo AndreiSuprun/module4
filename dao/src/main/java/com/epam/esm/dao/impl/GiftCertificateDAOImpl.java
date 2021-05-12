@@ -6,16 +6,14 @@ import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.*;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +48,16 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         return null;
     }
 
+    public List<Order> getOrdersForCertificates(Long certificateId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
+        Root<Order> orderRoot = criteriaQuery.from(Order.class);
+        criteriaQuery.where(criteriaBuilder.equal(orderRoot.join("orderItems").get("certificate").get("id"), certificateId));
+        criteriaQuery.select(orderRoot);
+        TypedQuery<Order> query = entityManager.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
+
     @Override
     public boolean delete(Long id) {
         GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
@@ -75,8 +83,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public GiftCertificate insert(GiftCertificate certificate) {
-        certificate.setCreateDate(java.time.LocalDateTime.now());
-        certificate.setLastUpdateDate(java.time.LocalDateTime.now());
         List<Tag> tags = certificate.getTags();
         List<Tag> tagsInDB = new ArrayList<>();
         for(Tag tag : tags){
@@ -98,7 +104,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public GiftCertificate update(GiftCertificate certificate, Long id) {
-        certificate.setLastUpdateDate(java.time.LocalDateTime.now());
         certificate.setId(id);
         List<Tag> tags = certificate.getTags();
         List<Tag> tagsInDB = new ArrayList<>();

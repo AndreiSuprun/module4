@@ -2,6 +2,7 @@ package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.exception.ErrorCode;
+import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.validator.EntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,9 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
         validateField(durationValidator,
                 giftCertificate.getDuration(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DURATION_FIELD, giftCertificate.getDuration());
+        if (giftCertificate.getTags() == null){
+            throw new ProjectException(ErrorCode.TAG_IS_EMPTY);
+        }
         giftCertificate.getTags().forEach(tagValidator::validate);
     }
 }

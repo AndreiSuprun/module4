@@ -1,12 +1,17 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.dao.audit.Audit;
+import com.epam.esm.dao.audit.AuditListener;
+import com.epam.esm.dao.audit.Auditable;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="tags")
-public class Tag {
+@EntityListeners(AuditListener.class)
+public class Tag implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +19,8 @@ public class Tag {
     private Long id;
     @Column(name = "name", unique = true, nullable = false)
     private String name;
+    @Embedded
+    private Audit audit;
 
     public Tag(String name) {
         this.name = name;
@@ -36,6 +43,16 @@ public class Tag {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Audit getAudit() {
+        return audit;
+    }
+
+    @Override
+    public void setAudit(Audit audit) {
+        this.audit = audit;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class OrderDTO {
     private Long id;
     private UserDTO user;
     private BigDecimal totalPrice;
-    private LocalDateTime createDate;
+    private LocalDateTime createdOn;
     private List<OrderItemDTO> certificates = new ArrayList<>();
 
     public Long getId() {
@@ -41,12 +41,12 @@ public class OrderDTO {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
     }
 
     @JsonManagedReference

@@ -1,19 +1,17 @@
 package com.epam.esm.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import com.epam.esm.dao.audit.Audit;
+import com.epam.esm.dao.audit.AuditListener;
+import com.epam.esm.dao.audit.Auditable;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User {
+@EntityListeners(AuditListener.class)
+public class User implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +23,8 @@ public class User {
     private String lastName;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @Embedded
+    Audit audit;
 
     public User() {
     }
@@ -65,6 +65,16 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public Audit getAudit() {
+        return audit;
+    }
+
+    @Override
+    public void setAudit(Audit audit) {
+        this.audit = audit;
     }
 
     @Override

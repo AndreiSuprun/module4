@@ -55,20 +55,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> findAll(PaginationDTO paginationDTO) {
-        checkPagination(paginationDTO);
-        Long count = tagDAO.count();
-        checkPageNumber(paginationDTO, count);
-        List<Tag> tags = tagDAO.findAll(paginationDTO.getPage(), paginationDTO.getSize());
-        return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
-    }
-
-    @Override
     public List<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
-        List<Tag> tags;
+        checkPagination(paginationDTO);
         Long count = tagDAO.count(searchParams);
         checkPageNumber(paginationDTO, count);
-        tags = tagDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
+        List<Tag> tags = tagDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
         return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 
@@ -83,11 +74,19 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void delete(Long id) {
-        if (find(id) != null){
+        if (!tagDAO.getCertificatesForTag(id).isEmpty()){
             throw new ProjectException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
         }
         if (!tagDAO.delete(id)){
             throw new ProjectException(ErrorCode.TAG_NOT_FOUND, ID, id);
         }
+    }
+
+    public TagDTO findMostWidelyUsedTag(){
+        Tag tag = tagDAO.findMostWidelyUsedTag();
+        if (tag == null){
+            throw new ProjectException(ErrorCode.TAG_NOT_FOUND);
+        }
+        return mapper.mapEntityToDTO(tag);
     }
 }

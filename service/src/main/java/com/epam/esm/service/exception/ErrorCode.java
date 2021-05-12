@@ -9,9 +9,11 @@ public enum ErrorCode {
     CERTIFICATE_NOT_FOUND(40401, "certificate.not.found", HttpStatus.NOT_FOUND),
     CERTIFICATES_NOT_FOUND(40405, "certificates.not.found", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND(40406, "user.not.found", HttpStatus.NOT_FOUND),
+    USER_NOT_ADDED(40412, "user.not.added", HttpStatus.NOT_FOUND),
     ORDER_NOT_FOUND(40407, "order.not.found", HttpStatus.NOT_FOUND),
     TAG_NOT_FOUND(40402, "tag.not.found", HttpStatus.NOT_FOUND),
     TAG_IS_EMPTY(40009, "tag.is.empty", HttpStatus.BAD_REQUEST),
+    CERTIFICATE_CANNOT_BE_DELETED(40006, "certificate.cannot.be.deleted", HttpStatus.BAD_REQUEST),
     TAG_CANNOT_BE_DELETED(40006, "tag.cannot.be.deleted", HttpStatus.BAD_REQUEST),
     TAG_FIELD_INVALID(40001, "tag.field.invalid", HttpStatus.BAD_REQUEST),
     TAG_ALREADY_IN_DB(40003, "tag.already.in.db", HttpStatus.BAD_REQUEST),
@@ -19,6 +21,7 @@ public enum ErrorCode {
     CERTIFICATE_FIELD_INVALID(40002, "certificate.field.invalid", HttpStatus.BAD_REQUEST),
     ORDER_FIELD_INVALID(40011, "order.field.invalid", HttpStatus.BAD_REQUEST),
     CERTIFICATES_NOT_ADDED(40012, "certificates.not.added", HttpStatus.BAD_REQUEST),
+    ORDER_ITEMS_NOT_ADDED(40013, "order.items.not.added", HttpStatus.BAD_REQUEST),
     QUERY_PARAMETER_INVALID(40005, "query.parameter.invalid", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
 

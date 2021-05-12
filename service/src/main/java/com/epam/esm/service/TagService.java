@@ -24,7 +24,13 @@ public interface TagService extends GenericService<TagDTO>{
      */
     TagDTO add(TagDTO tagDTO);
 
-    List<TagDTO> findAll(PaginationDTO paginationDTO);
+    /**
+     * Search most used tag for user with highest total cost of orders.
+     *
+     * @throws ProjectException if such tag was not found in repository
+     * @return TagDTO tag dto of most used tag
+     */
+    TagDTO findMostWidelyUsedTag();
 
     /**
      * Retrieves TagDTO object for tag with provided name from repository.

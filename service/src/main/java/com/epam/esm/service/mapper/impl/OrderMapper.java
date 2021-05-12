@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class OrderMapper implements Mapper<Order, OrderDTO> {
 
+    private final static String CREATE_DATE = "createdOn";
     private final static String USER = "user";
     private final static String ORDER_ITEMS = "orderItems";
 
@@ -32,7 +33,6 @@ public class OrderMapper implements Mapper<Order, OrderDTO> {
     public Order mapDtoToEntity(OrderDTO orderDTO) {
         Order order = new Order();
         order.setId(orderDTO.getId());
-        order.setCreateDate(orderDTO.getCreateDate());
         order.setTotalPrice(orderDTO.getTotalPrice());
         if (orderDTO.getUser() != null) {
             User user = userMapper.mapDtoToEntity(orderDTO.getUser());
@@ -43,9 +43,10 @@ public class OrderMapper implements Mapper<Order, OrderDTO> {
 
     public OrderDTO mapEntityToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
-        BeanUtils.copyProperties(order, orderDTO, USER, ORDER_ITEMS);
+        BeanUtils.copyProperties(order, orderDTO, USER, CREATE_DATE, ORDER_ITEMS);
         UserDTO userDTO = userMapper.mapEntityToDTO(order.getUser());
         orderDTO.setUser(userDTO);
+        orderDTO.setCreatedOn(order.getAudit().getCreatedOn());
         List<OrderItemDTO> orderItemDTOs = order.getOrderCertificates().stream().
                 map(orderItemMapper::mapEntityToDTO).collect(Collectors.toList());
         orderItemDTOs.forEach(orderCertificateDTO -> orderCertificateDTO.setOrderDTO(orderDTO));

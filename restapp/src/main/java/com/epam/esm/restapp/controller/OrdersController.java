@@ -6,6 +6,7 @@ import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
+import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,17 @@ public class OrdersController {
         this.orderService = orderService;
     }
 
+    /**
+     * Retrieves orders from repository according to provided request parameters.
+     *
+     * @param page (optional) request parameter for page number
+     * @param size (optional) request parameter for page size
+     * @param searchParameters (optional) request parameter for searching
+     * @param sortParameters (optional) request parameter for sorting, ascending or descending
+     * @return PagedModel<EntityModel<OrderDTO>> object of orders for returned page from repository
+     * @throws ProjectException if provided query is not valid or orders according to provided query
+     *                          are not present in repository
+     */
     @GetMapping()
     public PagedModel<EntityModel<OrderDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
                                      @RequestParam(value = "size", required = false) Integer size,
@@ -48,12 +60,26 @@ public class OrdersController {
         return getPagedModel(orders, paginationDTO, searchParameters, orderParameters);
     }
 
+    /**
+     * Returns OrderDTO object for order with provided id from repository.
+     *
+     * @param id id of order to find
+     * @return EntityModel<OrderDTO> object of order with provided id in repository
+     * @throws ProjectException if order with provided id is not present in repository
+     */
     @GetMapping("/{id}")
     public EntityModel<OrderDTO> findOne(@PathVariable Long id) {
         OrderDTO orderDTO = orderService.find(id);
         return getEntityModel(orderDTO);
     }
 
+    /**
+     * Adds order to repository according to provided dto object.
+     *
+     * @param orderDTO OrderDTO object on basis of which is created new order in repository
+     * @return EntityModel<OrderDTO> object of created in repository order
+     * @throws ProjectException if fields in provided OrderDTO object is not valid
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<OrderDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
@@ -61,12 +87,27 @@ public class OrdersController {
         return getEntityModel(orderDTO);
     }
 
+    /**
+     * Updates order according to request body.
+     *
+     * @param updatedOrderDTO OrderDTO object according to which is necessary to update order in repository
+     * @param id id of updated order
+     * @return EntityModel<OrderDTO> order dto of updated order in repository
+     * @throws ProjectException if fields in provided OrderDTO is not valid or order with provided id is not present
+     * in repository
+     */
     @PutMapping("/{id}")
     public EntityModel<OrderDTO> update(@RequestBody OrderDTO updatedOrderDTO, @PathVariable Long id) {
         OrderDTO orderDTO = orderService.update(updatedOrderDTO, id);
         return getEntityModel(orderDTO);
     }
 
+    /**
+     * Removes order with provided id from repository.
+     *
+     * @param id id of order to delete from repository
+     * @throws ProjectException if order with provided id is not present in repository
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable Long id) {

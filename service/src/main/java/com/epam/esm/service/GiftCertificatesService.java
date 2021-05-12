@@ -1,7 +1,10 @@
 package com.epam.esm.service;
 
 import com.epam.esm.service.dto.GiftCertificateDTO;
+import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ProjectException;
+
+import java.util.List;
 
 /**
  * Service class responsible for processing gift certificate-related operations
