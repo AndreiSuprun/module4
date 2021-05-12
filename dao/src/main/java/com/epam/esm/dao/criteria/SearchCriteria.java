@@ -13,14 +13,14 @@ public class SearchCriteria {
     public SearchCriteria() {
     }
 
-    public SearchCriteria(final String key, final SearchOperation operation, final Object value) {
+    public SearchCriteria(String key, SearchOperation operation, Object value) {
         this.key = key;
         this.operation = operation;
         this.value = value;
         this.isNestedProperty = key.contains(UNDERSCORE_SIGN);
     }
 
-    public SearchCriteria(final String orPredicate, final String key, final SearchOperation operation, final Object value) {
+    public SearchCriteria(String orPredicate, String key, SearchOperation operation, Object value) {
         this.orPredicate = orPredicate != null && orPredicate.equals(SearchOperation.OR_PREDICATE_FLAG);
         this.key = key;
         this.operation = operation;

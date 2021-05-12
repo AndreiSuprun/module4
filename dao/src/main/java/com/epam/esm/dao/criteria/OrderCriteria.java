@@ -8,7 +8,7 @@ public class OrderCriteria {
     public OrderCriteria() {
     }
 
-    public OrderCriteria(final String key, final String direction) {
+    public OrderCriteria(String key, String direction) {
         this.key = key;
         this.direction = direction;
     }

@@ -17,7 +17,8 @@ public class SearchCriteriaBuilder {
         this.searchParameters = searchParameters;
     }
 
-    public final SearchCriteriaBuilder with(final String orPredicate, final String key, final String operation, final Object value, final String prefix, final String suffix) {
+    public SearchCriteriaBuilder with(String orPredicate, String key, String operation, Object value,
+                                            String prefix, String suffix) {
         SearchOperation op = SearchOperation.getSimpleOperation(operation.charAt(0));
         if (op != null) {
             if (op == SearchOperation.EQUALITY) {
@@ -48,7 +49,7 @@ public class SearchCriteriaBuilder {
         return params;
     }
 
-    public final SearchCriteriaBuilder with(SearchCriteria criteria) {
+    public SearchCriteriaBuilder with(SearchCriteria criteria) {
         params.add(criteria);
         return this;
     }

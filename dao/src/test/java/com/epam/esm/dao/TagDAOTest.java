@@ -42,7 +42,7 @@ public class TagDAOTest {
     @Transactional
     @Rollback
     public void testFindOneNotPresent(){
-        Tag tagInDb = tagDAO.findOne(1L);
+        Tag tagInDb = tagDAO.findOne(2L);
 
         Assertions.assertNull(tagInDb);
     }
@@ -55,7 +55,7 @@ public class TagDAOTest {
 
         tagDAO.insert(tag);
         List<Tag> tagInDb = tagDAO.findByQuery(null, null, 1L, 10);
-        Assertions.assertEquals(1, tagInDb.size());
+        Assertions.assertEquals(2, tagInDb.size());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TagDAOTest {
     @Transactional
     @Rollback
     public void testDeleteNotExisting(){
-        boolean actual = tagDAO.delete(1L);
+        boolean actual = tagDAO.delete(2L);
 
         Assertions.assertFalse(actual);
     }
@@ -112,7 +112,7 @@ public class TagDAOTest {
         tagDAO.insert(tag);
         Long count = tagDAO.count();
 
-        Assertions.assertEquals(1, count);
+        Assertions.assertEquals(2, count);
     }
 
     @Test

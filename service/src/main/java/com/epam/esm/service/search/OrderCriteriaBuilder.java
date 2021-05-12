@@ -17,7 +17,7 @@ public class OrderCriteriaBuilder {
         this.sortParameters = sortParameters;
     }
 
-    public final OrderCriteriaBuilder with(final String key, final String direction) {
+    public OrderCriteriaBuilder with(String key, String direction) {
         params.add(new OrderCriteria(key, direction));
         return this;
     }
@@ -32,7 +32,7 @@ public class OrderCriteriaBuilder {
         return params;
     }
 
-    public final OrderCriteriaBuilder with(OrderCriteria criteria) {
+    public OrderCriteriaBuilder with(OrderCriteria criteria) {
         params.add(criteria);
         return this;
     }

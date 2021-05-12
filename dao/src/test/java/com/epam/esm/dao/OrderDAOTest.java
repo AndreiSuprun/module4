@@ -30,6 +30,8 @@ public class OrderDAOTest {
     private GiftCertificateDAO certificateDAO;
     @Autowired
     private OrderDAO orderDAO;
+    @Autowired
+    private UserDAO userDAO;
 
     static Stream<Order> defaultOrder() {
         GiftCertificate certificate = new GiftCertificate();
@@ -37,15 +39,12 @@ public class OrderDAOTest {
         certificate.setDescription("Certificate description");
         certificate.setPrice(BigDecimal.valueOf(2.00));
         certificate.setDuration(30);
-        User user = new User();
-        user.setId(1L);
         OrderItem orderItem = new OrderItem();
-        orderItem.setCertificate(certificate);
         orderItem.setQuantity(1);
         Order order = new Order();
-        order.setId(1L);
-        order.setUser(user);
-        orderItem.setOrder(order);
+        order.setOrderCertificates(Lists.list(orderItem));
+        order.setTotalPrice(BigDecimal.valueOf(1));
+        order.setOrderCertificates(Lists.list(orderItem));
         return Stream.of(order);
     }
 
@@ -54,6 +53,8 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testFindOne(Order order){
+        User user = userDAO.findOne(1L);
+        order.setUser(user);
         order = orderDAO.insert(order);
         Order orderInDb = orderDAO.findOne(order.getId());
 
@@ -74,6 +75,10 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testFindByQuery(Order order){
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         orderDAO.insert(order);
         List<Order> ordersInDb = orderDAO.findByQuery(null, null, 1L, 10);
 
@@ -85,6 +90,10 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testCount(Order order){
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         orderDAO.insert(order);
         Long count = orderDAO.count();
 
@@ -96,6 +105,10 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testDeleteExisting(Order order){
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         order = orderDAO.insert(order);
         boolean actual = orderDAO.delete(order.getId());
 
@@ -115,6 +128,10 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testInsert(Order order){
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         orderDAO.insert(order);
         List<Order> orderInDb = orderDAO.findByQuery(null, null, 1L,10);
 
@@ -126,6 +143,10 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testUpdate(Order order){
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         Order orderInDB = orderDAO.insert(order);
         order.setTotalPrice(BigDecimal.valueOf(4));
         Order updatedOrderInDB = orderDAO.update(order, orderInDB.getId());
@@ -140,8 +161,12 @@ public class OrderDAOTest {
     public void testFindByNotFoundQuery(Order order) {
         SearchCriteria searchCriteria = new SearchCriteria("totalPrice", SearchOperation.EQUALITY, "3.00");
 
+        User user = userDAO.findOne(1L);
+        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
+        order.setUser(user);
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
         orderDAO.insert(order);
-        List<GiftCertificate> certificatesByQuery = certificateDAO.findByQuery(Lists.list(searchCriteria), null, 1L,10);
-        Assertions.assertEquals(0, certificatesByQuery.size());
+        List<Order> ordersByQuery = orderDAO.findByQuery(Lists.list(searchCriteria), null, 1L,10);
+        Assertions.assertEquals(0, ordersByQuery.size());
     }
 }

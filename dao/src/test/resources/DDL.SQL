@@ -82,3 +82,8 @@ create table if not exists users
     constraint users_email_uindex
     unique (email)
     );
+
+insert into users (first_name, last_name, email, created_on, created_by) values ('FirstName', 'LastName', 'user@mail.com', CURRENT_TIMESTAMP, 'user');
+insert into certificates (name, description, price, duration, created_on, created_by) values ('new Certificate', 'Description of new certificate', 2.00, 90, CURRENT_TIMESTAMP, 'user');
+insert into tags (name, created_on, created_by) values ('new Tag', CURRENT_TIMESTAMP, 'user');
+insert into certificates_tags (certificate_id, tag_id) values (1, 1);

@@ -16,6 +16,7 @@ public class CriteriaUtil<T> {
 
      public Predicate buildSearchCriteriaPredicate(List<SearchCriteria> searchCriteriaList, CriteriaBuilder builder, Root<T> root){
         Predicate predicate = builder.conjunction();
+        if(searchCriteriaList != null){
         for (SearchCriteria criteria : searchCriteriaList){
             String joinProperties = null;
             String newKey = null;
@@ -99,19 +100,20 @@ public class CriteriaUtil<T> {
                     break;
                 default:
             }
-        }
+        }}
         return predicate;
     }
 
     public List<Order> addSortCriteria(List<OrderCriteria> sortCriteriaList, CriteriaBuilder builder, Root<T> root){
         List<Order> orders = new ArrayList<>();
+        if(sortCriteriaList != null){
         for (OrderCriteria criteria : sortCriteriaList){
             if(criteria.getDirection().equalsIgnoreCase("desc")){
                 orders.add(builder.desc(root.get(criteria.getKey())));
             } else {
                 orders.add(builder.asc(root.get(criteria.getKey())));
             }
-        }
+        }}
         return orders;
     }
 }

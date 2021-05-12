@@ -29,52 +29,37 @@ public class UserDAOTest {
     @Autowired
     private UserDAO userDAO;
 
-    static Stream<User> defaultUser() {
-        User user = new User();
-        user.setId(1L);
-        user.setFirstName("FirstName");
-        user.setLastName("LastName");
-        user.setEmail("user@mail.com");
-        return Stream.of(user);
-    }
-
-    @ParameterizedTest
-    @MethodSource("defaultUser")
+    @Test
     @Transactional
     @Rollback
-    public void testFindOne(User user){
-        user = userDAO.insert(user);
-        User userInDb = userDAO.findOne(user.getId());
+    public void testFindOne(){
+        User userInDb = userDAO.findOne(1L);
 
-        Assertions.assertEquals(user.getId(), userInDb.getId());
+        Assertions.assertEquals(1L, userInDb.getId());
     }
 
     @Test
     @Transactional
     @Rollback
     public void testFindOneNotPresent(){
-        User userInDb = userDAO.findOne(1L);
+        User userInDb = userDAO.findOne(2L);
 
         Assertions.assertNull(userInDb);
     }
 
-    @ParameterizedTest
-    @MethodSource("defaultUser")
+    @Test
     @Transactional
     @Rollback
-    public void testFindByQuery(User user){
-        userDAO.insert(user);
+    public void testFindByQuery(){
         List<User> userInDb = userDAO.findByQuery(null, null, 1L, 10);
 
         Assertions.assertEquals(1, userInDb.size());
     }
 
-    @ParameterizedTest
-    @MethodSource("defaultUser")
+    @Test
     @Transactional
     @Rollback
-    public void testCount(User user){
-        userDAO.insert(user);
+    public void testCount(){
         Long count = userDAO.count();
 
         Assertions.assertEquals(1, count);
