@@ -38,7 +38,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO add(TagDTO tagDTO) {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
         tagValidator.validate(tag);
-        if (tagDAO.findByName(tag.getName()) == null){
+        if (tagDAO.findByName(tag.getName()) != null){
             throw new ProjectException(ErrorCode.TAG_ALREADY_IN_DB, tag.getName());
         }
         Tag tagInDB = tagDAO.insert(mapper.mapDtoToEntity(tagDTO));

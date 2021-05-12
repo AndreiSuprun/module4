@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ProjectException;
 import com.epam.esm.service.impl.TagServiceImpl;
@@ -121,7 +122,7 @@ public class TagServiceTest {
     }
 
     @Test
-    void findAllTagsTest() {
+    void findByQueryTest() {
         Tag expected1 = new Tag();
         expected1.setName("Tag1");
         expected1.setId(1L);
@@ -140,45 +141,14 @@ public class TagServiceTest {
         List<TagDTO> listDTOExpected = new ArrayList<>();
         listDTOExpected.add(expectedDTO1);
         listDTOExpected.add(expectedDTO2);
+        PaginationDTO paginationDTO = new PaginationDTO(1L, 10);
 
-        when(tagDAO.findAll()).thenReturn(listExpected);
+        when(tagDAO.findByQuery(null, null, paginationDTO.getPage(),paginationDTO.getSize())).thenReturn(listExpected);
         when(mapper.mapEntityToDTO(expected1)).thenReturn(expectedDTO1);
         when(mapper.mapEntityToDTO(expected2)).thenReturn(expectedDTO2);
-        List<TagDTO> actual = tagService.findAll();
+        List<TagDTO> actual = tagService.findByQuery(null, null, paginationDTO);
 
         assertEquals(listDTOExpected, actual);
-        verify(tagDAO, times(1)).findAll();
-    }
-
-    @Test
-    void tagExistTest() {
-        TagDTO tagDTO = new TagDTO();
-        tagDTO.setName("Tag");
-        Tag tag = new Tag();
-        tag.setName("Tag");
-
-        when(mapper.mapDtoToEntity(tagDTO)).thenReturn(tag);
-        doNothing().when(validator).validate(tag);
-        when(tagDAO.findByName(tag.getName())).thenReturn(Optional.of(tag));
-        boolean isExist = tagService.exist(tagDTO);
-
-        assertTrue(isExist);
-        verify(tagDAO, times(1)).findByName(tag.getName());
-    }
-
-    @Test
-    void tagNotExistTest() {
-        TagDTO tagDTO = new TagDTO();
-        tagDTO.setName("Tag");
-        Tag tag = new Tag();
-        tag.setName("Tag");
-
-        when(mapper.mapDtoToEntity(tagDTO)).thenReturn(tag);
-        doNothing().when(validator).validate(tag);
-        when(tagDAO.findByName(tag.getName())).thenReturn(Optional.empty());
-        boolean isExist = tagService.exist(tagDTO);
-
-        assertFalse(isExist);
-        verify(tagDAO, times(1)).findByName(tag.getName());
+        verify(tagDAO, times(1)).findByQuery(null, null, paginationDTO.getPage(), paginationDTO.getSize());
     }
 }

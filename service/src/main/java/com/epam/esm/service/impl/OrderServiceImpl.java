@@ -113,6 +113,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void delete(Long id) {
-        orderDAO.delete(id);
+        if(!orderDAO.delete(id)){
+            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+        }
     }
 }

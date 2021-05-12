@@ -84,15 +84,13 @@ public class OrderItem implements Auditable {
 
         OrderItem that = (OrderItem) o;
 
-        if (order != null ? !order.equals(that.order) : that.order != null) return false;
         if (certificate != null ? !certificate.equals(that.certificate) : that.certificate != null) return false;
         return quantity != null ? quantity.equals(that.quantity) : that.quantity == null;
     }
 
     @Override
     public int hashCode() {
-        int result = order != null ? order.hashCode() : 0;
-        result = 31 * result + (certificate != null ? certificate.hashCode() : 0);
+        int result = certificate != null ? certificate.hashCode() : 0;
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
         return result;
     }

@@ -11,7 +11,7 @@ public class OrderItemValidator extends EntityValidator<OrderItem> {
 
     private final static String QUANTITY_FIELD = "quantity";
 
-    private QuantityValidator quantityValidator;
+    private final QuantityValidator quantityValidator;
 
     @Autowired
     public OrderItemValidator(QuantityValidator quantityValidator){

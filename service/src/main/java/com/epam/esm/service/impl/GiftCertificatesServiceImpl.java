@@ -68,7 +68,8 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (certificateInDB == null) {
             throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
-        if (certificateDto.getName() != null && !(giftCertificateDAO.findByName(certificateDto.getName())).getId().equals(id)){
+        GiftCertificate giftCertificateByName = giftCertificateDAO.findByName(certificateDto.getName());
+        if (certificateDto.getName() != null && giftCertificateByName != null && giftCertificateByName.getId().equals(id)){
             throw new ProjectException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
         }
         GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
