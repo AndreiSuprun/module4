@@ -1,11 +1,9 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
-import com.epam.esm.service.dto.UserDTO;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ public class TagsController {
      * @param searchParameters (optional) request parameter for searching
      * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return List<Tag> list of tags from repository according to provided query
-     * @throws ProjectException if provided query is not valid or tags according to provided query
+     * @throws ValidationException if provided query is not valid or tags according to provided query
      *                          are not present in repository
      */
     @GetMapping
@@ -70,7 +68,7 @@ public class TagsController {
      *
      * @param newTag TagDTO object on basis of which is created new tag in repository
      * @return EntityModel<TagDTO> object of tag dto of created in repository tag
-     * @throws ProjectException if fields in provided TagDTO object is not valid or tag with the same name is alredy
+     * @throws ValidationException if fields in provided TagDTO object is not valid or tag with the same name is alredy
      * in repository
      */
     @PostMapping
@@ -85,7 +83,7 @@ public class TagsController {
      *
      * @param id id of tag to find
      * @return EntityModel<TagDTO> object of tag with provided id in repository
-     * @throws ProjectException if tag with provided id is not present in repository
+     * @throws ValidationException if tag with provided id is not present in repository
      */
     @GetMapping("/{id}")
     public EntityModel<TagDTO> find(@PathVariable Long id) {
@@ -97,7 +95,7 @@ public class TagsController {
      * Removes tag with provided id from repository.
      *
      * @param id id of tag to delete from repository
-     * @throws ProjectException if tag with provided id is not present in repository or there are exist gift
+     * @throws ValidationException if tag with provided id is not present in repository or there are exist gift
      * certificates which consist this tag
      */
     @DeleteMapping("/{id}")
@@ -111,7 +109,7 @@ public class TagsController {
      * Returns TagDTO object for most widely used tag for user with the highest cost of all orders.
      *
      * @return EntityModel<TagDTO> object  for most widely used tag
-     * @throws ProjectException if tag not found in in repository
+     * @throws ValidationException if tag not found in in repository
      */
     @GetMapping("/most_used")
     public EntityModel<TagDTO> getMostUsed() {

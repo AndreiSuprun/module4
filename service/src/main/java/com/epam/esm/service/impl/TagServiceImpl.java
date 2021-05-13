@@ -3,13 +3,12 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ErrorCode;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.TagMapper;
 import com.epam.esm.service.validator.impl.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class TagServiceImpl implements TagService {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
         tagValidator.validate(tag);
         if (tagDAO.findByName(tag.getName()) != null){
-            throw new ProjectException(ErrorCode.TAG_ALREADY_IN_DB, tag.getName());
+            throw new ValidationException(ErrorCode.TAG_ALREADY_IN_DB, tag.getName());
         }
         Tag tagInDB = tagDAO.insert(mapper.mapDtoToEntity(tagDTO));
         return mapper.mapEntityToDTO(tagInDB);
@@ -49,7 +48,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO find(Long id) {
         Tag tag = tagDAO.findOne(id);
         if (tag == null){
-            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, id);
+            throw new ValidationException(ErrorCode.TAG_NOT_FOUND, id);
         }
         return mapper.mapEntityToDTO(tag);
     }
@@ -67,7 +66,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO findByName(String name) {
         Tag tag = tagDAO.findByName(name);
         if (tag == null){
-            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, NAME, name);
+            throw new ValidationException(ErrorCode.TAG_NOT_FOUND, NAME, name);
         }
         return mapper.mapEntityToDTO(tag);
     }
@@ -75,17 +74,17 @@ public class TagServiceImpl implements TagService {
     @Override
     public void delete(Long id) {
         if (!tagDAO.getCertificatesForTag(id).isEmpty()){
-            throw new ProjectException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
+            throw new ValidationException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
         }
         if (!tagDAO.delete(id)){
-            throw new ProjectException(ErrorCode.TAG_NOT_FOUND, ID, id);
+            throw new ValidationException(ErrorCode.TAG_NOT_FOUND, ID, id);
         }
     }
 
     public TagDTO findMostWidelyUsedTag(){
         Tag tag = tagDAO.findMostWidelyUsedTag();
         if (tag == null){
-            throw new ProjectException(ErrorCode.TAG_NOT_FOUND);
+            throw new ValidationException(ErrorCode.TAG_NOT_FOUND);
         }
         return mapper.mapEntityToDTO(tag);
     }

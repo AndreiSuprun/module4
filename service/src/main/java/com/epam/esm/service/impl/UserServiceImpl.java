@@ -1,14 +1,12 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDAO;
-import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
-import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ErrorCode;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.OrderMapper;
 import com.epam.esm.service.mapper.impl.UserMapper;
 import com.epam.esm.dao.criteria.SearchCriteria;
@@ -49,7 +47,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO find(Long id) {
         User user = userDao.findOne(id);
         if (user == null) {
-            throw new ProjectException(ErrorCode.USER_NOT_FOUND, id);
+            throw new ValidationException(ErrorCode.USER_NOT_FOUND, id);
         }
         return mapper.mapEntityToDTO(user);
     }

@@ -1,22 +1,12 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.UserDAO;
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
-import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.dto.UserDTO;
-import com.epam.esm.service.exception.ProjectException;
-import com.epam.esm.service.impl.GiftCertificatesServiceImpl;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.impl.UserServiceImpl;
-import com.epam.esm.service.mapper.impl.GiftCertificateMapper;
-import com.epam.esm.service.mapper.impl.QueryMapper;
 import com.epam.esm.service.mapper.impl.UserMapper;
-import com.epam.esm.service.validator.impl.GiftCertificateValidator;
-import com.epam.esm.service.validator.impl.QueryValidator;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,7 +40,7 @@ public class UserServiceTest {
 
         when(userDAO.findOne(id)).thenReturn(null);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             userService.find(id);
         });
         verify(userDAO, times(1)).findOne(id);

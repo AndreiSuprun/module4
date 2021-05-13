@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for mapping GiftCertificates to/from GiftCertificates DTO
+ *
+ * @author Andrei Suprun
+ */
 @Service
 public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertificateDTO> {
 
@@ -26,6 +31,12 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
         this.tagMapper = tagMapper;
     }
 
+    /**
+     * Maps GiftCertificate DTO object to GiftCertificate entity object.
+     *
+     * @param giftCertificateDTO DTO object for mapping
+     * @return GiftCertificate entity object
+     */
     public GiftCertificate mapDtoToEntity(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = new GiftCertificate();
         BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, CREATE_DATE, LAST_UPDATE_DATE, TAGS);
@@ -35,6 +46,12 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
         return giftCertificate;
     }
 
+    /**
+     * Maps GiftCertificate entity object to GiftCertificate DTO object.
+     *
+     * @param giftCertificate entity object for mapping
+     * @return GiftCertificateDTO DTO object
+     */
     public GiftCertificateDTO mapEntityToDTO(GiftCertificate giftCertificate) {
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
         BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, CREATE_DATE, LAST_UPDATE_DATE, TAGS);

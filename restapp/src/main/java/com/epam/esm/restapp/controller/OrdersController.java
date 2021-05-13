@@ -1,12 +1,9 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.OrderService;
-import com.epam.esm.service.UserService;
-import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.UserDTO;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +41,7 @@ public class OrdersController {
      * @param searchParameters (optional) request parameter for searching
      * @param sortParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<OrderDTO>> object of orders for returned page from repository
-     * @throws ProjectException if provided query is not valid or orders according to provided query
+     * @throws ValidationException if provided query is not valid or orders according to provided query
      *                          are not present in repository
      */
     @GetMapping()
@@ -65,7 +62,7 @@ public class OrdersController {
      *
      * @param id id of order to find
      * @return EntityModel<OrderDTO> object of order with provided id in repository
-     * @throws ProjectException if order with provided id is not present in repository
+     * @throws ValidationException if order with provided id is not present in repository
      */
     @GetMapping("/{id}")
     public EntityModel<OrderDTO> findOne(@PathVariable Long id) {
@@ -78,7 +75,7 @@ public class OrdersController {
      *
      * @param orderDTO OrderDTO object on basis of which is created new order in repository
      * @return EntityModel<OrderDTO> object of created in repository order
-     * @throws ProjectException if fields in provided OrderDTO object is not valid
+     * @throws ValidationException if fields in provided OrderDTO object is not valid
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -93,7 +90,7 @@ public class OrdersController {
      * @param updatedOrderDTO OrderDTO object according to which is necessary to update order in repository
      * @param id id of updated order
      * @return EntityModel<OrderDTO> order dto of updated order in repository
-     * @throws ProjectException if fields in provided OrderDTO is not valid or order with provided id is not present
+     * @throws ValidationException if fields in provided OrderDTO is not valid or order with provided id is not present
      * in repository
      */
     @PutMapping("/{id}")
@@ -106,7 +103,7 @@ public class OrdersController {
      * Removes order with provided id from repository.
      *
      * @param id id of order to delete from repository
-     * @throws ProjectException if order with provided id is not present in repository
+     * @throws ValidationException if order with provided id is not present in repository
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

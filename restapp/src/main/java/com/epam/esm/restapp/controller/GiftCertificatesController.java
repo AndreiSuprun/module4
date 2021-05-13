@@ -2,7 +2,7 @@ package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.dto.*;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class GiftCertificatesController {
      * @param searchParameters (optional) request parameter for searching
      * @param sortParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<GiftCertificateDTO>> object of gift certificates for returned page from repository
-     * @throws ProjectException if provided query is not valid or gift certificates according to provided query
+     * @throws ValidationException if provided query is not valid or gift certificates according to provided query
      *                          are not present in repository
      */
     @GetMapping
@@ -75,7 +75,7 @@ public class GiftCertificatesController {
      * @param newCertificate GiftCertificateDTO object on basis of which is created new gift certificate
      *                       in repository
      * @return EntityModel<GiftCertificateDTO> object for gift certificate dto of created in repository gift certificate
-     * @throws ProjectException if fields in provided GiftCertificateDTO object is not valid
+     * @throws ValidationException if fields in provided GiftCertificateDTO object is not valid
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -89,7 +89,7 @@ public class GiftCertificatesController {
      *
      * @param id id of gift certificate to find
      * @return EntityModel<GiftCertificateDTO> object of gift certificate with provided id in repository
-     * @throws ProjectException if gift certificate with provided id is not present in repository
+     * @throws ValidationException if gift certificate with provided id is not present in repository
      */
     @GetMapping("/{id}")
     public EntityModel<GiftCertificateDTO> find(@PathVariable Long id) {
@@ -101,7 +101,7 @@ public class GiftCertificatesController {
      * Removes gift certificate with provided id from repository.
      *
      * @param id id of gift certificate to delete from repository
-     * @throws ProjectException if gift certificate with provided id is not present in repository
+     * @throws ValidationException if gift certificate with provided id is not present in repository
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -117,7 +117,7 @@ public class GiftCertificatesController {
      *                              in repository
      * @param id                    id of updated gift certificate
      * @return EntityModel<GiftCertificateDTO> object of gift certificate dto of updated gift certificate in repository
-     * @throws ProjectException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
+     * @throws ValidationException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
      *                          id is not present in repository
      */
     @PutMapping("/{id}")
@@ -132,7 +132,7 @@ public class GiftCertificatesController {
      * @param updatedCertificateDTO GiftCertificateDTO object which consist fields to update
      * @param id                    id of updated gift certificate
      * @return EntityModel<GiftCertificateDTO> object of gift certificate dto of updated certificate
-     * @throws ProjectException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
+     * @throws ValidationException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
      *                          id is not present in repository
      */
     @PatchMapping("/{id}")

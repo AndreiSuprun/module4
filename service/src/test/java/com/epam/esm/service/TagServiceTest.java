@@ -4,7 +4,7 @@ import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.service.mapper.impl.TagMapper;
 import com.epam.esm.service.validator.impl.TagValidator;
@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -45,9 +44,9 @@ public class TagServiceTest {
         expected.setName("Tag");
 
         when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
-        doThrow(ProjectException.class).when(validator).validate(expected);
+        doThrow(ValidationException.class).when(validator).validate(expected);
 
-        assertThrows(ProjectException.class, () -> {tagService.add(expectedDTO);});
+        assertThrows(ValidationException.class, () -> {tagService.add(expectedDTO);});
         verify(tagDAO, never()).insert(any(Tag.class));
     }
 
@@ -85,7 +84,7 @@ public class TagServiceTest {
 
         when(tagDAO.delete(id)).thenReturn(false);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             tagService.delete(id);
         });
         verify(tagDAO, times(1)).delete(id);
@@ -97,7 +96,7 @@ public class TagServiceTest {
 
         when(tagDAO.findOne(id)).thenReturn(null);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             tagService.find(id);
         });
         verify(tagDAO, times(1)).findOne(id);

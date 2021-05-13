@@ -1,11 +1,9 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.UserService;
-import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
-import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.dto.UserDTO;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -42,7 +39,7 @@ public class UsersController {
      * @param searchParameters (optional) request parameter for searching
      * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<UserDTO>> object of users for returned page from repository
-     * @throws ProjectException if provided query is not valid or users according to provided query
+     * @throws ValidationException if provided query is not valid or users according to provided query
      *                          are not present in repository
      */
     @GetMapping()
@@ -63,7 +60,7 @@ public class UsersController {
      *
      * @param id id of user to find
      * @return EntityModel<UserDTO> object of user with provided id in repository
-     * @throws ProjectException if user with provided id is not present in repository
+     * @throws ValidationException if user with provided id is not present in repository
      */
     @GetMapping("/{id}")
     public EntityModel<UserDTO> findOne(@PathVariable Long id) {

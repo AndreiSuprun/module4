@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for mapping Order to/from Order DTO
+ *
+ * @author Andrei Suprun
+ */
 @Service
 public class OrderMapper implements Mapper<Order, OrderDTO> {
 
@@ -30,6 +35,12 @@ public class OrderMapper implements Mapper<Order, OrderDTO> {
         this.userMapper = userMapper;
     }
 
+    /**
+     * Maps Order DTO object to Order entity object.
+     *
+     * @param orderDTO DTO object for mapping
+     * @return Order entity object
+     */
     public Order mapDtoToEntity(OrderDTO orderDTO) {
         Order order = new Order();
         order.setId(orderDTO.getId());
@@ -41,6 +52,12 @@ public class OrderMapper implements Mapper<Order, OrderDTO> {
         return order;
     }
 
+    /**
+     * Maps Order entity object to Order DTO object.
+     *
+     * @param order entity object for mapping
+     * @return Order DTO object
+     */
     public OrderDTO mapEntityToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         BeanUtils.copyProperties(order, orderDTO, USER, CREATE_DATE, ORDER_ITEMS);

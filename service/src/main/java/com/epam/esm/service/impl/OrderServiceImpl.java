@@ -3,7 +3,6 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.OrderItem;
 import com.epam.esm.service.GiftCertificatesService;
@@ -11,7 +10,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ErrorCode;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.OrderItemMapper;
 import com.epam.esm.service.mapper.impl.OrderMapper;
 import com.epam.esm.service.validator.impl.OrderItemValidator;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO find(Long id) {
         Order user = orderDAO.findOne(id);
         if (user == null) {
-            throw new ProjectException(ErrorCode.ORDER_NOT_FOUND, id);
+            throw new ValidationException(ErrorCode.ORDER_NOT_FOUND, id);
         }
         return mapper.mapEntityToDTO(user);
     }
@@ -69,15 +67,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO placeOrder(OrderDTO orderDTO) {
         if (orderDTO.getUser() == null || orderDTO.getUser().getId() == null){
-                throw new ProjectException(ErrorCode.USER_NOT_ADDED);
+                throw new ValidationException(ErrorCode.USER_NOT_ADDED);
             }
         UserDTO user = userService.find(orderDTO.getUser().getId());
         if (orderDTO.getCertificates().isEmpty()){
-            throw new ProjectException(ErrorCode.ORDER_ITEMS_NOT_ADDED);
+            throw new ValidationException(ErrorCode.ORDER_ITEMS_NOT_ADDED);
         }
         for(OrderItemDTO orderItemDTO : orderDTO.getCertificates()){
             if (orderItemDTO.getGiftCertificateDTO() == null || orderItemDTO.getGiftCertificateDTO().getId() == null){
-                throw new ProjectException(ErrorCode.CERTIFICATES_NOT_ADDED);
+                throw new ValidationException(ErrorCode.CERTIFICATES_NOT_ADDED);
             }
         }
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
@@ -103,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO update(OrderDTO orderDto, Long id) {
         Order order = orderDAO.findOne(id);
         if (order == null) {
-            throw new ProjectException(ErrorCode.ORDER_NOT_FOUND, id);
+            throw new ValidationException(ErrorCode.ORDER_NOT_FOUND, id);
         }
         Order orderInRequest = mapper.mapDtoToEntity(orderDto);
         order = orderDAO.update(orderInRequest, id);
@@ -114,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delete(Long id) {
         if(!orderDAO.delete(id)){
-            throw new ProjectException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
+            throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
     }
 }

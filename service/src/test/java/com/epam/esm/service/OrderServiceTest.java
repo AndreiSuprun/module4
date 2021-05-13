@@ -1,16 +1,12 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.entity.*;
 import com.epam.esm.service.dto.*;
-import com.epam.esm.service.exception.ProjectException;
-import com.epam.esm.service.impl.GiftCertificatesServiceImpl;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.impl.OrderServiceImpl;
-import com.epam.esm.service.mapper.impl.GiftCertificateMapper;
 import com.epam.esm.service.mapper.impl.OrderItemMapper;
 import com.epam.esm.service.mapper.impl.OrderMapper;
-import com.epam.esm.service.validator.impl.GiftCertificateValidator;
 import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,9 +78,9 @@ public class OrderServiceTest {
         when(mapper.mapDtoToEntity(orderDTO)).thenReturn(order);
         when(orderDAO.insert(order)).thenReturn(order);
         when(orderItemMapper.mapDtoToEntity(orderItemDTO)).thenReturn(orderItem);
-        doThrow(ProjectException.class).when(orderItemValidator).validate(order.getOrderCertificates().get(0));
+        doThrow(ValidationException.class).when(orderItemValidator).validate(order.getOrderCertificates().get(0));
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             orderService.placeOrder(orderDTO);
         });
         verify(orderDAO, times(1)).insert(any(Order.class));
@@ -168,7 +163,7 @@ public class OrderServiceTest {
 
         when(orderDAO.findOne(id)).thenReturn(null);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             orderService.update(orderDTO, id);
         });
         verify(orderDAO, never()).update(any(Order.class), anyLong());
@@ -186,7 +181,7 @@ public class OrderServiceTest {
 
         when(orderDAO.findOne(id)).thenReturn(null);
         when(mapper.mapDtoToEntity(orderDTO)).thenReturn(order);
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             orderService.update(orderDTO, id);
         });
         verify(orderDAO, never()).update(any(Order.class), anyLong());
@@ -210,7 +205,7 @@ public class OrderServiceTest {
 
         when(orderDAO.delete(id)).thenReturn(false);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             orderService.delete(id);
         });
         verify(orderDAO, times(1)).delete(id);
@@ -222,7 +217,7 @@ public class OrderServiceTest {
 
         when(orderDAO.findOne(id)).thenReturn(null);
 
-        assertThrows(ProjectException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             orderService.find(id);
         });
         verify(orderDAO, times(1)).findOne(id);

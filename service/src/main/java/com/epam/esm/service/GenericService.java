@@ -2,7 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ErrorCode;
-import com.epam.esm.service.exception.ProjectException;
+import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 
@@ -22,7 +22,7 @@ public interface GenericService<T> {
      *
      * @param id id of entity to find
      * @return DTO object of entity with provided id in repository
-     * @throws ProjectException if entity with provided id is not present in repository
+     * @throws ValidationException if entity with provided id is not present in repository
      */
     T find(Long id);
 
@@ -33,7 +33,7 @@ public interface GenericService<T> {
      * @param orderParams params for order query
      * @param paginationDTO DTO for pagination
      * @return List<T> list of entities from repository according to provided query
-     * @throws ProjectException if provided query is not valid or entities according to provided query
+     * @throws ValidationException if provided query is not valid or entities according to provided query
      *                          are not present in repository
      */
     List<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
@@ -43,20 +43,20 @@ public interface GenericService<T> {
      * pagination parameters are not present in request
      *
      * @param paginationDTO params for pagination
-     * @throws ProjectException if provided pagination parameters is not valid
+     * @throws ValidationException if provided pagination parameters is not valid
      */
     default void checkPagination(PaginationDTO paginationDTO) {
         if (paginationDTO.getPage() == null) {
             paginationDTO.setPage(PaginationDTO.FIRST_PAGE);
         }
         if (paginationDTO.getPage() <= 0) {
-            throw new ProjectException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getPage());
+            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getPage());
         }
         if (paginationDTO.getSize() == null) {
             paginationDTO.setSize(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
         }
         if (paginationDTO.getSize() <= 0) {
-            throw new ProjectException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getSize());
+            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getSize());
         }
     }
 
