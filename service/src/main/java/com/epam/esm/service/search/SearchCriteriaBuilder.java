@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
  *
  * @author Andrei Suprun
  */
-@Service
+
 public class SearchCriteriaBuilder {
 
     private List<SearchCriteria> params;
-    private String searchParameters;
+    private final String searchParameters;
 
     public SearchCriteriaBuilder(String searchParameters) {
         this.searchParameters = searchParameters;

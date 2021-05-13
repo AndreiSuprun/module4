@@ -18,8 +18,6 @@ public class GiftCertificateDTO {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    private LocalDateTime createdOn;
-    private LocalDateTime updatedOn;
     private List<TagDTO> tags;
 
     public GiftCertificateDTO() {
@@ -63,22 +61,6 @@ public class GiftCertificateDTO {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
-    }
-
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(LocalDateTime updatedOn) {
-        this.updatedOn = updatedOn;
     }
 
     public List<TagDTO> getTags() {

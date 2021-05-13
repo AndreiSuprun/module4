@@ -61,7 +61,6 @@ public class OrderDAOImpl implements OrderDAO {
         for(OrderItem orderItem : order.getOrderCertificates()){
             orderItem.setOrder(order);
             entityManager.persist(orderItem);
-            //order.addOrderCertificate(orderItem);
         };
         return entityManager.merge(order);
     }

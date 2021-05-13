@@ -51,7 +51,7 @@ public class GiftCertificatesController {
      * @param page (optional) request parameter for page number
      * @param size (optional) request parameter for page size
      * @param searchParameters (optional) request parameter for searching
-     * @param sortParameters (optional) request parameter for sorting, ascending or descending
+     * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<GiftCertificateDTO>> object of gift certificates for returned page from repository
      * @throws ValidationException if provided query is not valid or gift certificates according to provided query
      *                          are not present in repository

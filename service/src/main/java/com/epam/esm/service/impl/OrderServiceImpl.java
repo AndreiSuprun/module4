@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private OrderDAO orderDAO;
-    private UserService userService;
-    private GiftCertificatesService certificatesService;
-    private OrderItemValidator orderItemValidator;
+    private final OrderDAO orderDAO;
+    private final UserService userService;
+    private final GiftCertificatesService certificatesService;
+    private final OrderItemValidator orderItemValidator;
 
-    private OrderMapper mapper;
-    private OrderItemMapper orderItemMapper;
+    private final OrderMapper mapper;
+    private final OrderItemMapper orderItemMapper;
 
     @Autowired
     public OrderServiceImpl(OrderDAO orderDAO, UserService userService, GiftCertificatesService certificatesService,

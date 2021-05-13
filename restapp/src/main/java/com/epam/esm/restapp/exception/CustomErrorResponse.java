@@ -2,8 +2,8 @@ package com.epam.esm.restapp.exception;
 
 public class CustomErrorResponse {
 
-    private final String errorMessage;
-    private final String errorCode;
+    private String errorMessage;
+    private String errorCode;
 
     public String getErrorMessage() {
         return errorMessage;

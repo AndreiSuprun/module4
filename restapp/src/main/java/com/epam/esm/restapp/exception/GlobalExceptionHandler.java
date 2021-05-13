@@ -42,7 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode(ErrorCode.REQUEST_BODY_MISMATCH.getCode().toString());
         apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.REQUEST_BODY_MISMATCH.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
+                new Object[] {ex.getMessage()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode(ErrorCode.BAD_REQUEST.getCode().toString());
         apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
+                new Object[] {ex.toString()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
     }
 }

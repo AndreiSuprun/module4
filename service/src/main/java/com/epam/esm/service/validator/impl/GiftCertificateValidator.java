@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
 
     private final static String NAME_FIELD = "name";
-    private final static String DESCRIPTION_FIELD = "name";
+    private final static String DESCRIPTION_FIELD = "description";
     private final static String PRICE_FIELD = "price";
     private final static String DURATION_FIELD = "duration";
 
@@ -38,7 +38,7 @@ public class GiftCertificateValidator extends EntityValidator<GiftCertificate> {
                 giftCertificate.getName(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 NAME_FIELD, giftCertificate.getName());
         validateField(descriptionValidator,
-                giftCertificate.getName(), ErrorCode.CERTIFICATE_FIELD_INVALID,
+                giftCertificate.getDescription(), ErrorCode.CERTIFICATE_FIELD_INVALID,
                 DESCRIPTION_FIELD, giftCertificate.getDescription());
         validateField(priceValidator,
                 giftCertificate.getPrice(), ErrorCode.CERTIFICATE_FIELD_INVALID,

@@ -20,10 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserDAO userDao;
-
-    private UserMapper mapper;
-    private OrderMapper orderMapper;
+    private final UserDAO userDao;
+    private final UserMapper mapper;
+    private final OrderMapper orderMapper;
 
     @Autowired
     public UserServiceImpl(UserDAO userDao, UserMapper mapper, OrderMapper orderMapper) {

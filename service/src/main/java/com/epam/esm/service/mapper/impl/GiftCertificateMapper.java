@@ -20,8 +20,10 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertificateDTO> {
 
-    private final static String CREATE_DATE = "createdOn";
-    private final static String LAST_UPDATE_DATE = "updatedOn";
+    private final static String CREATED_ON = "createdOn";
+    private final static String UPDATED_ON = "updatedOn";
+    private final static String CREATE_BY = "createdOn";
+    private final static String UPDATED_BY = "updatedOn";
     private final static String TAGS = "tags";
 
     private final TagMapper tagMapper;
@@ -39,7 +41,7 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
      */
     public GiftCertificate mapDtoToEntity(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = new GiftCertificate();
-        BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, CREATE_DATE, LAST_UPDATE_DATE, TAGS);
+        BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, TAGS);
         if (giftCertificateDTO.getTags() != null){
             List<Tag> tags = giftCertificateDTO.getTags().stream().map(tagMapper::mapDtoToEntity).collect(Collectors.toList());
             giftCertificate.setTags(tags);}
@@ -54,9 +56,7 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
      */
     public GiftCertificateDTO mapEntityToDTO(GiftCertificate giftCertificate) {
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
-        BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, CREATE_DATE, LAST_UPDATE_DATE, TAGS);
-        giftCertificateDTO.setCreatedOn(giftCertificate.getAudit().getCreatedOn());
-        giftCertificateDTO.setUpdatedOn(giftCertificate.getAudit().getUpdatedOn());
+        BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, CREATED_ON, CREATE_BY, UPDATED_ON, UPDATED_BY, TAGS);
         if (giftCertificate.getTags() != null) {
             List<TagDTO> tagsDTO = giftCertificate.getTags().stream().map(tagMapper::mapEntityToDTO).collect(Collectors.toList());
             giftCertificateDTO.setTags(tagsDTO);

@@ -1,8 +1,6 @@
 package com.epam.esm.service.search;
 
 import com.epam.esm.dao.criteria.OrderCriteria;
-import com.epam.esm.dao.criteria.SearchOperation;
-import com.epam.esm.service.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,7 +13,7 @@ import java.util.regex.Pattern;
  *
  * @author Andrei Suprun
  */
-@Service
+
 public class OrderCriteriaBuilder {
 
     private List<OrderCriteria> params;
