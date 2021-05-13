@@ -50,7 +50,7 @@ public class GiftCertificateValidatorTest {
         when(descriptionValidator.isValid(giftCertificate.getDescription())).thenReturn(true);
         when(priceValidator.isValid(giftCertificate.getPrice())).thenReturn(true);
         when(durationValidator.isValid(giftCertificate.getDuration())).thenReturn(true);
-        when(tagValidator.validate(giftCertificate.getName());).thenReturn(true);
+        when(tagValidator.validate(giftCertificate.getName())user i;).thenReturn(true);
         orderItemValidator.validate(orderItem);
         verify(quantityValidator).isValid(orderItem.getQuantity());
     }

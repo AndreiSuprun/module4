@@ -108,44 +108,11 @@ public class TagDAOImpl implements TagDAO {
 
         String sql = "SELECT * FROM tags JOIN certificates_tags ON tags.id = certificates_tags.tag_id " +
                 "WHERE certificates_tags.certificate_id IN (SELECT orders_certificates.certificate_id " +
-                "FROM orders_certificates WHERE orders_certificates.order_id in (SELECT orders.id FROM orders" +
-                " WHERE (SELECT orders.user_id FROM orders GROUP BY orders.user_id ORDER BY SUM(orders.total_price) " +
-                "DESC LIMIT 1))) GROUP BY tags.name ORDER BY COUNT(*) DESC LIMIT 1";
-
-//        String sql1 = "SELECT t.name, count FROM Tag t JOIN GiftCertificate c WHERE c.id IN (SELECT os.certificate_id FROM OrderItem os " +
-//                "WHERE os.order_id in (SELECT o.id FROM Order o WHERE (SELECT o.user_id FROM Order o GROUP BY o.user_id ORDER by sum(o.total_price) desc limit 1))) LIMIT 1";
-
-//        Query query = entityManager.createQuery(sql1);
-
-        Query query = entityManager.createNativeQuery(sql, Tag.class); //createNativeQuery(sql);
+                "FROM orders_certificates WHERE orders_certificates.order_id in (SELECT orders.id FROM orders " +
+                "WHERE user_id = (SELECT orders.user_id FROM orders GROUP BY orders.user_id " +
+                "ORDER BY SUM(orders.total_price) DESC LIMIT 1))) GROUP BY tags.name ORDER BY COUNT(*) DESC LIMIT 1";
+        Query query = entityManager.createNativeQuery(sql, Tag.class);
         return (Tag) query.getSingleResult();
     }
-//        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Tag> tagCriteriaQuery = builder.createQuery(Tag.class);
-//        Root<GiftCertificate> certificateRoot = tagCriteriaQuery.from(GiftCertificate.class);
-//        Join<GiftCertificate, Tag> join = certificateRoot.join("tags");
-//        tagCriteriaQuery.select(join);
-//        //Root<Order> orderRoot = tagCriteriaQuery.from(Order.class);
-//        Subquery<Order> orderSubquery = tagCriteriaQuery.subquery(Order.class);
-//        Root<Order>  orderRoot = orderSubquery.from(Order.class);
-//        Path<Long> userId = orderRoot.get("user").get("id");
-//        Expression<Long> sumCost = builder.sum(orderRoot.get("totalPrice"));
-//        Expression<Long> maxCost = builder.max(sumCost);
-//        orderSubquery.select(orderRoot).where()
-//        tagCriteriaQuery.where(maxCost);
-//        .groupBy(orderRoot.get("user")).)
-//
-//        CriteriaBuilder cb = …
-//        CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
-//        Root<Customer> c = cq.from(Customer.class);
-//        Join<Customer, Order> o = c.join(Customer_.orders);
-//        cq.select(c).distinct(true);
-//        Root<Order> subo = sq.from(Order.class);
-//        sq.select(cb.max(cb.sum(subo.get("totalPrice")))).groupBy(subo.get("user_id")).;
-//        cq.where(sq.all(o.get("totalPrice")));
-//
-//
-//        TypedQuery<Tag> query = entityManager.createQuery(tagCriteriaQuery);
-//        return query.getResultList();
 }
 
