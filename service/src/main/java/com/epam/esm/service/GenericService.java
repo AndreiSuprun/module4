@@ -1,11 +1,15 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**

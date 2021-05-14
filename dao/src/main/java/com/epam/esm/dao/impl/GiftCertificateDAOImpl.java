@@ -36,13 +36,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public GiftCertificate findByName(String name) {
-        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
-        final Root<GiftCertificate> root = query.from(GiftCertificate.class);
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> root = query.from(GiftCertificate.class);
         query.select(root).where(builder.equal(root.get("name"), name));
         TypedQuery<GiftCertificate> typedQuery = entityManager.createQuery(query);
         List<GiftCertificate> giftCertificates = typedQuery.getResultList();
-        if (!giftCertificates.isEmpty()){
+        if (!giftCertificates.isEmpty()) {
             return giftCertificates.iterator().next();
         }
         return null;
@@ -61,7 +61,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public boolean delete(Long id) {
         GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
-        if(giftCertificate != null) {
+        if (giftCertificate != null) {
             entityManager.remove(giftCertificate);
             return true;
         }
@@ -73,7 +73,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<GiftCertificate> root = query.from(GiftCertificate.class);
-        if (searchParams.length > 0)  {
+        if (searchParams.length > 0) {
             query.where(criteriaUtil.buildSearchCriteriaPredicate(searchParams[0], builder,
                     root));
         }
@@ -83,21 +83,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public GiftCertificate insert(GiftCertificate certificate) {
-        List<Tag> tags = certificate.getTags();
-        List<Tag> tagsInDB = new ArrayList<>();
-        for(Tag tag : tags){
-            Tag tagInDB = tagDAO.insert(tag);
-            if(tagInDB != null){
-                tagsInDB.add(tagInDB);
-            } else {
-                if (tag.getId() == null){
-                    tag = tagDAO.findByName(tag.getName());
-                }
-                tagsInDB.add(tagDAO.findByName(tag.getName()));
-            }
-        }
-        certificate.getTags().clear();
-        certificate.setTags(tagsInDB);
+        addTags(certificate);
         entityManager.persist(certificate);
         return certificate;
     }
@@ -105,21 +91,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public GiftCertificate update(GiftCertificate certificate, Long id) {
         certificate.setId(id);
-        List<Tag> tags = certificate.getTags();
-        List<Tag> tagsInDB = new ArrayList<>();
-        for(Tag tag : tags){
-            Tag tagInDB = tagDAO.insert(tag);
-            if(tagInDB != null){
-                tagsInDB.add(tagInDB);
-            } else {
-                if (tag.getId() == null){
-                    tag = tagDAO.findByName(tag.getName());
-                }
-                tagsInDB.add(tagDAO.findByName(tag.getName()));
-            }
-        }
-        certificate.getTags().clear();
-        certificate.setTags(tagsInDB);
+        addTags(certificate);
         return entityManager.merge(certificate);
     }
 
@@ -135,5 +107,23 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         typedQuery.setFirstResult((int) ((page - 1) * size));
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
+    }
+
+    private void addTags(GiftCertificate certificate) {
+        List<Tag> tags = certificate.getTags();
+        List<Tag> tagsInDB = new ArrayList<>();
+        for (Tag tag : tags) {
+            Tag tagInDB = tagDAO.insert(tag);
+            if (tagInDB != null) {
+                tagsInDB.add(tagInDB);
+            } else {
+                if (tag.getId() == null) {
+                    tag = tagDAO.findByName(tag.getName());
+                }
+                tagsInDB.add(tagDAO.findByName(tag.getName()));
+            }
+        }
+        certificate.getTags().clear();
+        certificate.setTags(tagsInDB);
     }
 }

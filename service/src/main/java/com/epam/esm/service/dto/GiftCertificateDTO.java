@@ -70,4 +70,28 @@ public class GiftCertificateDTO {
     public void setTags(List<TagDTO> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GiftCertificateDTO that = (GiftCertificateDTO) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (price != null ? !price.equals(that.price) : that.price != null) return false;
+        if (duration != null ? !duration.equals(that.duration) : that.duration != null) return false;
+        return tags != null ? tags.equals(that.tags) : that.tags == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + (tags != null ? tags.hashCode() : 0);
+        return result;
+    }
 }

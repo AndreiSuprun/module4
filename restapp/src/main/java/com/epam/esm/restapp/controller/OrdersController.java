@@ -93,7 +93,7 @@ public class OrdersController {
      * @throws ValidationException if fields in provided OrderDTO is not valid or order with provided id is not present
      * in repository
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public EntityModel<OrderDTO> update(@RequestBody OrderDTO updatedOrderDTO, @PathVariable Long id) {
         OrderDTO orderDTO = orderService.update(updatedOrderDTO, id);
         return getEntityModel(orderDTO);

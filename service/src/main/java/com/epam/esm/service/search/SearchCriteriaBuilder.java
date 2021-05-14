@@ -65,7 +65,7 @@ public class SearchCriteriaBuilder {
     public List<SearchCriteria> build() {
         params = new ArrayList<>();
         String operationSet = String.join("|", SearchOperation.SIMPLE_OPERATION_SET);
-        Pattern pattern = Pattern.compile("(\\p{Punct}?)([\\w_]+?)(" + operationSet + ")(\\p{Punct}?)([\\p{L}\\p{Digit}]+?)(\\p{Punct}?),");
+        Pattern pattern = Pattern.compile("(\\p{Punct}?)([\\w_]+?)(" + operationSet + ")([*]?)([\\p{L}\\p{Digit}@.\\s]+?)([*]?),");
         Matcher matcher = pattern.matcher(searchParameters + ",");
         while (matcher.find()) {
             with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(5), matcher.group(4), matcher.group(6));
