@@ -87,19 +87,19 @@ public class OrderServiceImpl implements OrderService {
         orderDTOValidator.validate(orderDTO);
         UserDTO user = userService.find(orderDTO.getUser().getId());
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
-                map(item -> certificatesService.find(item.getGiftCertificateDTO().getId()).getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).
+                map(orderItemDTO -> certificatesService.find(orderItemDTO.getGiftCertificateDTO().getId()).getPrice().
+                        multiply(BigDecimal.valueOf(orderItemDTO.getQuantity()))).
                 reduce(BigDecimal.ZERO, BigDecimal::add);
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setUser(user);
         List<OrderItemDTO> orderItemDTOList = orderDTO.getCertificates();
         Order order = mapper.mapDtoToEntity(orderDTO);
         orderDAO.insert(order);
-        for (OrderItemDTO orderItemDTO : orderItemDTOList){
-            OrderItem orderItem = orderItemMapper.mapDtoToEntity(orderItemDTO);
-            orderItemValidator.validate(orderItem);
-            orderItem.setOrder(order);
-            order.addOrderCertificate(orderItem);
-        }
+        orderItemDTOList.stream().
+                map(orderItemMapper::mapDtoToEntity).
+                peek(orderItemValidator::validate).
+                peek(orderItem -> orderItem.setOrder(order)).
+                forEach(order::addOrderCertificate);
         Order orderInDB = orderDAO.update(order, order.getId());
         return mapper.mapEntityToDTO(orderInDB);
     }

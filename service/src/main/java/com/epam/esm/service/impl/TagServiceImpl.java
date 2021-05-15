@@ -54,7 +54,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO) {
+    public List<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
+                                    PaginationDTO paginationDTO) {
         checkPagination(paginationDTO);
         Long count = tagDAO.count(searchParams);
         checkPageNumber(paginationDTO, count);
