@@ -2,8 +2,11 @@ package com.epam.esm.dao.criteria;
 
 public class OrderCriteria {
 
+    private static String UNDERSCORE_SIGN = "_";
+
     private String key;
     private String direction;
+    private boolean isNestedProperty;
 
     public OrderCriteria() {
     }
@@ -11,6 +14,7 @@ public class OrderCriteria {
     public OrderCriteria(String key, String direction) {
         this.key = key;
         this.direction = direction;
+        this.isNestedProperty = key.contains(UNDERSCORE_SIGN);
     }
 
     public String getKey() {
@@ -27,6 +31,14 @@ public class OrderCriteria {
 
     public void setDirection(String direction) {
         this.direction = direction;
+    }
+
+    public boolean isNestedProperty() {
+        return isNestedProperty;
+    }
+
+    public void setNestedProperty(boolean nestedProperty) {
+        isNestedProperty = nestedProperty;
     }
 
     @Override

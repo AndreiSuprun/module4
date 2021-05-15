@@ -6,7 +6,6 @@ import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.OrderItem;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -15,14 +14,13 @@ import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.OrderItemMapper;
 import com.epam.esm.service.mapper.impl.OrderMapper;
+import com.epam.esm.service.validator.OrderDTOValidator;
 import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,17 +33,19 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     private final UserService userService;
     private final GiftCertificatesService certificatesService;
+    private final OrderDTOValidator orderDTOValidator;
     private final OrderItemValidator orderItemValidator;
-
     private final OrderMapper mapper;
     private final OrderItemMapper orderItemMapper;
 
     @Autowired
     public OrderServiceImpl(OrderDAO orderDAO, UserService userService, GiftCertificatesService certificatesService,
-                            OrderItemValidator orderItemValidator, OrderMapper mapper, OrderItemMapper orderItemMapper) {
+                            OrderDTOValidator orderDTOValidator, OrderItemValidator orderItemValidator,
+                            OrderMapper mapper, OrderItemMapper orderItemMapper) {
         this.orderDAO = orderDAO;
         this.userService = userService;
         this.certificatesService = certificatesService;
+        this.orderDTOValidator = orderDTOValidator;
         this.orderItemValidator = orderItemValidator;
         this.mapper = mapper;
         this.orderItemMapper = orderItemMapper;
@@ -84,18 +84,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDTO placeOrder(OrderDTO orderDTO) {
-        if (orderDTO.getUser() == null || orderDTO.getUser().getId() == null){
-                throw new ValidationException(ErrorCode.USER_NOT_ADDED);
-            }
+        orderDTOValidator.validate(orderDTO);
         UserDTO user = userService.find(orderDTO.getUser().getId());
-        if (orderDTO.getCertificates().isEmpty()){
-            throw new ValidationException(ErrorCode.ORDER_ITEMS_NOT_ADDED);
-        }
-        for(OrderItemDTO orderItemDTO : orderDTO.getCertificates()){
-            if (orderItemDTO.getGiftCertificateDTO() == null || orderItemDTO.getGiftCertificateDTO().getId() == null){
-                throw new ValidationException(ErrorCode.CERTIFICATES_NOT_ADDED);
-            }
-        }
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
                 map(item -> certificatesService.find(item.getGiftCertificateDTO().getId()).getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).
                 reduce(BigDecimal.ZERO, BigDecimal::add);

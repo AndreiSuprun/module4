@@ -108,10 +108,19 @@ public class CriteriaUtil<T> {
         List<Order> orders = new ArrayList<>();
         if(sortCriteriaList != null){
         for (OrderCriteria criteria : sortCriteriaList){
+            String joinProperties = null;
+            String newKey = null;
+            if(criteria.isNestedProperty()){
+                String complexKey = criteria.getKey();
+                joinProperties = complexKey.substring(0, complexKey.indexOf(UNDERSCORE_SIGN));
+                newKey = complexKey.substring(complexKey.indexOf(UNDERSCORE_SIGN) + 1);
+            }
             if(criteria.getDirection().equalsIgnoreCase("desc")){
-                orders.add(builder.desc(root.get(criteria.getKey())));
+                orders.add(builder.desc(criteria.isNestedProperty() ?
+                        root.join(joinProperties).get(newKey) : root.get(criteria.getKey())));
             } else {
-                orders.add(builder.asc(root.get(criteria.getKey())));
+                orders.add(builder.asc(criteria.isNestedProperty() ?
+                        root.join(joinProperties).get(newKey) : root.get(criteria.getKey())));
             }
         }}
         return orders;
