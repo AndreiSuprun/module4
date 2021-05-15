@@ -1,12 +1,15 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.OrderDAO;
+import com.epam.esm.dao.criteria.SearchCriteria;
+import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.*;
 import com.epam.esm.service.dto.*;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.impl.OrderServiceImpl;
 import com.epam.esm.service.mapper.impl.OrderItemMapper;
 import com.epam.esm.service.mapper.impl.OrderMapper;
+import com.epam.esm.service.validator.OrderDTOValidator;
 import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +43,8 @@ public class OrderServiceTest {
     private OrderItemValidator orderItemValidator;
     @Mock
     private OrderItemMapper orderItemMapper;
+    @Mock
+    private OrderDTOValidator orderDTOValidator;
 
     @BeforeEach
     public void init() {
@@ -72,6 +79,7 @@ public class OrderServiceTest {
         orderItem.setQuantity(2);
         order.setOrderCertificates(Lists.list(orderItem));
 
+        doNothing().when(orderDTOValidator).validate(orderDTO);
         when(userService.find(orderDTO.getUser().getId())).thenReturn(userDTO);
         when(giftCertificatesService.find(orderDTO.getCertificates().get(0).getGiftCertificateDTO().getId())).
                 thenReturn(certificateDTO);
@@ -115,6 +123,7 @@ public class OrderServiceTest {
         orderItem.setQuantity(2);
         order.setOrderCertificates(Lists.list(orderItem));
 
+        doNothing().when(orderDTOValidator).validate(orderDTO);
         when(userService.find(orderDTO.getUser().getId())).thenReturn(userDTO);
         when(giftCertificatesService.find(orderDTO.getCertificates().get(0).getGiftCertificateDTO().getId())).
                 thenReturn(certificateDTO);
@@ -259,5 +268,29 @@ public class OrderServiceTest {
 
         assertEquals(Lists.list(expectedDTO), actual);
         verify(orderDAO, times(1)).findByQuery(null, null, paginationDTO.getPage(), paginationDTO.getSize());
+    }
+
+    @Test
+    void findByUserTest() {
+        Long id = 1L;
+        SearchCriteria searchCriteria = new SearchCriteria("user_id", SearchOperation.EQUALITY, id);
+        searchCriteria.setNestedProperty(true);
+        List<SearchCriteria> searchParams = Stream.of(searchCriteria).collect(Collectors.toList());
+        Order expected = new Order();
+        expected.setTotalPrice(BigDecimal.valueOf(20));
+        expected.setId(id);
+        OrderDTO expectedDTO = new OrderDTO();
+        expectedDTO.setTotalPrice(BigDecimal.valueOf(20));
+        expectedDTO.setId(id);
+        PaginationDTO paginationDTO = new PaginationDTO(1L, 10);
+
+        when(userService.find(id)).thenReturn(new UserDTO());
+        when(orderDAO.findByQuery(searchParams, null, paginationDTO.getPage(), paginationDTO.getSize())).
+                thenReturn(Lists.list(expected));
+        when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
+        List<OrderDTO> actual = orderService.findByUser(id, paginationDTO);
+
+        assertEquals(Lists.list(expectedDTO), actual);
+        verify(orderDAO, times(1)).findByQuery(searchParams, null, paginationDTO.getPage(), paginationDTO.getSize());
     }
 }

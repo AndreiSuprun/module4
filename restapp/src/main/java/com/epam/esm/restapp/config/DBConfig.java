@@ -16,16 +16,15 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:/application.properties")
 public class DBConfig {
 
-    @Value("${dev.database.driver}") String driver;
-    @Value("${dev.database.url}") String databaseUrl;
-    @Value("${dev.database.username}") String userName;
-    @Value("${dev.database.password}") String password;
+    @Value("${spring.datasource.driver}") String driver;
+    @Value("${spring.datasource.url}") String databaseUrl;
+    @Value("${spring.datasource.username}") String userName;
+    @Value("${spring.datasource.password}") String password;
 
     @Bean
     @Profile("prod")

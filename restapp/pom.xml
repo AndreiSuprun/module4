@@ -11,7 +11,7 @@
 
     <artifactId>restapp</artifactId>
     <version>1.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>restapp</name>
 
