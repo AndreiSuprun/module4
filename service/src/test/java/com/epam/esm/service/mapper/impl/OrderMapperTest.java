@@ -84,6 +84,7 @@ class OrderMapperTest {
         orderItem.setCertificate(giftCertificate);
         orderItem.setQuantity(1);
         order.setOrderCertificates(Lists.list(orderItem));
+        orderItem.setOrder(order);
 
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setCreatedOn(order.getAudit().getCreatedOn());
@@ -105,6 +106,7 @@ class OrderMapperTest {
         orderItemDTO.setGiftCertificateDTO(giftCertificateDTO);
         orderItemDTO.setQuantity(1);
         orderDTO.setCertificates(Lists.list(orderItemDTO));
+        orderItemDTO.setOrderDTO(orderDTO);
 
         when(userMapper.mapEntityToDTO(user)).thenReturn(userDTO);
         when(orderItemMapper.mapEntityToDTO(orderItem)).thenReturn(orderItemDTO);

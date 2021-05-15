@@ -21,9 +21,12 @@ public class TagDAOImpl implements TagDAO {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private CriteriaUtil<Tag> criteriaUtil;
 
     @Autowired
-    private CriteriaUtil<Tag> criteriaUtil;
+    public TagDAOImpl(CriteriaUtil<Tag> criteriaUtil) {
+        this.criteriaUtil = criteriaUtil;
+    }
 
     @Override
     public Tag findOne(Long id) {

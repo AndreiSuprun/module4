@@ -1,7 +1,10 @@
 package com.epam.esm.service;
 
 import com.epam.esm.service.dto.OrderDTO;
+import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ValidationException;
+
+import java.util.List;
 
 /**
  * Service class responsible for processing order-related operations
@@ -18,6 +21,8 @@ public interface OrderService extends GenericService<OrderDTO> {
      * @return List<OrderDTO> List of orders dto of retrived orders
      */
     OrderDTO placeOrder(OrderDTO orderDTO);
+
+    List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO);
 
     /**
      * Updates gift certificate according to provided dto object.

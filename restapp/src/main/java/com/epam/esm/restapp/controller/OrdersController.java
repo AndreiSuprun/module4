@@ -8,29 +8,27 @@ import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/orders")
 public class OrdersController {
+    private static final String SEARCH_BY_USER_ID= "user_id:";
 
     private final OrderService orderService;
+    private final EntityResponseBuilder responseBuilder;
 
     @Autowired
-    public OrdersController(OrderService orderService) {
+    public OrdersController(OrderService orderService, EntityResponseBuilder responseBuilder) {
         this.orderService = orderService;
+        this.responseBuilder = responseBuilder;
     }
 
     /**
@@ -39,7 +37,7 @@ public class OrdersController {
      * @param page (optional) request parameter for page number
      * @param size (optional) request parameter for page size
      * @param searchParameters (optional) request parameter for searching
-     * @param sortParameters (optional) request parameter for sorting, ascending or descending
+     * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<OrderDTO>> object of orders for returned page from repository
      * @throws ValidationException if provided query is not valid or orders according to provided query
      *                          are not present in repository
@@ -54,7 +52,7 @@ public class OrdersController {
         PaginationDTO paginationDTO = new PaginationDTO(page, size);
         List<OrderDTO> orders = orderService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
                 paginationDTO);
-        return getPagedModel(orders, paginationDTO, searchParameters, orderParameters);
+        return responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameters, orderParameters);
     }
 
     /**
@@ -67,7 +65,7 @@ public class OrdersController {
     @GetMapping("/{id}")
     public EntityModel<OrderDTO> findOne(@PathVariable Long id) {
         OrderDTO orderDTO = orderService.find(id);
-        return getEntityModel(orderDTO);
+        return responseBuilder.getOrderEntityModel(orderDTO);
     }
 
     /**
@@ -81,7 +79,7 @@ public class OrdersController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<OrderDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
         orderDTO = orderService.placeOrder(orderDTO);
-        return getEntityModel(orderDTO);
+        return responseBuilder.getOrderEntityModel(orderDTO);
     }
 
     /**
@@ -96,7 +94,17 @@ public class OrdersController {
     @PatchMapping("/{id}")
     public EntityModel<OrderDTO> update(@RequestBody OrderDTO updatedOrderDTO, @PathVariable Long id) {
         OrderDTO orderDTO = orderService.update(updatedOrderDTO, id);
-        return getEntityModel(orderDTO);
+        return responseBuilder.getOrderEntityModel(orderDTO);
+    }
+
+        @GetMapping("/users/{userId}")
+    public PagedModel<EntityModel<OrderDTO>> findUserOrders(@RequestParam(value = "page", required = false) Long page,
+                                                        @RequestParam(value = "size", required = false) Integer size,
+                                                        @PathVariable Long userId) {
+        PaginationDTO paginationDTO = new PaginationDTO(page, size);
+        List<OrderDTO> orders = orderService.findByUser(userId, paginationDTO);
+        String searchParameter = SEARCH_BY_USER_ID + userId;
+        return  responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameter, null);
     }
 
     /**
@@ -110,53 +118,5 @@ public class OrdersController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         orderService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private EntityModel<OrderDTO> getEntityModel(OrderDTO order){
-        return EntityModel.of(order, linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
-                linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
-                linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
-                linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete"),
-                linkTo(methodOn(OrdersController.class).
-                        findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).
-                        withRel("users"));
-    }
-
-    private PagedModel<EntityModel<OrderDTO>> getPagedModel(List<OrderDTO> orders, PaginationDTO pagination,
-                                                           String searchParameters, String orderParameters){
-        List<EntityModel<OrderDTO>> entityModels = orders.stream()
-                .map(order -> EntityModel.of(order,
-                        linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
-                        linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
-                        linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
-                        linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete")))
-                .collect(Collectors.toList());
-        List<Link> links = new ArrayList<>();
-        if (pagination.getPage() > 0){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
-                    pagination.getSize(),searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.FIRST));
-        }
-        if (pagination.getPage() > 1){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage() - 1 ,
-                    pagination.getSize(),searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.PREV));
-        }
-        links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage(), pagination.getSize(),
-                searchParameters, orderParameters))
-                .withRel(IanaLinkRelations.SELF));
-        if (pagination.getTotalPages() > pagination.getPage()){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getPage() + 1,
-                    pagination.getSize(), searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.NEXT));
-        }
-        if (pagination.getTotalPages() > pagination.getPage() - 1){
-            links.add(linkTo(methodOn(OrdersController.class).findByQuery(pagination.getTotalPages(),
-                    pagination.getSize(), searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.LAST));
-        }
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(pagination.getSize(),
-                pagination.getPage(), pagination.getTotalCount());
-        return PagedModel.of(entityModels, pageMetadata, links);
     }
 }

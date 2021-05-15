@@ -22,14 +22,14 @@ import java.util.List;
 @Repository
 public class OrderDAOImpl implements OrderDAO {
 
-    @Autowired
-    private CriteriaUtil<Order> criteriaUtil;
-
     @PersistenceContext
     private EntityManager entityManager;
+    private final CriteriaUtil<Order> criteriaUtil;
 
     @Autowired
-    private UserDAO userDAO;
+    public OrderDAOImpl(CriteriaUtil<Order> criteriaUtil) {
+        this.criteriaUtil = criteriaUtil;
+    }
 
     @Override
     public Order findOne(Long id) {

@@ -3,8 +3,10 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
+import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.OrderItem;
+import com.epam.esm.entity.User;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -19,11 +21,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final String USER_ID = "user_id";
 
     private final OrderDAO orderDAO;
     private final UserService userService;
@@ -56,11 +63,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO find(Long id) {
-        Order user = orderDAO.findOne(id);
-        if (user == null) {
+        Order order = orderDAO.findOne(id);
+        if (order == null) {
             throw new ValidationException(ErrorCode.ORDER_NOT_FOUND, id);
         }
-        return mapper.mapEntityToDTO(user);
+        return mapper.mapEntityToDTO(order);
+    }
+
+    @Override
+    public List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO) {
+        if (userService.find(userId) == null) {
+            throw new ValidationException(ErrorCode.USER_NOT_FOUND, userId);
+        }
+        SearchCriteria searchCriteria = new SearchCriteria(USER_ID, SearchOperation.EQUALITY, userId);
+        searchCriteria.setNestedProperty(true);
+        List<SearchCriteria> searchParams = Stream.of(searchCriteria).collect(Collectors.toList());
+        return findByQuery(searchParams, null, paginationDTO);
     }
 
     @Transactional

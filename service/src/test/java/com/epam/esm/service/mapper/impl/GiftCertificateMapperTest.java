@@ -54,7 +54,6 @@ class GiftCertificateMapperTest {
 
     @Test
     void mapEntityToDTOTest() {
-
         Tag tag = new Tag("tag");
         GiftCertificate giftCertificate = new GiftCertificate("name", "description", BigDecimal.valueOf(2), 60, Lists.list(tag));
         TagDTO tagDTO = new TagDTO();

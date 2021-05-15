@@ -20,14 +20,16 @@ import java.util.List;
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
-    @Autowired
-    private CriteriaUtil<GiftCertificate> criteriaUtil;
-
-    @Autowired
-    private TagDAO tagDAO;
-
     @PersistenceContext
     private EntityManager entityManager;
+    private final CriteriaUtil<GiftCertificate> criteriaUtil;
+    private final TagDAO tagDAO;
+
+    @Autowired
+    public GiftCertificateDAOImpl(CriteriaUtil<GiftCertificate> criteriaUtil, TagDAO tagDAO) {
+        this.criteriaUtil = criteriaUtil;
+        this.tagDAO = tagDAO;
+    }
 
     @Override
     public GiftCertificate findOne(Long id) {

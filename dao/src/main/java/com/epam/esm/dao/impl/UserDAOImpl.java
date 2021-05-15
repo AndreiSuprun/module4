@@ -21,11 +21,14 @@ import java.util.List;
 @Repository
 public class UserDAOImpl implements UserDAO {
 
-    @Autowired
-    private CriteriaUtil<User> criteriaUtil;
-
     @PersistenceContext
     private EntityManager entityManager;
+    private final CriteriaUtil<User> criteriaUtil;
+
+    @Autowired
+    public UserDAOImpl(CriteriaUtil<User> criteriaUtil) {
+        this.criteriaUtil = criteriaUtil;
+    }
 
     @Override
     public User findOne(Long id) {

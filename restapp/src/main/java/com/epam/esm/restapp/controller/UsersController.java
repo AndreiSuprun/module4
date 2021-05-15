@@ -1,6 +1,8 @@
 package com.epam.esm.restapp.controller;
 
+import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ValidationException;
@@ -8,27 +10,28 @@ import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/users")
 public class UsersController {
 
+    private static final String SEARCH_BY_USER_ID= "user_id:";
+
     private final UserService userService;
+    private final OrderService orderService;
+    private final EntityResponseBuilder responseBuilder;
 
     @Autowired
-    public UsersController(UserService userService) {
+    public UsersController(UserService userService, OrderService orderService, EntityResponseBuilder responseBuilder) {
         this.userService = userService;
+        this.orderService = orderService;
+        this.responseBuilder = responseBuilder;
     }
 
     /**
@@ -52,7 +55,7 @@ public class UsersController {
         PaginationDTO paginationDTO = new PaginationDTO(page, size);
         List<UserDTO> users = userService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
                 paginationDTO);
-        return  getPagedModel(users, paginationDTO, searchParameters, orderParameters);
+        return  responseBuilder.getUserPagedModel(users, paginationDTO, searchParameters, orderParameters);
     }
 
     /**
@@ -65,47 +68,23 @@ public class UsersController {
     @GetMapping("/{id}")
     public EntityModel<UserDTO> findOne(@PathVariable Long id) {
         UserDTO userDTO = userService.find(id);
-        return getEntityModel(userDTO);
+        return responseBuilder.getUserEntityModel(userDTO);
     }
 
-    private EntityModel<UserDTO> getEntityModel(UserDTO user){
-        return EntityModel.of(user, linkTo(methodOn(UsersController.class).findOne(user.getId())).withSelfRel(),
-                linkTo(methodOn(UsersController.class).
-                        findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).withRel("users"));
-    }
-
-    private PagedModel<EntityModel<UserDTO>> getPagedModel(List<UserDTO> users, PaginationDTO pagination,
-                                                           String searchParameters, String orderParameters){
-        List<EntityModel<UserDTO>> entityModels = users.stream()
-                .map(user -> EntityModel.of(user,
-                        linkTo(methodOn(UsersController.class).findOne(user.getId())).withSelfRel()))
-                .collect(Collectors.toList());
-        List<Link> links = new ArrayList<>();
-        if (pagination.getPage() > 0){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(PaginationDTO.FIRST_PAGE,
-                    pagination.getSize(),searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.FIRST));
-        }
-        if (pagination.getPage() > 1){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage() - 1 ,
-                    pagination.getSize(),searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.PREV));
-        }
-        links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage(), pagination.getSize(),
-                searchParameters, orderParameters))
-                .withRel(IanaLinkRelations.SELF));
-        if (pagination.getTotalPages() > pagination.getPage()){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getPage() + 1,
-                    pagination.getSize(), searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.NEXT));
-        }
-        if (pagination.getTotalPages() > pagination.getPage() - 1){
-            links.add(linkTo(methodOn(UsersController.class).findByQuery(pagination.getTotalPages(),
-                    pagination.getSize(), searchParameters, orderParameters))
-                    .withRel(IanaLinkRelations.LAST));
-        }
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(pagination.getSize(),
-                pagination.getPage(), pagination.getTotalCount());
-        return PagedModel.of(entityModels, pageMetadata, links);
+    /**
+     * Returns UserDTO object for user with provided id from repository.
+     *
+     * @param id id of user to find
+     * @return EntityModel<UserDTO> object of user with provided id in repository
+     * @throws ValidationException if user with provided id is not present in repository
+     */
+    @GetMapping("/{id}/orders")
+    public PagedModel<EntityModel<OrderDTO>> getUserOrders(@RequestParam(value = "page", required = false) Long page,
+                                                     @RequestParam(value = "size", required = false) Integer size,
+                                                     @PathVariable Long id) {
+        PaginationDTO paginationDTO = new PaginationDTO(page, size);
+        List<OrderDTO> orders = orderService.findByUser(id, paginationDTO);
+        String searchParameter = SEARCH_BY_USER_ID + id;
+        return  responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameter, null);
     }
 }
