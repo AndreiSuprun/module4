@@ -35,10 +35,9 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
                                      PaginationDTO paginationDTO) {
         checkPagination(paginationDTO);
-        List<User> users;
         Long count = userDao.count(searchParams);
         checkPageNumber(paginationDTO, count);
-        users = userDao.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
+        List<User> users = userDao.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
         return users.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
     }
 

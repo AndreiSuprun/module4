@@ -42,7 +42,6 @@ public class SearchCriteriaBuilder {
             if (op == SearchOperation.EQUALITY) {
                 final boolean startWithAsterisk = prefix != null && prefix.contains(SearchOperation.ZERO_OR_MORE_REGEX);
                 final boolean endWithAsterisk = suffix != null && suffix.contains(SearchOperation.ZERO_OR_MORE_REGEX);
-
                 if (startWithAsterisk && endWithAsterisk) {
                     op = SearchOperation.CONTAINS;
                 } else if (startWithAsterisk) {
