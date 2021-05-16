@@ -1,15 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.dao.criteria.OrderCriteria;
+import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
-import com.epam.esm.dao.criteria.OrderCriteria;
-import com.epam.esm.dao.criteria.SearchCriteria;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -20,6 +16,7 @@ import java.util.List;
 public interface GenericService<T> {
 
     final String PAGE_PARAMETER = "page";
+    final String SIZE_PARAMETER = "size";
 
     /**
      * Returns DTO object for entity with provided id from repository.
@@ -60,8 +57,12 @@ public interface GenericService<T> {
             paginationDTO.setSize(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
         }
         if (paginationDTO.getSize() <= 0) {
-            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getSize());
+            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, SIZE_PARAMETER, paginationDTO.getSize());
         }
+        if (paginationDTO.getSize() > 500) {
+            throw new ValidationException(ErrorCode.PAGE_SIZE_INVALID, PaginationDTO.MAX_RECORDS_PER_PAGE);
+        }
+
     }
 
     /**

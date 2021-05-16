@@ -1,11 +1,9 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.UserDAO;
+import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

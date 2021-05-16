@@ -1,9 +1,5 @@
 package com.epam.esm.service.dto;
 
-import com.epam.esm.entity.Order;
-
-import java.util.List;
-
 public class UserDTO {
 
     private Long id;

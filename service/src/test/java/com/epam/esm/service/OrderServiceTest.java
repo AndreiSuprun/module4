@@ -89,7 +89,7 @@ public class OrderServiceTest {
         doThrow(ValidationException.class).when(orderItemValidator).validate(order.getOrderCertificates().get(0));
 
         assertThrows(ValidationException.class, () -> {
-            orderService.placeOrder(orderDTO);
+            orderService.createOrder(orderDTO);
         });
         verify(orderDAO, times(1)).insert(any(Order.class));
     }
@@ -133,67 +133,10 @@ public class OrderServiceTest {
         doNothing().when(orderItemValidator).validate(order.getOrderCertificates().get(0));
         when(orderDAO.update(order, order.getId())).thenReturn(order);
         when(mapper.mapEntityToDTO(order)).thenReturn(orderDTO);
-        OrderDTO actual = orderService.placeOrder(orderDTO);
+        OrderDTO actual = orderService.createOrder(orderDTO);
         assertEquals(orderDTO, actual);
         verify(orderDAO, times(1)).insert(any(Order.class));
         verify(orderDAO, times(1)).update(any(Order.class), anyLong());
-    }
-
-    @Test
-    void updateCorrectTest() {
-        Long id = 1L;
-        Order orderInDB = new Order();
-        orderInDB.setTotalPrice(BigDecimal.valueOf(20));
-        orderInDB.setId(id);
-        OrderDTO expectedDTO = new OrderDTO();
-        expectedDTO.setTotalPrice(BigDecimal.valueOf(20));
-        expectedDTO.setId(id);
-        Order expected = new Order();
-        expected.setTotalPrice(BigDecimal.valueOf(20));
-        expected.setId(id);
-
-        when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
-        when(orderDAO.findOne(expected.getId())).thenReturn(orderInDB);
-        when(orderDAO.update(expected, id)).thenReturn(expected);
-        when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
-        OrderDTO actual = orderService.update(expectedDTO, id);
-
-        assertEquals(expectedDTO, actual);
-        verify(orderDAO, times(1)).update(expected, id);
-    }
-
-    @Test
-    void updateNotCorrectIdTest() {
-        Long id = 2L;
-        Order orderInDB = new Order();
-        orderInDB.setTotalPrice(BigDecimal.valueOf(20));
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setTotalPrice(BigDecimal.valueOf(30));
-
-        when(orderDAO.findOne(id)).thenReturn(null);
-
-        assertThrows(ValidationException.class, () -> {
-            orderService.update(orderDTO, id);
-        });
-        verify(orderDAO, never()).update(any(Order.class), anyLong());
-    }
-
-    @Test
-    void updateNotValidTest() {
-        Long id = 1L;
-        Order orderInDB = new Order();
-        orderInDB.setTotalPrice(BigDecimal.valueOf(20));
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setTotalPrice(BigDecimal.valueOf(30));
-        Order order = new Order();
-        order.setTotalPrice(BigDecimal.valueOf(-30));
-
-        when(orderDAO.findOne(id)).thenReturn(null);
-        when(mapper.mapDtoToEntity(orderDTO)).thenReturn(order);
-        assertThrows(ValidationException.class, () -> {
-            orderService.update(orderDTO, id);
-        });
-        verify(orderDAO, never()).update(any(Order.class), anyLong());
     }
 
     @Test

@@ -23,6 +23,7 @@ public enum ErrorCode {
     CERTIFICATES_NOT_ADDED(40012, "certificates.not.added", HttpStatus.BAD_REQUEST),
     ORDER_ITEMS_NOT_ADDED(40013, "order.items.not.added", HttpStatus.BAD_REQUEST),
     QUERY_PARAMETER_INVALID(40005, "query.parameter.invalid", HttpStatus.BAD_REQUEST),
+    PAGE_SIZE_INVALID(400013, "page.size.invalid", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private Integer code;

@@ -19,8 +19,7 @@ public class EntityResponseBuilder {
 
     public EntityModel<OrderDTO> getOrderEntityModel(OrderDTO order){
         return EntityModel.of(order, linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
-                linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
-                linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
+                linkTo(methodOn(OrdersController.class).createOrder(order)).withRel("place_order"),
                 linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete"),
                 linkTo(methodOn(OrdersController.class).
                         findByQuery(PaginationDTO.FIRST_PAGE, PaginationDTO.DEFAULT_RECORDS_PER_PAGE, null, null)).
@@ -32,8 +31,7 @@ public class EntityResponseBuilder {
         List<EntityModel<OrderDTO>> entityModels = orders.stream()
                 .map(order -> EntityModel.of(order,
                         linkTo(methodOn(OrdersController.class).findOne(order.getId())).withSelfRel(),
-                        linkTo(methodOn(OrdersController.class).placeOrder(order)).withRel("place_order"),
-                        linkTo(methodOn(OrdersController.class).update(order, order.getId())).withRel("update"),
+                        linkTo(methodOn(OrdersController.class).createOrder(order)).withRel("place_order"),
                         linkTo(methodOn(OrdersController.class).delete(order.getId())).withRel("delete")))
                 .collect(Collectors.toList());
         List<Link> links = new ArrayList<>();

@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 
 public class SearchCriteriaBuilder {
 
+    private static final String DELIMITER = "|";
+    private static final String COMA = ",";
     private List<SearchCriteria> params;
     private final String searchParameters;
 
@@ -63,9 +65,9 @@ public class SearchCriteriaBuilder {
      */
     public List<SearchCriteria> build() {
         params = new ArrayList<>();
-        String operationSet = String.join("|", SearchOperation.SIMPLE_OPERATION_SET);
+        String operationSet = String.join(DELIMITER, SearchOperation.SIMPLE_OPERATION_SET);
         Pattern pattern = Pattern.compile("(\\p{Punct}?)([\\w_]+?)(" + operationSet + ")([*]?)([\\p{L}\\p{Digit}@.\\s]+?)([*]?),");
-        Matcher matcher = pattern.matcher(searchParameters + ",");
+        Matcher matcher = pattern.matcher(searchParameters + COMA);
         while (matcher.find()) {
             with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(5), matcher.group(4), matcher.group(6));
         }

@@ -12,7 +12,4 @@ import java.util.List;
  *
  * @author Andrei Suprun
  */
-public interface UserService extends GenericService<UserDTO> {
-
-//    List<Order> getUserOrders(Long userId);
-}
+public interface UserService extends GenericService<UserDTO> {}

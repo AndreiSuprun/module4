@@ -1,7 +1,7 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.criteria.CriteriaUtil;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.GiftCertificate;
@@ -13,7 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository

@@ -5,11 +5,13 @@ import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.OrderItem;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
-import com.epam.esm.service.dto.*;
+import com.epam.esm.service.dto.OrderDTO;
+import com.epam.esm.service.dto.OrderItemDTO;
+import com.epam.esm.service.dto.PaginationDTO;
+import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.OrderItemMapper;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private final static String AUDIT = "audit";
     private static final String USER_ID = "user_id";
 
     private final OrderDAO orderDAO;
@@ -83,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderDTO placeOrder(OrderDTO orderDTO) {
+    public OrderDTO createOrder(OrderDTO orderDTO) {
         orderDTOValidator.validate(orderDTO);
         UserDTO user = userService.find(orderDTO.getUser().getId());
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
@@ -102,18 +105,6 @@ public class OrderServiceImpl implements OrderService {
                 forEach(order::addOrderCertificate);
         Order orderInDB = orderDAO.update(order, order.getId());
         return mapper.mapEntityToDTO(orderInDB);
-    }
-
-    @Transactional
-    @Override
-    public OrderDTO update(OrderDTO orderDto, Long id) {
-        Order order = orderDAO.findOne(id);
-        if (order == null) {
-            throw new ValidationException(ErrorCode.ORDER_NOT_FOUND, id);
-        }
-        Order orderInRequest = mapper.mapDtoToEntity(orderDto);
-        order = orderDAO.update(orderInRequest, id);
-        return mapper.mapEntityToDTO(order);
     }
 
     @Transactional

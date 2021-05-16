@@ -13,6 +13,7 @@ import com.epam.esm.service.mapper.impl.TagMapper;
 import com.epam.esm.service.validator.impl.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class TagServiceImpl implements TagService {
         this.tagValidator = tagValidator;
     }
 
+    @Transactional
     @Override
     public TagDTO add(TagDTO tagDTO) {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
@@ -72,6 +74,7 @@ public class TagServiceImpl implements TagService {
         return mapper.mapEntityToDTO(tag);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         if (!tagDAO.getCertificatesForTag(id).isEmpty()){

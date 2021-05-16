@@ -72,10 +72,10 @@ public class UsersController {
     }
 
     /**
-     * Returns UserDTO object for user with provided id from repository.
+     * Returns OrderDTO objects for user with provided id from repository.
      *
-     * @param id id of user to find
-     * @return EntityModel<UserDTO> object of user with provided id in repository
+     * @param id id of user to find orders
+     * @return PagedModel<EntityModel<OrderDTO>> object of orderDTO for user with provided id
      * @throws ValidationException if user with provided id is not present in repository
      */
     @GetMapping("/{id}/orders")

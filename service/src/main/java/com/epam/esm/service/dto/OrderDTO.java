@@ -1,6 +1,5 @@
 package com.epam.esm.service.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.math.BigDecimal;

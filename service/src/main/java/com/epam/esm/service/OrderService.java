@@ -20,21 +20,17 @@ public interface OrderService extends GenericService<OrderDTO> {
      * @throws ValidationException if user is not found in repository
      * @return List<OrderDTO> List of orders dto of retrived orders
      */
-    OrderDTO placeOrder(OrderDTO orderDTO);
-
-    List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO);
+    OrderDTO createOrder(OrderDTO orderDTO);
 
     /**
-     * Updates gift certificate according to provided dto object.
+     * Returns OrderDTO object for order with provided id from repository.
      *
-     * @param orderDTO GiftCertificateDTO object according to which is necessary to update gift certificate
-     *                              in repository
-     * @param id id of updated gift certificate
-     * @throws ValidationException if fields in provided GiftCertificateDTO is not valid or gift certificate with provided
-     * id is not present in repository
-     * @return GiftCertificateDTO gift certificate dto of updated gift certificate in repository
+     * @param userId id of user to find orders
+     * @param paginationDTO DTO for pagination
+     * @return List<OrderDTO> object of orders for user with provided id
+     * @throws ValidationException if user with provided id is not present in repository
      */
-    OrderDTO update(OrderDTO orderDTO, Long id);
+    List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO);
 
     /**
      * Removes gift certificate with provided id from repository.

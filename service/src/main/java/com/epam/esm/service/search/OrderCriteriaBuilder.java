@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 
 public class OrderCriteriaBuilder {
 
+    private static final String DELIMITER = ";";
+    private static final String REGEX = "(\\w+?)(,)(\\w+?);";
     private List<OrderCriteria> params;
     private final String sortParameters;
 
@@ -43,8 +45,8 @@ public class OrderCriteriaBuilder {
      */
     public List<OrderCriteria> build() {
         params = new ArrayList<>();
-        Pattern pattern = Pattern.compile("(\\w+?)(,)(\\w+?);");
-        Matcher matcher = pattern.matcher(sortParameters + ";");
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(sortParameters + DELIMITER);
         while (matcher.find()) {
             with(matcher.group(1),matcher.group(3));
         }

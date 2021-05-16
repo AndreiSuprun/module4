@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.GiftCertificateDTO;
@@ -12,7 +13,9 @@ import com.epam.esm.service.mapper.impl.GiftCertificateMapper;
 import com.epam.esm.service.mapper.impl.TagMapper;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
+import com.epam.esm.service.validator.GiftCertificateDTOValidator;
 import com.epam.esm.service.validator.impl.GiftCertificateValidator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,20 +26,25 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificatesServiceImpl implements GiftCertificatesService {
 
+    private final static String AUDIT = "audit";
+    private final static String TAGS = "tags";
+
     private final GiftCertificateDAO giftCertificateDAO;
     private final TagService tagService;
     private final GiftCertificateMapper mapper;
     private final GiftCertificateValidator validator;
+    private final GiftCertificateDTOValidator certificateDTOValidator;
     private final TagMapper tagMapper;
 
     @Autowired
     public GiftCertificatesServiceImpl(GiftCertificateDAO giftCertificateDAO, TagService tagService,
                                        GiftCertificateMapper mapper, GiftCertificateValidator validator,
-                                       TagMapper tagMapper) {
+                                       GiftCertificateDTOValidator certificateDTOValidator, TagMapper tagMapper) {
         this.giftCertificateDAO = giftCertificateDAO;
         this.tagService = tagService;
         this.mapper = mapper;
         this.validator = validator;
+        this.certificateDTOValidator = certificateDTOValidator;
         this.tagMapper = tagMapper;
     }
 
@@ -55,35 +63,19 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
     @Transactional
     @Override
     public GiftCertificateDTO update(GiftCertificateDTO certificateDto, Long id) {
-        GiftCertificate certificateInDB = giftCertificateDAO.findOne(id);
-        if (certificateInDB == null) {
-            throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
-        }
-        if (certificateDto.getName() != null){
-            GiftCertificate certificateByName = giftCertificateDAO.findByName(certificateDto.getName());
-            if (certificateByName != null && !certificateByName.getId().equals(id)){
-                throw new ValidationException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
-            }
-        }
+        GiftCertificate certificateInDB = certificateDTOValidator.validate(certificateDto, id);
         GiftCertificate certificateInRequest = mapper.mapDtoToEntity(certificateDto);
         validator.validate(certificateInRequest);
-        certificateInDB = giftCertificateDAO.update(certificateInRequest, id);
+        BeanUtils.copyProperties(certificateInRequest, certificateInDB, AUDIT, TAGS);
+        certificateInDB.setTags(certificateInRequest.getTags());
+        certificateInDB = giftCertificateDAO.update(certificateInDB, id);
         return mapper.mapEntityToDTO(certificateInDB);
     }
 
     @Transactional
     @Override
     public GiftCertificateDTO patch(GiftCertificateDTO certificateDto, Long id) {
-        GiftCertificate certificateInDB = giftCertificateDAO.findOne(id);
-        if (certificateInDB == null) {
-            throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
-        }
-        if (certificateDto.getName() != null){
-            GiftCertificate certificateByName = giftCertificateDAO.findByName(certificateDto.getName());
-            if (certificateByName != null && !certificateByName.getId().equals(id)){
-                throw new ValidationException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
-            }
-        }
+        GiftCertificate certificateInDB = certificateDTOValidator.validate(certificateDto, id);
         if (certificateDto.getName() != null) {
             certificateInDB.setName(certificateDto.getName());
         }
@@ -95,6 +87,12 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         }
         if (certificateDto.getDuration() != null) {
             certificateInDB.setDuration(certificateDto.getDuration());
+        }
+        if (certificateDto.getTags() != null) {
+            List<Tag> tags = certificateDto.getTags().stream().
+                    map(tagMapper::mapDtoToEntity).
+                    collect(Collectors.toList());
+            certificateInDB.setTags(tags);
         }
         validator.validate(certificateInDB);
         certificateInDB = giftCertificateDAO.update(certificateInDB, id);

@@ -2,6 +2,7 @@ package com.epam.esm.service.dto;
 
 public class PaginationDTO {
     public static final Integer DEFAULT_RECORDS_PER_PAGE = 10;
+    public static final Integer MAX_RECORDS_PER_PAGE = 500;
     public static final Long FIRST_PAGE = 1L;
 
     private Long page;

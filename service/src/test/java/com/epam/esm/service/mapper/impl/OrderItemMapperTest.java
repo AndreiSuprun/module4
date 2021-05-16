@@ -18,14 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-class OrderMapperTest {
+class OrderItemMapperTest {
 
     @InjectMocks
-    private OrderMapper orderMapper;
-    @Mock
-    private UserMapper userMapper;
-    @Mock
     OrderItemMapper orderItemMapper;
+
+    @Mock
+    GiftCertificateMapper giftCertificateMapper;
 
     @BeforeEach
     public void init() {
@@ -34,23 +33,12 @@ class OrderMapperTest {
 
     @Test
     void mapDtoToEntityTest() {
-        Order order = new Order();
-        User user = new User("firstName", "lastName", "email");
-        order.setUser(user);
-        order.setTotalPrice(BigDecimal.valueOf(2));
         Tag tag = new Tag("tag");
         GiftCertificate giftCertificate = new GiftCertificate("name", "description", BigDecimal.valueOf(2), 60, Lists.list(tag));
         OrderItem orderItem = new OrderItem();
         orderItem.setCertificate(giftCertificate);
         orderItem.setQuantity(1);
 
-        OrderDTO orderDTO = new OrderDTO();
-        UserDTO userDTO = new UserDTO();
-        userDTO.setFirstName("firstName");
-        userDTO.setLastName("lastName");
-        userDTO.setEmail("email");
-        orderDTO.setUser(userDTO);
-        orderDTO.setTotalPrice(BigDecimal.valueOf(2));
         TagDTO tagDTO = new TagDTO();
         tagDTO.setName("tag");
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
@@ -63,11 +51,11 @@ class OrderMapperTest {
         orderItemDTO.setGiftCertificateDTO(giftCertificateDTO);
         orderItemDTO.setQuantity(1);
 
-        when(userMapper.mapDtoToEntity(userDTO)).thenReturn(user);
+        when(giftCertificateMapper.mapDtoToEntity(giftCertificateDTO)).thenReturn(giftCertificate);
 
-        Order actual = orderMapper.mapDtoToEntity(orderDTO);
+        OrderItem actual = orderItemMapper.mapDtoToEntity(orderItemDTO);
 
-        assertTrue(Objects.deepEquals(actual, order));
+        assertTrue(Objects.deepEquals(actual, orderItem));
     }
 
     @Test
@@ -110,11 +98,10 @@ class OrderMapperTest {
         orderDTO.setCertificates(Lists.list(orderItemDTO));
         orderItemDTO.setOrderDTO(orderDTO);
 
-        when(userMapper.mapEntityToDTO(user)).thenReturn(userDTO);
-        when(orderItemMapper.mapEntityToDTO(orderItem)).thenReturn(orderItemDTO);
+        when(giftCertificateMapper.mapEntityToDTO(giftCertificate)).thenReturn(giftCertificateDTO);
 
-        OrderDTO actual = orderMapper.mapEntityToDTO(order);
+        OrderItemDTO actual = orderItemMapper.mapEntityToDTO(orderItem);
 
-        assertFalse(Objects.deepEquals(actual, orderDTO));
+        assertFalse(Objects.deepEquals(actual, orderItemDTO));
     }
 }

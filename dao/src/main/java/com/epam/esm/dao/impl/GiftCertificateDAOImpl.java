@@ -1,19 +1,22 @@
 package com.epam.esm.dao.impl;
 
+import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.criteria.CriteriaUtil;
-import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,17 +118,20 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         List<Tag> tags = certificate.getTags();
         List<Tag> tagsInDB = new ArrayList<>();
         for (Tag tag : tags) {
-            Tag tagInDB = tagDAO.insert(tag);
-            if (tagInDB != null) {
-                tagsInDB.add(tagInDB);
-            } else {
-                if (tag.getId() == null) {
-                    tag = tagDAO.findByName(tag.getName());
+            if (tag.getId() != null) {
+                Tag tagInDB = tagDAO.findOne(tag.getId());
+                if (tagInDB != null) {
+                    tagsInDB.add(tagInDB);
+                } else {
+                    tag.setId(null);
+                    tagDAO.insert(tag);
+                    tagsInDB.add(tagDAO.findByName(tag.getName()));
                 }
+            } else {
+                tagDAO.insert(tag);
                 tagsInDB.add(tagDAO.findByName(tag.getName()));
             }
         }
-        certificate.getTags().clear();
         certificate.setTags(tagsInDB);
     }
 }

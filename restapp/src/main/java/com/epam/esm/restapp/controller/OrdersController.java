@@ -59,7 +59,7 @@ public class OrdersController {
      * Returns OrderDTO object for order with provided id from repository.
      *
      * @param id id of order to find
-     * @return EntityModel<OrderDTO> object of order with provided id in repository
+     * @return EntityModel<OrderDTO> object of orders for user with provided id
      * @throws ValidationException if order with provided id is not present in repository
      */
     @GetMapping("/{id}")
@@ -77,27 +77,19 @@ public class OrdersController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<OrderDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
-        orderDTO = orderService.placeOrder(orderDTO);
+    public EntityModel<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
+        orderDTO = orderService.createOrder(orderDTO);
         return responseBuilder.getOrderEntityModel(orderDTO);
     }
 
     /**
-     * Updates order according to request body.
+     * Returns OrderDTO objects for user with provided id from repository.
      *
-     * @param updatedOrderDTO OrderDTO object according to which is necessary to update order in repository
-     * @param id id of updated order
-     * @return EntityModel<OrderDTO> order dto of updated order in repository
-     * @throws ValidationException if fields in provided OrderDTO is not valid or order with provided id is not present
-     * in repository
+     * @param userId id of user to find
+     * @return PagedModel<EntityModel<OrderDTO>> object of orderDTO for user with provided id
+     * @throws ValidationException if user with provided id is not present in repository
      */
-    @PatchMapping("/{id}")
-    public EntityModel<OrderDTO> update(@RequestBody OrderDTO updatedOrderDTO, @PathVariable Long id) {
-        OrderDTO orderDTO = orderService.update(updatedOrderDTO, id);
-        return responseBuilder.getOrderEntityModel(orderDTO);
-    }
-
-        @GetMapping("/users/{userId}")
+    @GetMapping("/users/{userId}")
     public PagedModel<EntityModel<OrderDTO>> findUserOrders(@RequestParam(value = "page", required = false) Long page,
                                                         @RequestParam(value = "size", required = false) Integer size,
                                                         @PathVariable Long userId) {
