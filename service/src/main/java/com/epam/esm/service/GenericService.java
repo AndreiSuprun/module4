@@ -72,13 +72,13 @@ public interface GenericService<T> {
      * @param count count of objects in repository according to request
      */
     default void checkPageNumber(PaginationDTO paginationDTO, Long count) {
-        if (((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) > count) {
-            paginationDTO.setPage(PaginationDTO.FIRST_PAGE);
-        }
         paginationDTO.setTotalCount(count);
         long totalPages = count % paginationDTO.getSize() > 0 ? count / paginationDTO.getSize() + 1 :
                 count / paginationDTO.getSize();
         paginationDTO.setTotalPages(totalPages);
+        if (((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) > count) {
+            paginationDTO.setPage(totalPages);
+        }
     }
 }
 
