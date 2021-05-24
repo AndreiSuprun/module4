@@ -6,7 +6,9 @@ import com.epam.esm.dao.audit.Auditable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -23,6 +25,13 @@ public class User implements Auditable {
     private String lastName;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @Column(name = "password")
+    private String password;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(	name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
     @Embedded
     Audit audit;
 
@@ -67,6 +76,22 @@ public class User implements Auditable {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public Audit getAudit() {
         return audit;
@@ -75,35 +100,5 @@ public class User implements Auditable {
     @Override
     public void setAudit(Audit audit) {
         this.audit = audit;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
-        return email != null ? email.equals(user.email) : user.email == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = firstName != null ? firstName.hashCode() : 0;
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
     }
 }
