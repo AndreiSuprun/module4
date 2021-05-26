@@ -8,12 +8,21 @@ import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
+import com.epam.esm.service.security.JwtResponse;
+import com.epam.esm.service.security.LoginRequest;
+import com.epam.esm.service.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -32,6 +41,12 @@ public class UsersController {
         this.userService = userService;
         this.orderService = orderService;
         this.responseBuilder = responseBuilder;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestParam String userName, @RequestParam String password) {
+        JwtResponse jwt = userService.authenticate(userName, password);
+        return ResponseEntity.ok(jwt);
     }
 
     /**

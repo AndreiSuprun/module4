@@ -5,9 +5,7 @@ import com.epam.esm.dao.audit.AuditListener;
 import com.epam.esm.dao.audit.Auditable;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,8 +21,8 @@ public class User implements Auditable {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column(name = "email", unique = true, nullable = false)
-    private String email;
+    @Column(name = "user_name", unique = true, nullable = false)
+    private String userName;
     @Column(name = "password")
     private String password;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -38,10 +36,10 @@ public class User implements Auditable {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email) {
+    public User(String firstName, String lastName, String userName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.userName = userName;
     }
 
     public Long getId() {
@@ -68,12 +66,12 @@ public class User implements Auditable {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
