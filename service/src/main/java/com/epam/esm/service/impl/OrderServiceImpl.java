@@ -1,16 +1,17 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.OrderDAO;
+import com.epam.esm.dao.OrderRepository;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.User;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.OrderItemDTO;
-import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
@@ -19,21 +20,19 @@ import com.epam.esm.service.mapper.impl.OrderMapper;
 import com.epam.esm.service.validator.OrderDTOValidator;
 import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final static String AUDIT = "audit";
-    private static final String USER_ID = "user_id";
-
-    private final OrderDAO orderDAO;
+    private final OrderRepository orderRepository;
     private final UserService userService;
     private final GiftCertificatesService certificatesService;
     private final OrderDTOValidator orderDTOValidator;
@@ -42,10 +41,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemMapper orderItemMapper;
 
     @Autowired
-    public OrderServiceImpl(OrderDAO orderDAO, UserService userService, GiftCertificatesService certificatesService,
+    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, GiftCertificatesService certificatesService,
                             OrderDTOValidator orderDTOValidator, OrderItemValidator orderItemValidator,
                             OrderMapper mapper, OrderItemMapper orderItemMapper) {
-        this.orderDAO = orderDAO;
+        this.orderRepository = orderRepository;
         this.userService = userService;
         this.certificatesService = certificatesService;
         this.orderDTOValidator = orderDTOValidator;
@@ -55,33 +54,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
-                                     PaginationDTO paginationDTO) {
-        checkPagination(paginationDTO);
-        Long count = orderDAO.count(searchParams);
-        checkPageNumber(paginationDTO, count);
-        List<Order> orders = orderDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
-        return orders.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
+    public Page<OrderDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
+                                      Pageable pageable) {
+        Page<Order> users = orderRepository.findByQuery(searchParams, orderParams, pageable);
+        return users.map(mapper::mapEntityToDTO);
     }
 
     @Override
     public OrderDTO find(Long id) {
-        Order order = orderDAO.findOne(id);
-        if (order == null) {
-            throw new ValidationException(ErrorCode.ORDER_NOT_FOUND, id);
-        }
-        return mapper.mapEntityToDTO(order);
+        Optional<Order> user = orderRepository.findById(id);
+        return mapper.mapEntityToDTO(user.orElseThrow(() -> new ValidationException(ErrorCode.ORDER_NOT_FOUND, id)));
     }
 
     @Override
-    public List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO) {
+    public Page<OrderDTO> findByUser(Long userId, Pageable pageable) {
         if (userService.find(userId) == null) {
             throw new ValidationException(ErrorCode.USER_NOT_FOUND, userId);
         }
-        SearchCriteria searchCriteria = new SearchCriteria(USER_ID, SearchOperation.EQUALITY, userId);
-        searchCriteria.setNestedProperty(true);
-        List<SearchCriteria> searchParams = Stream.of(searchCriteria).collect(Collectors.toList());
-        return findByQuery(searchParams, null, paginationDTO);
+        return orderRepository.findByUserId(userId, pageable).map(mapper::mapEntityToDTO);
+//        SearchCriteria searchCriteria = new SearchCriteria(USER_ID, SearchOperation.EQUALITY, userId);
+//        searchCriteria.setNestedProperty(true);
+//        List<SearchCriteria> searchParams = Stream.of(searchCriteria).collect(Collectors.toList());
+//        return findByQuery(searchParams, null, pageable);
     }
 
     @Transactional
@@ -97,21 +91,22 @@ public class OrderServiceImpl implements OrderService {
         orderDTO.setUser(user);
         List<OrderItemDTO> orderItemDTOList = orderDTO.getCertificates();
         Order order = mapper.mapDtoToEntity(orderDTO);
-        orderDAO.insert(order);
+        orderRepository.save(order);
         orderItemDTOList.stream().
                 map(orderItemMapper::mapDtoToEntity).
                 peek(orderItemValidator::validate).
                 peek(orderItem -> orderItem.setOrder(order)).
                 forEach(order::addOrderCertificate);
-        Order orderInDB = orderDAO.update(order, order.getId());
+        Order orderInDB = orderRepository.save(order);
         return mapper.mapEntityToDTO(orderInDB);
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        if(!orderDAO.delete(id)){
+        if(!orderRepository.findById(id).isPresent()){
             throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
+        orderRepository.deleteById(id);
     }
 }

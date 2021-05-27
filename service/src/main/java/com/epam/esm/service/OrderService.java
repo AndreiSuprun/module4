@@ -3,6 +3,8 @@ package com.epam.esm.service;
 import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ValidationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -30,7 +32,7 @@ public interface OrderService extends GenericService<OrderDTO> {
      * @return List<OrderDTO> object of orders for user with provided id
      * @throws ValidationException if user with provided id is not present in repository
      */
-    List<OrderDTO> findByUser(Long userId, PaginationDTO paginationDTO);
+    Page<OrderDTO> findByUser(Long userId, Pageable pageable);
 
     /**
      * Removes gift certificate with provided id from repository.

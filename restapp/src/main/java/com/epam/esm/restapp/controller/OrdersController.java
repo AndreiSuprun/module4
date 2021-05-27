@@ -7,6 +7,8 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -43,16 +45,14 @@ public class OrdersController {
      *                          are not present in repository
      */
     @GetMapping()
-    public PagedModel<EntityModel<OrderDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
-                                     @RequestParam(value = "size", required = false) Integer size,
-                                     @RequestParam(value = "search", required = false) String searchParameters,
-                                     @RequestParam(value = "order", required = false) String orderParameters) {
+    public PagedModel<EntityModel<OrderDTO>> findByQuery(Pageable pageable,
+                                                         @RequestParam(value = "search", required = false) String searchParameters,
+                                                         @RequestParam(value = "order", required = false) String orderParameters) {
         SearchCriteriaBuilder searchCriteriaBuilder = new SearchCriteriaBuilder(searchParameters);
         OrderCriteriaBuilder orderCriteriaBuilder = new OrderCriteriaBuilder(orderParameters);
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<OrderDTO> orders = orderService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
-                paginationDTO);
-        return responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameters, orderParameters);
+        Page<OrderDTO> orders = orderService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
+                pageable);
+        return responseBuilder.getOrderPagedModel(orders, pageable, searchParameters, orderParameters);
     }
 
     /**
@@ -90,13 +90,11 @@ public class OrdersController {
      * @throws ValidationException if user with provided id is not present in repository
      */
     @GetMapping("/users/{userId}")
-    public PagedModel<EntityModel<OrderDTO>> findUserOrders(@RequestParam(value = "page", required = false) Long page,
-                                                        @RequestParam(value = "size", required = false) Integer size,
+    public PagedModel<EntityModel<OrderDTO>> findUserOrders(Pageable pageable,
                                                         @PathVariable Long userId) {
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<OrderDTO> orders = orderService.findByUser(userId, paginationDTO);
+        Page<OrderDTO> orders = orderService.findByUser(userId, pageable);
         String searchParameter = SEARCH_BY_USER_ID + userId;
-        return  responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameter, null);
+        return  responseBuilder.getOrderPagedModel(orders, pageable, searchParameter, null);
     }
 
     /**

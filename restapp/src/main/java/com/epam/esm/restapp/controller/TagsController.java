@@ -7,6 +7,8 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -48,16 +50,14 @@ public class TagsController {
      *                          are not present in repository
      */
     @GetMapping
-    public PagedModel<EntityModel<TagDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
-                                                       @RequestParam(value = "size", required = false) Integer size,
+    public PagedModel<EntityModel<TagDTO>> findByQuery(Pageable pageable,
                                                        @RequestParam(value = "search", required = false) String searchParameters,
                                                        @RequestParam(value = "order", required = false) String orderParameters) {
         SearchCriteriaBuilder searchCriteriaBuilder = new SearchCriteriaBuilder(searchParameters);
         OrderCriteriaBuilder orderCriteriaBuilder = new OrderCriteriaBuilder(orderParameters);
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<TagDTO> tagDTOs = tagService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
-                paginationDTO);
-        return responseBuilder.getTagPagedModel(tagDTOs, paginationDTO, searchParameters, orderParameters);
+        Page<TagDTO> tagDTOs = tagService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
+                pageable);
+        return responseBuilder.getTagPagedModel(tagDTOs, pageable, searchParameters, orderParameters);
     }
 
     /**

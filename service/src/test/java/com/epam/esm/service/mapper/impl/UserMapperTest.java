@@ -31,10 +31,9 @@ class UserMapperTest {
 
     @Test
     void mapDtoToEntityTest() {
-        User user = new User("firstName", "lastName", "email");
+        User user = new User("userName", "email", "111");
         UserDTO userDTO = new UserDTO();
-        userDTO.setFirstName("firstName");
-        userDTO.setLastName("lastName");
+        userDTO.setUserName("userName");
         userDTO.setEmail("email");
 
         UserDTO actual = userMapper.mapEntityToDTO(user);
@@ -45,10 +44,9 @@ class UserMapperTest {
 
     @Test
     void mapEntityToDTOTest() {
-        User user = new User("firstName", "lastName", "email");
+        User user = new User("userName", "email", "111");
         UserDTO userDTO = new UserDTO();
-        userDTO.setFirstName("firstName");
-        userDTO.setLastName("lastName");
+        userDTO.setUserName("userName");
         userDTO.setEmail("email");
 
         User actual = userMapper.mapDtoToEntity(userDTO);

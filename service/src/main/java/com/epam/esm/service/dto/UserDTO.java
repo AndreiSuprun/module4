@@ -3,8 +3,7 @@ package com.epam.esm.service.dto;
 public class UserDTO {
 
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String userName;
     private String email;
 
     public UserDTO() {
@@ -18,20 +17,12 @@ public class UserDTO {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
@@ -49,15 +40,13 @@ public class UserDTO {
 
         UserDTO userDTO = (UserDTO) o;
 
-        if (firstName != null ? !firstName.equals(userDTO.firstName) : userDTO.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(userDTO.lastName) : userDTO.lastName != null) return false;
+        if (userName != null ? !userName.equals(userDTO.userName) : userDTO.userName != null) return false;
         return email != null ? email.equals(userDTO.email) : userDTO.email == null;
     }
 
     @Override
     public int hashCode() {
-        int result = firstName != null ? firstName.hashCode() : 0;
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        int result = userName != null ? userName.hashCode() : 0;
         result = 31 * result + (email != null ? email.hashCode() : 0);
         return result;
     }

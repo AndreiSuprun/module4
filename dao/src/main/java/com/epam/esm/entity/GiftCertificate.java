@@ -1,10 +1,23 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.dao.audit.Audit;
-import com.epam.esm.dao.audit.AuditListener;
-import com.epam.esm.dao.audit.Auditable;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,8 +26,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name="certificates")
-@EntityListeners(AuditListener.class)
-public class GiftCertificate implements Auditable {
+@EntityListeners(AuditingEntityListener.class)
+public class GiftCertificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +49,18 @@ public class GiftCertificate implements Auditable {
             joinColumns = @JoinColumn(name = "certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
-    @Embedded
-    Audit audit;
+    @Column(name = "created_by")
+    @CreatedBy
+    private String createdBy;
+    @Column(name = "updated_by")
+    @LastModifiedBy
+    private String modifiedBy;
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @CreatedDate
+    private LocalDateTime createdDate;
+    @Column(name = "updated_on")
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
 
     public GiftCertificate(String name, String description, BigDecimal price, int duration, List<Tag> tags) {
         this.name = name;
@@ -104,15 +127,20 @@ public class GiftCertificate implements Auditable {
         }
         this.tags.add(tag);
     }
-
-    @Override
-    public Audit getAudit() {
-        return audit;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    @Override
-    public void setAudit(Audit audit) {
-        this.audit = audit;
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override

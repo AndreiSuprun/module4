@@ -8,10 +8,10 @@ import com.epam.esm.service.dto.UserDTO;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
-import com.epam.esm.service.security.JwtResponse;
-import com.epam.esm.service.security.LoginRequest;
-import com.epam.esm.service.security.UserDetailsImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +43,11 @@ public class UsersController {
         this.responseBuilder = responseBuilder;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestParam String userName, @RequestParam String password) {
-        JwtResponse jwt = userService.authenticate(userName, password);
-        return ResponseEntity.ok(jwt);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> authenticateUser(@RequestParam String userName, @RequestParam String password) {
+//        JwtResponse jwt = userService.authenticate(userName, password);
+//        return ResponseEntity.ok(jwt);
+//    }
 
     /**
      * Retrieves users from repository according to provided request parameters.
@@ -61,16 +61,14 @@ public class UsersController {
      *                          are not present in repository
      */
     @GetMapping()
-    public PagedModel<EntityModel<UserDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
-                                     @RequestParam(value = "size", required = false) Integer size,
-                                     @RequestParam(value = "search", required = false) String searchParameters,
-                                     @RequestParam(value = "order", required = false) String orderParameters) {
+    public PagedModel<EntityModel<UserDTO>> findByQuery(Pageable pageable,
+                                                        @RequestParam(value = "search", required = false) String searchParameters,
+                                                        @RequestParam(value = "order", required = false) String orderParameters) {
         SearchCriteriaBuilder searchCriteriaBuilder = new SearchCriteriaBuilder(searchParameters);
         OrderCriteriaBuilder orderCriteriaBuilder = new OrderCriteriaBuilder(orderParameters);
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<UserDTO> users = userService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
-                paginationDTO);
-        return  responseBuilder.getUserPagedModel(users, paginationDTO, searchParameters, orderParameters);
+        Page<UserDTO> users = userService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
+                pageable);
+        return  responseBuilder.getUserPagedModel(users, pageable, searchParameters, orderParameters);
     }
 
     /**
@@ -94,12 +92,10 @@ public class UsersController {
      * @throws ValidationException if user with provided id is not present in repository
      */
     @GetMapping("/{id}/orders")
-    public PagedModel<EntityModel<OrderDTO>> getUserOrders(@RequestParam(value = "page", required = false) Long page,
-                                                     @RequestParam(value = "size", required = false) Integer size,
+    public PagedModel<EntityModel<OrderDTO>> getUserOrders(Pageable pageable,
                                                      @PathVariable Long id) {
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<OrderDTO> orders = orderService.findByUser(id, paginationDTO);
+        Page<OrderDTO> orders = orderService.findByUser(id, pageable);
         String searchParameter = SEARCH_BY_USER_ID + id;
-        return  responseBuilder.getOrderPagedModel(orders, paginationDTO, searchParameter, null);
+        return  responseBuilder.getOrderPagedModel(orders, pageable, searchParameter, null);
     }
 }

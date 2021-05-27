@@ -5,6 +5,8 @@ import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -37,7 +39,7 @@ public interface GenericService<T> {
      * @throws ValidationException if provided query is not valid or entities according to provided query
      *                          are not present in repository
      */
-    List<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, PaginationDTO paginationDTO);
+    Page<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, Pageable pageable);
 
     /**
      * Check pagination parameters according to provided query. Set default values for page number and page size if

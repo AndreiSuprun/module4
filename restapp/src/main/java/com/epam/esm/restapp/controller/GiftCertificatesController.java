@@ -6,6 +6,8 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +49,7 @@ public class GiftCertificatesController {
     /**
      * Retrieves gift certificates from repository according to provided request parameters.
      *
-     * @param page (optional) request parameter for page number
-     * @param size (optional) request parameter for page size
+     * @param pageable (optional) request parameter for page number
      * @param searchParameters (optional) request parameter for searching
      * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<GiftCertificateDTO>> object of gift certificates for returned page from repository
@@ -56,16 +57,14 @@ public class GiftCertificatesController {
      *                          are not present in repository
      */
     @GetMapping
-    public PagedModel<EntityModel<GiftCertificateDTO>> findByQuery(@RequestParam(value = "page", required = false) Long page,
-                                                                       @RequestParam(value = "size", required = false) Integer size,
+    public PagedModel<EntityModel<GiftCertificateDTO>> findByQuery(Pageable pageable,
                                                                        @RequestParam(value = "search", required = false) String searchParameters,
-                                                                       @RequestParam(value = "order", required = false) String orderParameters) {
+                                                                   @RequestParam(value = "order", required = false) String orderParameters) {
         SearchCriteriaBuilder searchCriteriaBuilder = new SearchCriteriaBuilder(searchParameters);
         OrderCriteriaBuilder orderCriteriaBuilder = new OrderCriteriaBuilder(orderParameters);
-        PaginationDTO paginationDTO = new PaginationDTO(page, size);
-        List<GiftCertificateDTO> certificateDTOs = giftCertificatesService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
-                paginationDTO);
-        return responseBuilder.getCertificatePagedModel(certificateDTOs, paginationDTO, searchParameters, orderParameters);
+        Page<GiftCertificateDTO> certificateDTOs = giftCertificatesService.findByQuery(searchCriteriaBuilder.build(), orderCriteriaBuilder.build(),
+                pageable);
+        return responseBuilder.getCertificatePagedModel(certificateDTOs, pageable, searchParameters, orderParameters);
     }
 
     /**

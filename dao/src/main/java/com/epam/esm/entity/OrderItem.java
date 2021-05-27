@@ -1,15 +1,27 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.dao.audit.Audit;
-import com.epam.esm.dao.audit.AuditListener;
-import com.epam.esm.dao.audit.Auditable;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="orders_certificates")
-@EntityListeners(AuditListener.class)
-public class OrderItem implements Auditable {
+@EntityListeners(AuditingEntityListener.class)
+public class OrderItem {
 
     @EmbeddedId
     private OrderItemId id;
@@ -25,8 +37,18 @@ public class OrderItem implements Auditable {
     private GiftCertificate certificate;
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
-    @Embedded
-    private Audit audit;
+    @Column(name = "created_by")
+    @CreatedBy
+    private String createdBy;
+    @Column(name = "updated_by")
+    @LastModifiedBy
+    private String modifiedBy;
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @CreatedDate
+    private LocalDateTime createdDate;
+    @Column(name = "updated_on")
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
 
     public OrderItem(){
         id = new OrderItemId();
@@ -67,14 +89,21 @@ public class OrderItem implements Auditable {
         this.quantity = quantity;
     }
 
-    @Override
-    public Audit getAudit() {
-        return audit;
+
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    @Override
-    public void setAudit(Audit audit) {
-        this.audit = audit;
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override

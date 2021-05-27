@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public class OrderMapper implements Mapper<Order, OrderDTO> {
         BeanUtils.copyProperties(order, orderDTO, USER, CREATE_DATE, ORDER_ITEMS);
         UserDTO userDTO = userMapper.mapEntityToDTO(order.getUser());
         orderDTO.setUser(userDTO);
-        orderDTO.setCreatedOn(order.getAudit().getCreatedOn());
+        orderDTO.setCreatedOn(order.getCreatedDate());
         List<OrderItemDTO> orderItemDTOs = order.getOrderCertificates().stream().
                 map(orderItemMapper::mapEntityToDTO).collect(Collectors.toList());
         orderItemDTOs.forEach(orderCertificateDTO -> orderCertificateDTO.setOrderDTO(orderDTO));

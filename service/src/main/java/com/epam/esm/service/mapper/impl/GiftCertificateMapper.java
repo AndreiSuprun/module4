@@ -54,8 +54,8 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
     public GiftCertificateDTO mapEntityToDTO(GiftCertificate giftCertificate) {
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
         BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, TAGS, AUDIT);
-        giftCertificateDTO.setCreatedDate(giftCertificate.getAudit().getCreatedOn());
-        giftCertificateDTO.setLastUpdateDate(giftCertificate.getAudit().getUpdatedOn());
+        giftCertificateDTO.setCreatedDate(giftCertificate.getCreatedDate());
+        giftCertificateDTO.setLastUpdateDate(giftCertificate.getModifiedDate());
         if (giftCertificate.getTags() != null) {
             List<TagDTO> tagsDTO = giftCertificate.getTags().stream().map(tagMapper::mapEntityToDTO).collect(Collectors.toList());
             giftCertificateDTO.setTags(tagsDTO);

@@ -1,6 +1,5 @@
 package com.epam.esm.service.mapper.impl;
 
-import com.epam.esm.dao.audit.Audit;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.dto.GiftCertificateDTO;
@@ -37,7 +36,6 @@ class GiftCertificateMapperTest {
     void mapDtoToEntityTest() {
         Tag tag = new Tag("tag");
         GiftCertificate giftCertificate = new GiftCertificate("name", "description", BigDecimal.valueOf(2), 60, Lists.list(tag));
-        giftCertificate.setAudit(new Audit());
         TagDTO tagDTO = new TagDTO();
         tagDTO.setName("tag");
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();

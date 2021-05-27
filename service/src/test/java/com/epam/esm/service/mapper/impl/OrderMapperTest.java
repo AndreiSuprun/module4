@@ -1,6 +1,5 @@
 package com.epam.esm.service.mapper.impl;
 
-import com.epam.esm.dao.audit.Audit;
 import com.epam.esm.entity.*;
 import com.epam.esm.service.dto.*;
 import org.assertj.core.util.Lists;
@@ -46,8 +45,7 @@ class OrderMapperTest {
 
         OrderDTO orderDTO = new OrderDTO();
         UserDTO userDTO = new UserDTO();
-        userDTO.setFirstName("firstName");
-        userDTO.setLastName("lastName");
+        userDTO.setUserName("userName");
         userDTO.setEmail("email");
         orderDTO.setUser(userDTO);
         orderDTO.setTotalPrice(BigDecimal.valueOf(2));
@@ -77,11 +75,8 @@ class OrderMapperTest {
         User user = new User("firstName", "lastName", "email");
         order.setUser(user);
         order.setTotalPrice(BigDecimal.valueOf(2));
-        order.setAudit(new Audit());
-        order.getAudit().setCreatedOn(LocalDateTime.now());
         Tag tag = new Tag("tag");
         GiftCertificate giftCertificate = new GiftCertificate("name", "description", BigDecimal.valueOf(2), 60, Lists.list(tag));
-        giftCertificate.setAudit(new Audit());
         OrderItem orderItem = new OrderItem();
         orderItem.setCertificate(giftCertificate);
         orderItem.setQuantity(1);
@@ -89,10 +84,8 @@ class OrderMapperTest {
         orderItem.setOrder(order);
 
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setCreatedOn(order.getAudit().getCreatedOn());
         UserDTO userDTO = new UserDTO();
-        userDTO.setFirstName("firstName");
-        userDTO.setLastName("lastName");
+        userDTO.setUserName("userName");
         userDTO.setEmail("email");
         orderDTO.setUser(userDTO);
         orderDTO.setTotalPrice(BigDecimal.valueOf(2));

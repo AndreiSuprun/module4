@@ -1,28 +1,39 @@
 package com.epam.esm.entity;
 
-import com.epam.esm.dao.audit.Audit;
-import com.epam.esm.dao.audit.AuditListener;
-import com.epam.esm.dao.audit.Auditable;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name="users")
-@EntityListeners(AuditListener.class)
-public class User implements Auditable {
+@EntityListeners(AuditingEntityListener.class)
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-    @Column(name = "user_name", unique = true, nullable = false)
+    @Column(name = "user_name", nullable = false)
     private String userName;
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
     @Column(name = "password")
     private String password;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -30,16 +41,26 @@ public class User implements Auditable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-    @Embedded
-    Audit audit;
+    @Column(name = "created_by")
+    @CreatedBy
+    private String createdBy;
+    @Column(name = "updated_by")
+    @LastModifiedBy
+    private String modifiedBy;
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @CreatedDate
+    private LocalDateTime createdDate;
+    @Column(name = "updated_on")
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String userName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String userName, String email, String password) {
         this.userName = userName;
+        this.email = email;
+        this.password=password;
     }
 
     public Long getId() {
@@ -50,28 +71,20 @@ public class User implements Auditable {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -90,13 +103,19 @@ public class User implements Auditable {
         this.roles = roles;
     }
 
-    @Override
-    public Audit getAudit() {
-        return audit;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    @Override
-    public void setAudit(Audit audit) {
-        this.audit = audit;
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 }

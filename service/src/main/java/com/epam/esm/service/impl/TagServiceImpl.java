@@ -1,9 +1,11 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.TagRepository;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
@@ -12,24 +14,27 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.mapper.impl.TagMapper;
 import com.epam.esm.service.validator.impl.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
 
-    private final TagDAO tagDAO;
+    private final TagRepository tagRepository;
     private final TagMapper mapper;
     private final TagValidator tagValidator;
     private static final String NAME = "name";
     private static final String ID = "id";
 
     @Autowired
-    public TagServiceImpl(TagDAO tagDAO, TagMapper mapper, TagValidator tagValidator) {
-        this.tagDAO = tagDAO;
+    public TagServiceImpl(TagRepository tagRepository, TagMapper mapper, TagValidator tagValidator) {
+        this.tagRepository = tagRepository;
         this.mapper = mapper;
         this.tagValidator = tagValidator;
     }
@@ -39,54 +44,52 @@ public class TagServiceImpl implements TagService {
     public TagDTO add(TagDTO tagDTO) {
         Tag tag = mapper.mapDtoToEntity(tagDTO);
         tagValidator.validate(tag);
-        if (tagDAO.findByName(tag.getName()) != null){
+        if (tagRepository.findByName(tag.getName()).isPresent()){
             throw new ValidationException(ErrorCode.TAG_ALREADY_IN_DB, tag.getName());
         }
-        Tag tagInDB = tagDAO.insert(mapper.mapDtoToEntity(tagDTO));
+        Tag tagInDB = tagRepository.save(mapper.mapDtoToEntity(tagDTO));
         return mapper.mapEntityToDTO(tagInDB);
     }
 
     @Override
     public TagDTO find(Long id) {
-        Tag tag = tagDAO.findOne(id);
-        if (tag == null){
+        Optional<Tag> tagOptional = tagRepository.findById(id);
+        if (!tagOptional.isPresent()){
             throw new ValidationException(ErrorCode.TAG_NOT_FOUND, id);
         }
-        return mapper.mapEntityToDTO(tag);
+        return mapper.mapEntityToDTO(tagOptional.get());
     }
 
     @Override
-    public List<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
-                                    PaginationDTO paginationDTO) {
-        checkPagination(paginationDTO);
-        Long count = tagDAO.count(searchParams);
-        checkPageNumber(paginationDTO, count);
-        List<Tag> tags = tagDAO.findByQuery(searchParams, orderParams, paginationDTO.getPage(), paginationDTO.getSize());
-        return tags.stream().map(mapper::mapEntityToDTO).collect(Collectors.toList());
+    public Page<TagDTO> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams,
+                                        Pageable pageable) {
+        Page<Tag> tags = tagRepository.findByQuery(searchParams, orderParams, pageable);
+        return tags.map(mapper::mapEntityToDTO);
     }
 
     @Override
     public TagDTO findByName(String name) {
-        Tag tag = tagDAO.findByName(name);
-        if (tag == null){
+        Optional<Tag> tagOptional = tagRepository.findByName(name);
+        if (!tagOptional.isPresent()){
             throw new ValidationException(ErrorCode.TAG_NOT_FOUND, NAME, name);
         }
-        return mapper.mapEntityToDTO(tag);
+        return mapper.mapEntityToDTO(tagOptional.get());
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        if (!tagDAO.getCertificatesForTag(id).isEmpty()){
-            throw new ValidationException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
-        }
-        if (!tagDAO.delete(id)){
+        if (!tagRepository.existsById(id)){
             throw new ValidationException(ErrorCode.TAG_NOT_FOUND, ID, id);
         }
+        if (!tagRepository.getCertificatesForTag(id).isEmpty()){
+            throw new ValidationException(ErrorCode.TAG_CANNOT_BE_DELETED, id);
+        }
+        tagRepository.deleteById(id);
     }
 
     public TagDTO findMostWidelyUsedTag(){
-        Tag tag = tagDAO.findMostWidelyUsedTag();
+        Tag tag = tagRepository.findMostWidelyUsedTag();
         if (tag == null){
             throw new ValidationException(ErrorCode.TAG_NOT_FOUND);
         }
