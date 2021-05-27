@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -18,6 +19,8 @@ import java.util.Optional;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserRepository userRepository;
+
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication)
@@ -28,7 +31,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (!userOptional.isPresent()) {
             throw new ValidationException(ErrorCode.USER_NAME_NOT_VALID, userName);
         }
-        if (!userOptional.get().getPassword().equals(password)) {
+        if (!userOptional.get().getPassword().equals(passwordEncoder.encode(password))) {
             throw new ValidationException(ErrorCode.USER_NAME_NOT_VALID, userName);
         }
         UserDetails principal = UserDetailsImpl.build(userOptional.get());
@@ -39,5 +42,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
+    }
+
+    public PasswordEncoder getPasswordEncoder() {
+        return passwordEncoder;
+    }
+
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 }

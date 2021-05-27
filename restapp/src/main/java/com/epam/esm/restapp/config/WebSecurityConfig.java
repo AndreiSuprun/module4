@@ -39,6 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        customAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
     }
 
@@ -60,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/certstore/v1/orders").hasRole("USER").
                 antMatchers("/certstore/v1/**").permitAll();
-                //authenticated();
+                //anyRequest().authenticated().and().formLogin().permitAll();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

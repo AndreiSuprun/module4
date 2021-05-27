@@ -34,9 +34,11 @@ public class User {
     private String userName;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @Column(name = "pwd")
+    private String passw;
     @Column(name = "password")
     private String password;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -117,5 +119,13 @@ public class User {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public String getPassw() {
+        return passw;
+    }
+
+    public void setPassw(String passw) {
+        this.passw = passw;
     }
 }
