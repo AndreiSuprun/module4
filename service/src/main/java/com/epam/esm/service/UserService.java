@@ -4,6 +4,7 @@ import com.epam.esm.entity.Order;
 import com.epam.esm.service.dto.OrderDTO;
 import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.UserDTO;
+import com.epam.esm.service.security.JwtResponse;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ import java.util.List;
  */
 public interface UserService extends GenericService<UserDTO> {
 
-//    JwtResponse authenticate(String userName, String password);
+    JwtResponse authenticate(String userName, String password);
+
+    UserDTO add(UserDTO userDTO);
 }

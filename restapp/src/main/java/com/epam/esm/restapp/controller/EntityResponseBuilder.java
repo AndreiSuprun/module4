@@ -2,7 +2,6 @@ package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.dto.GiftCertificateDTO;
 import com.epam.esm.service.dto.OrderDTO;
-import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.dto.UserDTO;
 import org.springframework.data.domain.Page;

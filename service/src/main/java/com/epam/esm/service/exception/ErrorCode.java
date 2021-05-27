@@ -6,6 +6,8 @@ public enum ErrorCode {
     BAD_REQUEST(40008, "bad.request", HttpStatus.BAD_REQUEST),
     METHOD_ARGUMENT_TYPE_MISMATCH(40007, "method.argument.type.mismatch", HttpStatus.BAD_REQUEST),
     REQUEST_BODY_MISMATCH(40009, "request.body.mismatch", HttpStatus.BAD_REQUEST),
+    USER_NAME_NOT_VALID(40101, "user.name.not.valid", HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_VALID(40102, "password.not.valid", HttpStatus.BAD_REQUEST),
     CERTIFICATE_NOT_FOUND(40401, "certificate.not.found", HttpStatus.NOT_FOUND),
     CERTIFICATES_NOT_FOUND(40405, "certificates.not.found", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND(40406, "user.not.found", HttpStatus.NOT_FOUND),

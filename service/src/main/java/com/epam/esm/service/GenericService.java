@@ -41,46 +41,5 @@ public interface GenericService<T> {
      */
     Page<T> findByQuery(List<SearchCriteria> searchParams, List<OrderCriteria> orderParams, Pageable pageable);
 
-    /**
-     * Check pagination parameters according to provided query. Set default values for page number and page size if
-     * pagination parameters are not present in request
-     *
-     * @param paginationDTO params for pagination
-     * @throws ValidationException if provided pagination parameters is not valid
-     */
-    default void checkPagination(PaginationDTO paginationDTO) {
-        if (paginationDTO.getPage() == null) {
-            paginationDTO.setPage(PaginationDTO.FIRST_PAGE);
-        }
-        if (paginationDTO.getPage() <= 0) {
-            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, PAGE_PARAMETER, paginationDTO.getPage());
-        }
-        if (paginationDTO.getSize() == null) {
-            paginationDTO.setSize(PaginationDTO.DEFAULT_RECORDS_PER_PAGE);
-        }
-        if (paginationDTO.getSize() <= 0) {
-            throw new ValidationException(ErrorCode.QUERY_PARAMETER_INVALID, SIZE_PARAMETER, paginationDTO.getSize());
-        }
-        if (paginationDTO.getSize() > 500) {
-            throw new ValidationException(ErrorCode.PAGE_SIZE_INVALID, PaginationDTO.MAX_RECORDS_PER_PAGE);
-        }
-
-    }
-
-    /**
-     * Check page number in provided query. Set default values for page number if it is out of range
-     *
-     * @param paginationDTO params for pagination
-     * @param count count of objects in repository according to request
-     */
-    default void checkPageNumber(PaginationDTO paginationDTO, Long count) {
-        paginationDTO.setTotalCount(count);
-        long totalPages = count % paginationDTO.getSize() > 0 ? count / paginationDTO.getSize() + 1 :
-                count / paginationDTO.getSize();
-        paginationDTO.setTotalPages(totalPages);
-        if (((long) (paginationDTO.getPage() - 1) * paginationDTO.getSize()) > count) {
-            paginationDTO.setPage(totalPages);
-        }
-    }
 }
 

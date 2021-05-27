@@ -2,7 +2,6 @@ package com.epam.esm.restapp.controller;
 
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.dto.OrderDTO;
-import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
@@ -13,11 +12,15 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orders")
@@ -36,8 +39,7 @@ public class OrdersController {
     /**
      * Retrieves orders from repository according to provided request parameters.
      *
-     * @param page (optional) request parameter for page number
-     * @param size (optional) request parameter for page size
+     * @param pageable (optional) request parameter for page number
      * @param searchParameters (optional) request parameter for searching
      * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<OrderDTO>> object of orders for returned page from repository
