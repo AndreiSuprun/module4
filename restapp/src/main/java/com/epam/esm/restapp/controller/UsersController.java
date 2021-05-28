@@ -1,6 +1,8 @@
 package com.epam.esm.restapp.controller;
 
 import com.epam.esm.dao.UserRepository;
+import com.epam.esm.entity.ERole;
+import com.epam.esm.entity.Role;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -25,7 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -57,9 +61,13 @@ public class UsersController {
     @GetMapping("/passw")
     public void authenticateUser() {
         List<User> users = userService.findAll();
-
+        Role role = new Role();
+        role.setId(1);
+        role.setName(ERole.ROLE_USER);
+        Set<Role> p = new HashSet<>();
+        p.add(role);
         for(User user: users){
-            user.setPassword(passwordEncoder.encode(user.getPassw()));
+            user.setRoles(p);
             userRepository.save(user);
         }
     }

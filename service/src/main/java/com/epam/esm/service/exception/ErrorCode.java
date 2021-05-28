@@ -6,8 +6,8 @@ public enum ErrorCode {
     BAD_REQUEST(40008, "bad.request", HttpStatus.BAD_REQUEST),
     METHOD_ARGUMENT_TYPE_MISMATCH(40007, "method.argument.type.mismatch", HttpStatus.BAD_REQUEST),
     REQUEST_BODY_MISMATCH(40009, "request.body.mismatch", HttpStatus.BAD_REQUEST),
-    USER_NAME_NOT_VALID(40101, "user.name.not.valid", HttpStatus.BAD_REQUEST),
-    PASSWORD_NOT_VALID(40102, "password.not.valid", HttpStatus.BAD_REQUEST),
+    USER_NAME_NOT_VALID(40102, "user.name.not.valid", HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_VALID(40103, "password.not.valid", HttpStatus.BAD_REQUEST),
     CERTIFICATE_NOT_FOUND(40401, "certificate.not.found", HttpStatus.NOT_FOUND),
     CERTIFICATES_NOT_FOUND(40405, "certificates.not.found", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND(40406, "user.not.found", HttpStatus.NOT_FOUND),
@@ -26,7 +26,8 @@ public enum ErrorCode {
     ORDER_ITEMS_NOT_ADDED(40013, "order.items.not.added", HttpStatus.BAD_REQUEST),
     QUERY_PARAMETER_INVALID(40005, "query.parameter.invalid", HttpStatus.BAD_REQUEST),
     PAGE_SIZE_INVALID(400013, "page.size.invalid", HttpStatus.BAD_REQUEST),
-    INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR);
+    INTERNAL_ERROR(50001, "internal.error", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNAUTHORIZED_USER(40101, "unauthorized.user", HttpStatus.UNAUTHORIZED);
 
     private Integer code;
     private String messageCode;

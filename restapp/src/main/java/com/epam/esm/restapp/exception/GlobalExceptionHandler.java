@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -71,5 +72,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.BAD_REQUEST.getMessageCode(),
                 new Object[] {ex.toString()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
+    }
+
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<CustomErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        CustomErrorResponse apiResponse = new CustomErrorResponse();
+        apiResponse.setErrorCode(ErrorCode.UNAUTHORIZED_USER.getCode().toString());
+        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.UNAUTHORIZED_USER.getMessageCode(),
+                new Object[] {}, Locale.getDefault()));
+        return new ResponseEntity<>(apiResponse, ErrorCode.UNAUTHORIZED_USER.getHttpStatus());
     }
 }
