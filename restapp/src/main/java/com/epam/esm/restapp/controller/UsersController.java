@@ -12,6 +12,8 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import com.epam.esm.service.security.JwtResponse;
+import com.epam.esm.service.security.LoginRequest;
+import com.epam.esm.service.security.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,9 +56,15 @@ public class UsersController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestParam String userName, @RequestParam String password) {
-        JwtResponse jwt = userService.authenticate(userName, password);
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        JwtResponse jwt = userService.authenticate(loginRequest.getUserName(), loginRequest.getPassword());
         return ResponseEntity.ok(jwt);
+    }
+
+    @PostMapping("/sign_up")
+    public EntityModel<UserDTO> registerUser(@RequestBody RegisterRequest registerRequest) {
+        UserDTO userDTO = userService.add(registerRequest);
+        return responseBuilder.getUserEntityModel(userDTO);
     }
 
     @GetMapping("/passw")
@@ -75,8 +84,7 @@ public class UsersController {
     /**
      * Retrieves users from repository according to provided request parameters.
      *
-     * @param page (optional) request parameter for page number
-     * @param size (optional) request parameter for page size
+     * @param pageable (optional) request parameter for page number and page size
      * @param searchParameters (optional) request parameter for searching
      * @param orderParameters (optional) request parameter for sorting, ascending or descending
      * @return PagedModel<EntityModel<UserDTO>> object of users for returned page from repository

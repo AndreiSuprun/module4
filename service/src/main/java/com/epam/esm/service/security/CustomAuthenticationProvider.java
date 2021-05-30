@@ -31,8 +31,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (!userOptional.isPresent()) {
             throw new ValidationException(ErrorCode.USER_NAME_NOT_VALID, userName);
         }
-        if (!userOptional.get().getPassword().equals(passwordEncoder.encode(password))) {
-            throw new ValidationException(ErrorCode.USER_NAME_NOT_VALID, userName);
+        if (!passwordEncoder.matches(password, userOptional.get().getPassword())) {
+            throw new ValidationException(ErrorCode.PASSWORD_NOT_VALID);
         }
         UserDetails principal = UserDetailsImpl.build(userOptional.get());
         return new UsernamePasswordAuthenticationToken(

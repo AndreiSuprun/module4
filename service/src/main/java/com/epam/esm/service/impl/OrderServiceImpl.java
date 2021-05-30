@@ -22,6 +22,9 @@ import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +85,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         orderDTOValidator.validate(orderDTO);
-        UserDTO user = userService.find(orderDTO.getUser().getId());
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        UserDTO user = userService.findByUserName(userDetails.getUsername());
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
                 map(orderItemDTO -> certificatesService.find(orderItemDTO.getGiftCertificateDTO().getId()).getPrice().
                         multiply(BigDecimal.valueOf(orderItemDTO.getQuantity()))).

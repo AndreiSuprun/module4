@@ -60,8 +60,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().//antMatchers("/certstore/v1/orders").hasAuthority("USER").
-                antMatchers("/certstore/v1/**").permitAll().
-                anyRequest().authenticated();//.and().antMatcher("/certstore/v1/users/login").formLogin().permitAll();
+                antMatchers("/certstore/v1/**").permitAll();
+                //anyRequest().authenticated()
+                //.and().formLogin().loginPage("/certstore/v1/users/login").permitAll();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
