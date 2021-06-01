@@ -6,6 +6,7 @@ import com.epam.esm.service.security.CustomAuthenticationProvider;
 import com.epam.esm.service.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@ComponentScan(basePackages = {"com.epam.esm"})
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
@@ -54,12 +56,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+//                .oauth2ResourceServer().jwt();
+//    }
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().//antMatchers("/certstore/v1/orders").hasAuthority("USER").
+                .authorizeRequests().antMatchers("/certstore/v1/orders").hasAuthority("USER").
                 antMatchers("/certstore/v1/**").permitAll();
                 //anyRequest().authenticated()
                 //.and().formLogin().loginPage("/certstore/v1/users/login").permitAll();

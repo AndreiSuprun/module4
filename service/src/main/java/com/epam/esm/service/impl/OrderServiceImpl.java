@@ -75,10 +75,6 @@ public class OrderServiceImpl implements OrderService {
             throw new ValidationException(ErrorCode.USER_NOT_FOUND, userId);
         }
         return orderRepository.findByUserId(userId, pageable).map(mapper::mapEntityToDTO);
-//        SearchCriteria searchCriteria = new SearchCriteria(USER_ID, SearchOperation.EQUALITY, userId);
-//        searchCriteria.setNestedProperty(true);
-//        List<SearchCriteria> searchParams = Stream.of(searchCriteria).collect(Collectors.toList());
-//        return findByQuery(searchParams, null, pageable);
     }
 
     @Transactional

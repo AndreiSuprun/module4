@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = "com.epam.esm", exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication
 @EntityScan(basePackages = {"com.epam.esm.entity"})
 @EnableJpaRepositories("com.epam.esm.dao")
 @EnableJpaAuditing
