@@ -3,6 +3,7 @@ package com.epam.esm.restapp.config;
 import com.epam.esm.service.security.AuthEntryPointJwt;
 import com.epam.esm.service.security.AuthTokenFilter;
 import com.epam.esm.service.security.CustomAuthenticationProvider;
+import com.epam.esm.service.security.ExceptionHandlerFilter;
 import com.epam.esm.service.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
+import java.util.Locale;
+
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackages = {"com.epam.esm"})
@@ -39,6 +42,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
+    }
+
+    @Bean
+    public ExceptionHandlerFilter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter();
     }
 
     @Override
@@ -85,5 +93,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                //addFilterBefore(exceptionHandlerFilter(), AuthTokenFilter.class);
     }
 }

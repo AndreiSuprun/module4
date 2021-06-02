@@ -19,9 +19,4 @@ public class ModuleApplication {
     public static void main(String[] args) {
         SpringApplication.run(ModuleApplication.class, args);
     }
-
-//    @Bean(name = "mvcHandlerMappingIntrospector")
-//    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
-//        return new HandlerMappingIntrospector();
-//    }
 }
