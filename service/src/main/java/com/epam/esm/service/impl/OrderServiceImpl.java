@@ -104,6 +104,29 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
+    public OrderDTO createOrderWithUser(OrderDTO orderDTO) {
+        orderDTOValidator.validateWithUser(orderDTO);
+        UserDTO user = userService.find(orderDTO.getUser().getId());
+        BigDecimal totalPrice = orderDTO.getCertificates().stream().
+                map(orderItemDTO -> certificatesService.find(orderItemDTO.getGiftCertificateDTO().getId()).getPrice().
+                        multiply(BigDecimal.valueOf(orderItemDTO.getQuantity()))).
+                reduce(BigDecimal.ZERO, BigDecimal::add);
+        orderDTO.setTotalPrice(totalPrice);
+        orderDTO.setUser(user);
+        List<OrderItemDTO> orderItemDTOList = orderDTO.getCertificates();
+        Order order = mapper.mapDtoToEntity(orderDTO);
+        orderRepository.save(order);
+        orderItemDTOList.stream().
+                map(orderItemMapper::mapDtoToEntity).
+                peek(orderItemValidator::validate).
+                peek(orderItem -> orderItem.setOrder(order)).
+                forEach(order::addOrderCertificate);
+        Order orderInDB = orderRepository.save(order);
+        return mapper.mapEntityToDTO(orderInDB);
+    }
+
+    @Transactional
+    @Override
     public void delete(Long id) {
         if(!orderRepository.findById(id).isPresent()){
             throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);

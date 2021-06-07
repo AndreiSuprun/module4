@@ -21,6 +21,17 @@ public class OrderDTOValidator {
      * @throws ValidationException if validation is failed
      */
     public void validate(OrderDTO orderDTO){
+        if (orderDTO.getCertificates().isEmpty()){
+            throw new ValidationException(ErrorCode.ORDER_ITEMS_NOT_ADDED);
+        }
+        for(OrderItemDTO orderItemDTO : orderDTO.getCertificates()){
+            if (orderItemDTO.getGiftCertificateDTO() == null || orderItemDTO.getGiftCertificateDTO().getId() == null){
+                throw new ValidationException(ErrorCode.CERTIFICATES_NOT_ADDED);
+            }
+        }
+    }
+
+    public void validateWithUser(OrderDTO orderDTO){
         if (orderDTO.getUser() == null || orderDTO.getUser().getId() == null){
             throw new ValidationException(ErrorCode.USER_NOT_ADDED);
         }

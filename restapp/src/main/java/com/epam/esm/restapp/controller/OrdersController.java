@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/orders")
 public class OrdersController {
     private static final String SEARCH_BY_USER_ID= "user_id:";
 
@@ -46,7 +45,7 @@ public class OrdersController {
      * @throws ValidationException if provided query is not valid or orders according to provided query
      *                          are not present in repository
      */
-    @GetMapping()
+    @GetMapping(("/orders"))
     public PagedModel<EntityModel<OrderDTO>> findByQuery(Pageable pageable,
                                                          @RequestParam(value = "search", required = false) String searchParameters,
                                                          @RequestParam(value = "order", required = false) String orderParameters) {
@@ -64,7 +63,7 @@ public class OrdersController {
      * @return EntityModel<OrderDTO> object of orders for user with provided id
      * @throws ValidationException if order with provided id is not present in repository
      */
-    @GetMapping("/{id}")
+    @GetMapping("/orders/{id}")
     public EntityModel<OrderDTO> findOne(@PathVariable Long id) {
         OrderDTO orderDTO = orderService.find(id);
         return responseBuilder.getOrderEntityModel(orderDTO);
@@ -77,10 +76,24 @@ public class OrdersController {
      * @return EntityModel<OrderDTO> object of created in repository order
      * @throws ValidationException if fields in provided OrderDTO object is not valid
      */
-    @PostMapping
+    @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
         orderDTO = orderService.createOrder(orderDTO);
+        return responseBuilder.getOrderEntityModel(orderDTO);
+    }
+
+    /**
+     * Adds order to repository according to provided dto object.
+     *
+     * @param orderDTO OrderDTO object on basis of which is created new order in repository
+     * @return EntityModel<OrderDTO> object of created in repository order
+     * @throws ValidationException if fields in provided OrderDTO object is not valid
+     */
+    @PostMapping("/order_for_user")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntityModel<OrderDTO> createOrderForUser(@RequestBody OrderDTO orderDTO) {
+        orderDTO = orderService.createOrderWithUser(orderDTO);
         return responseBuilder.getOrderEntityModel(orderDTO);
     }
 
@@ -91,7 +104,7 @@ public class OrdersController {
      * @return PagedModel<EntityModel<OrderDTO>> object of orderDTO for user with provided id
      * @throws ValidationException if user with provided id is not present in repository
      */
-    @GetMapping("/users/{userId}")
+    @GetMapping("/orders/users/{userId}")
     public PagedModel<EntityModel<OrderDTO>> findUserOrders(Pageable pageable,
                                                         @PathVariable Long userId) {
         Page<OrderDTO> orders = orderService.findByUser(userId, pageable);
@@ -105,7 +118,7 @@ public class OrdersController {
      * @param id id of order to delete from repository
      * @throws ValidationException if order with provided id is not present in repository
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         orderService.delete(id);

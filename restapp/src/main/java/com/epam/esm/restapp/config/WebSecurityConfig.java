@@ -3,9 +3,10 @@ package com.epam.esm.restapp.config;
 import com.epam.esm.service.security.AuthEntryPointJwt;
 import com.epam.esm.service.security.AuthTokenFilter;
 import com.epam.esm.service.security.CustomAuthenticationProvider;
-import com.epam.esm.service.security.ExceptionHandlerFilter;
+import com.epam.esm.service.security.SimpleAccessDeniedHandler;
 import com.epam.esm.service.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,15 +40,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
-    @Bean
-    public ExceptionHandlerFilter exceptionHandlerFilter() {
-        return new ExceptionHandlerFilter();
-    }
+//    @Bean
+//    public ExceptionHandlerFilter exceptionHandlerFilter() {
+//        return new ExceptionHandlerFilter(messageSource);
+//    }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -76,23 +80,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/").antMatchers(HttpMethod.POST,"/users/login").antMatchers(HttpMethod.POST,"/users/sign_up");
+        web.ignoring().antMatchers(HttpMethod.GET, "/certificates/**").antMatchers(HttpMethod.GET, "/tags/**")
+                .antMatchers(HttpMethod.POST,"/users/login")
+                .antMatchers(HttpMethod.POST,"/users/sign_up");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.
         cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                .exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/orders").hasRole("USER")
-                .antMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, "/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+                .antMatchers(HttpMethod.GET, "/certificates/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/tags/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").hasAuthority("USER")
+                .antMatchers(HttpMethod.POST, "/orders").hasAuthority("USER")
+                .antMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.PATCH, "/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN");
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-                //addFilterBefore(exceptionHandlerFilter(), AuthTokenFilter.class);
     }
 }

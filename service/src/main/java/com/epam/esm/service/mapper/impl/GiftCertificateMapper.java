@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertificateDTO> {
 
-    private final static String AUDIT = "audit";
     private final static String TAGS = "tags";
+    private final static String CREATED_BY = "createdBy";
+    private final static String MODIFIED_BY = "modifiedBy";
 
     private final TagMapper tagMapper;
 
@@ -38,7 +39,7 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
      */
     public GiftCertificate mapDtoToEntity(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = new GiftCertificate();
-        BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, TAGS, AUDIT);
+        BeanUtils.copyProperties(giftCertificateDTO, giftCertificate, TAGS, CREATED_BY, MODIFIED_BY);
         if (giftCertificateDTO.getTags() != null){
             List<Tag> tags = giftCertificateDTO.getTags().stream().map(tagMapper::mapDtoToEntity).collect(Collectors.toList());
             giftCertificate.setTags(tags);}
@@ -53,7 +54,7 @@ public class GiftCertificateMapper implements Mapper<GiftCertificate, GiftCertif
      */
     public GiftCertificateDTO mapEntityToDTO(GiftCertificate giftCertificate) {
         GiftCertificateDTO giftCertificateDTO = new GiftCertificateDTO();
-        BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, TAGS, AUDIT);
+        BeanUtils.copyProperties(giftCertificate, giftCertificateDTO, TAGS, CREATED_BY, MODIFIED_BY);
         giftCertificateDTO.setCreatedDate(giftCertificate.getCreatedDate());
         giftCertificateDTO.setLastUpdateDate(giftCertificate.getModifiedDate());
         if (giftCertificate.getTags() != null) {

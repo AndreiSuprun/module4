@@ -80,7 +80,7 @@ public class UsersController {
         List<User> users = userService.findAll();
         Role role = new Role();
         role.setId(1);
-        role.setName(ERole.ROLE_USER);
+        role.setName(ERole.USER);
         Set<Role> p = new HashSet<>();
         p.add(role);
         for(User user: users){

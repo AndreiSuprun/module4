@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -81,5 +82,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.UNAUTHORIZED_USER.getMessageCode(),
                 new Object[] {}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.UNAUTHORIZED_USER.getHttpStatus());
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<CustomErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        CustomErrorResponse apiResponse = new CustomErrorResponse();
+        apiResponse.setErrorCode(ErrorCode.INVALID_JWT_TOKEN.getCode().toString());
+        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.INVALID_JWT_TOKEN.getMessageCode(),
+                new Object[] {}, Locale.getDefault()));
+        return new ResponseEntity<>(apiResponse, ErrorCode.INVALID_JWT_TOKEN.getHttpStatus());
     }
 }

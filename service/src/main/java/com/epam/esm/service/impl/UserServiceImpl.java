@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         User user = new User(registerRequest.getUserName(), registerRequest.getEmail(),
                 passwordEncoder.encode(registerRequest.getPassword()));
         Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName(ERole.ROLE_USER).get());
+        roles.add(roleRepository.findByName(ERole.USER).get());
         user.setRoles(roles);
         return mapper.mapEntityToDTO(userRepository.save(user));
     }

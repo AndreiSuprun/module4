@@ -2,17 +2,26 @@ package com.epam.esm.service.security;
 
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 
 @Component
 public class JwtUtils {
@@ -37,20 +46,16 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateJwtToken(String authToken, HttpServletResponse response) throws IOException {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
-            throw new ValidationException(ErrorCode.INVALID_JWT_SIGNATURE, e.getMessage());
-        } catch (MalformedJwtException e) {
-            throw new ValidationException(ErrorCode.INVALID_JWT_TOKEN,  e.getMessage());
-        } catch (ExpiredJwtException e) {
-            throw new ValidationException(ErrorCode.EXPIRED_JWT_TOKEN, e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            throw new ValidationException(ErrorCode.UNSUPPORTED_JWT_TOKEN, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException(ErrorCode.JWT_CLAIMS_ARE_EMPTY, e.getMessage());
+        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
+            return false;
         }
     }
 }

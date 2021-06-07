@@ -25,6 +25,15 @@ public interface OrderService extends GenericService<OrderDTO> {
     OrderDTO createOrder(OrderDTO orderDTO);
 
     /**
+     * Finds orders for user with provided id.
+     *
+     * @param orderDTO Order to place in repository
+     * @throws ValidationException if user is not found in repository
+     * @return List<OrderDTO> List of orders dto of retrived orders
+     */
+    OrderDTO createOrderWithUser(OrderDTO orderDTO);
+
+    /**
      * Returns OrderDTO object for order with provided id from repository.
      *
      * @param userId id of user to find orders
