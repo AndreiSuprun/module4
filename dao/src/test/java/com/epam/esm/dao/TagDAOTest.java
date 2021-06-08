@@ -1,12 +1,13 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entity.*;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,10 +22,10 @@ import java.util.Optional;
 public class TagDAOTest {
 
     @Autowired
-    private TagDAO tagDAO;
+    private TagRepository tagDAO;
 
     @Autowired
-    private GiftCertificateDAO giftCertificateDAO;
+    private CertificateRepository giftCertificateDAO;
 
     @Test
     @Transactional
@@ -32,19 +33,19 @@ public class TagDAOTest {
     public void testFindOne(){
         Tag tag = new Tag("Tag");
 
-        tag = tagDAO.insert(tag);
-        Tag tagInDb = tagDAO.findOne(tag.getId());
+        tag = tagDAO.save(tag);
+        Optional<Tag> tagInDb = tagDAO.findById(tag.getId());
 
-        Assertions.assertEquals(tag.getId(), tagInDb.getId());
+        Assertions.assertEquals(tag.getId(), tagInDb.get().getId());
     }
 
     @Test
     @Transactional
     @Rollback
     public void testFindOneNotPresent(){
-        Tag tagInDb = tagDAO.findOne(2L);
+        Optional<Tag> tagInDb = tagDAO.findById(2L);
 
-        Assertions.assertNull(tagInDb);
+        Assertions.assertFalse(tagInDb.isPresent());
     }
 
     @Test
@@ -53,9 +54,9 @@ public class TagDAOTest {
     public void testFindByQuery(){
         Tag tag = new Tag("Tag");
 
-        tagDAO.insert(tag);
-        List<Tag> tagInDb = tagDAO.findByQuery(null, null, 1L, 10);
-        Assertions.assertEquals(2, tagInDb.size());
+        tagDAO.save(tag);
+        Page<Tag> tagInDb = tagDAO.findByQuery(null, null, Pageable.unpaged());
+        Assertions.assertEquals(2, tagInDb.getTotalElements());
     }
 
     @Test
@@ -64,19 +65,11 @@ public class TagDAOTest {
     public void testDeleteExisting(){
         Tag tag = new Tag("Tag");
 
-        tag = tagDAO.insert(tag);
-        boolean actual = tagDAO.delete(tag.getId());
+        tag = tagDAO.save(tag);
+        tagDAO.delete(tag);
+        Optional<Tag> tagInDb = tagDAO.findByName(tag.getName());
 
-        Assertions.assertTrue(actual);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testDeleteNotExisting(){
-        boolean actual = tagDAO.delete(2L);
-
-        Assertions.assertFalse(actual);
+        Assertions.assertFalse(tagInDb.isPresent());
     }
 
     @Test
@@ -85,10 +78,10 @@ public class TagDAOTest {
     public void testInsert(){
         Tag tag = new Tag("Tag");
 
-        tag = tagDAO.insert(tag);
-        Tag tagInDb = tagDAO.findByName(tag.getName());
+        tag = tagDAO.save(tag);
+        Optional<Tag> tagInDb = tagDAO.findByName(tag.getName());
 
-        Assertions.assertEquals(tag.getName(), tagInDb.getName());
+        Assertions.assertEquals(tag.getName(), tagInDb.get().getName());
     }
 
     @Test
@@ -97,10 +90,10 @@ public class TagDAOTest {
     public void testFindByName() {
         Tag tag = new Tag("Tag");
 
-        tag = tagDAO.insert(tag);
-        Tag tagByName = tagDAO.findByName(tag.getName());
+        tag = tagDAO.save(tag);
+        Optional<Tag> tagByName = tagDAO.findByName(tag.getName());
 
-        Assertions.assertEquals(tag.getName(), tagByName.getName());
+        Assertions.assertEquals(tag.getName(), tagByName.get().getName());
     }
 
     @Test
@@ -109,7 +102,7 @@ public class TagDAOTest {
     public void testCount(){
         Tag tag = new Tag("Tag");
 
-        tagDAO.insert(tag);
+        tagDAO.save(tag);
         Long count = tagDAO.count();
 
         Assertions.assertEquals(2, count);
@@ -127,7 +120,7 @@ public class TagDAOTest {
         Tag tag = new Tag("Tag");
         certificate.addTag(tag);
 
-        GiftCertificate certificateInDB = giftCertificateDAO.insert(certificate);
+        GiftCertificate certificateInDB = giftCertificateDAO.save(certificate);
         List<GiftCertificate> certificates = tagDAO.getCertificatesForTag(certificateInDB.getTags().get(0).getId());
         Assertions.assertEquals(certificate.getId(), certificates.get(0).getId());
     }

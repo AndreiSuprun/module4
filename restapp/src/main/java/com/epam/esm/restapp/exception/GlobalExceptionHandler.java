@@ -74,22 +74,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new Object[] {ex.toString()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.BAD_REQUEST.getHttpStatus());
     }
-
-    @ExceptionHandler({AuthenticationException.class})
-    public ResponseEntity<CustomErrorResponse> handleAuthenticationException(AuthenticationException ex) {
-        CustomErrorResponse apiResponse = new CustomErrorResponse();
-        apiResponse.setErrorCode(ErrorCode.UNAUTHORIZED_USER.getCode().toString());
-        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.UNAUTHORIZED_USER.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
-        return new ResponseEntity<>(apiResponse, ErrorCode.UNAUTHORIZED_USER.getHttpStatus());
-    }
-
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<CustomErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
-        CustomErrorResponse apiResponse = new CustomErrorResponse();
-        apiResponse.setErrorCode(ErrorCode.INVALID_JWT_TOKEN.getCode().toString());
-        apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.INVALID_JWT_TOKEN.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
-        return new ResponseEntity<>(apiResponse, ErrorCode.INVALID_JWT_TOKEN.getHttpStatus());
-    }
 }
