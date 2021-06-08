@@ -75,20 +75,6 @@ public class UsersController {
         return responseBuilder.getUserEntityModel(userDTO);
     }
 
-    @GetMapping("/passw")
-    public void authenticateUser() {
-        List<User> users = userService.findAll();
-        Role role = new Role();
-        role.setId(1);
-        role.setName(ERole.USER);
-        Set<Role> p = new HashSet<>();
-        p.add(role);
-        for(User user: users){
-            user.setRoles(p);
-            userRepository.save(user);
-        }
-    }
-
     /**
      * Retrieves users from repository according to provided request parameters.
      *
