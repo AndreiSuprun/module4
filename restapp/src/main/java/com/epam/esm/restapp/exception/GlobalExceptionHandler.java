@@ -53,7 +53,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         CustomErrorResponse apiResponse = new CustomErrorResponse();
         apiResponse.setErrorCode(ErrorCode.INTERNAL_ERROR.getCode().toString());
         apiResponse.setErrorMessage(messageSource.getMessage(ErrorCode.INTERNAL_ERROR.getMessageCode(),
-                new Object[] {}, Locale.getDefault()));
+                new Object[] {ex.getCause()}, Locale.getDefault()));
         return new ResponseEntity<>(apiResponse, ErrorCode.INTERNAL_ERROR.getHttpStatus());
     }
 

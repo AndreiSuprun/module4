@@ -1,13 +1,10 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.TagRepository;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.dto.PaginationDTO;
 import com.epam.esm.service.dto.TagDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
@@ -21,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {

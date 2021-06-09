@@ -1,14 +1,14 @@
 package com.epam.esm.service.validator;
 
-import com.epam.esm.dao.GiftCertificateDAO;
+import com.epam.esm.dao.CertificateRepository;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.dto.GiftCertificateDTO;
-import com.epam.esm.service.dto.OrderDTO;
-import com.epam.esm.service.dto.OrderItemDTO;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 /**
  * Class for GiftCertificateDTO validation
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class GiftCertificateDTOValidator {
 
-    private final GiftCertificateDAO giftCertificateDAO;
+    private final CertificateRepository giftCertificateDAO;
 
     @Autowired
-    public GiftCertificateDTOValidator(GiftCertificateDAO giftCertificateDAO) {
+    public GiftCertificateDTOValidator(CertificateRepository giftCertificateDAO) {
         this.giftCertificateDAO = giftCertificateDAO;
     }
 
@@ -33,16 +33,16 @@ public class GiftCertificateDTOValidator {
      * @throws ValidationException if validation is failed
      */
     public GiftCertificate validate(GiftCertificateDTO certificateDto, Long id){
-        GiftCertificate certificateInDB = giftCertificateDAO.findOne(id);
-        if (certificateInDB == null) {
+        Optional<GiftCertificate> certificateInDB = giftCertificateDAO.findById(id);
+        if (!certificateInDB.isPresent()) {
             throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
         if (certificateDto.getName() != null){
-            GiftCertificate certificateByName = giftCertificateDAO.findByName(certificateDto.getName());
-            if (certificateByName != null && !certificateByName.getId().equals(id)){
+            Optional<GiftCertificate> certificateByName = giftCertificateDAO.findByName(certificateDto.getName());
+            if (certificateByName.isPresent() && !certificateByName.get().getId().equals(id)){
                 throw new ValidationException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, certificateDto.getName());
             }
         }
-        return  certificateInDB;
+        return  certificateInDB.get();
     }
 }

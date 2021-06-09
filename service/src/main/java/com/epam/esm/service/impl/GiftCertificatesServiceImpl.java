@@ -58,6 +58,7 @@ public class GiftCertificatesServiceImpl implements GiftCertificatesService {
         if (certificateRepository.findByName(giftCertificate.getName()).isPresent()){
             throw new ValidationException(ErrorCode.CERTIFICATE_ALREADY_IN_DB, giftCertificate.getName());
         }
+        certificateRepository.addTags(giftCertificate);
         giftCertificate = certificateRepository.save(giftCertificate);
         return mapper.mapEntityToDTO(giftCertificate);
     }

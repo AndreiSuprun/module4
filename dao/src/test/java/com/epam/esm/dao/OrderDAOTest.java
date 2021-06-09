@@ -13,13 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @ExtendWith(SpringExtension.class)
@@ -27,11 +29,11 @@ import java.util.stream.Stream;
 public class OrderDAOTest {
 
     @Autowired
-    private GiftCertificateDAO certificateDAO;
+    private CertificateRepository certificateDAO;
     @Autowired
-    private OrderDAO orderDAO;
+    private OrderRepository orderDAO;
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository userDAO;
 
     static Stream<Order> defaultOrder() {
         GiftCertificate certificate = new GiftCertificate();
@@ -53,21 +55,21 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testFindOne(Order order){
-        User user = userDAO.findOne(1L);
-        order.setUser(user);
-        order = orderDAO.insert(order);
-        Order orderInDb = orderDAO.findOne(order.getId());
+        Optional<User> user = userDAO.findById(1L);
+        order.setUser(user.get());
+        order = orderDAO.save(order);
+        Optional<Order> orderInDb = orderDAO.findById(order.getId());
 
-        Assertions.assertEquals(order.getId(), orderInDb.getId());
+        Assertions.assertEquals(order.getId(), orderInDb.get().getId());
     }
 
     @Test
     @Transactional
     @Rollback
     public void testFindOneNotPresent(){
-        Order orderInDb = orderDAO.findOne(1L);
+        Optional<Order> orderInDb = orderDAO.findById(1L);
 
-        Assertions.assertNull(orderInDb);
+        Assertions.assertFalse(orderInDb.isPresent());
     }
 
     @ParameterizedTest
@@ -75,14 +77,14 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testFindByQuery(Order order){
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        orderDAO.insert(order);
-        List<Order> ordersInDb = orderDAO.findByQuery(null, null, 1L, 10);
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        orderDAO.save(order);
+        Page<Order> ordersInDb = orderDAO.findByQuery(null, null, Pageable.unpaged());
 
-        Assertions.assertEquals(1, ordersInDb.size());
+        Assertions.assertEquals(1, ordersInDb.getTotalElements());
     }
 
     @ParameterizedTest
@@ -90,11 +92,11 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testCount(Order order){
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        orderDAO.insert(order);
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        orderDAO.save(order);
         Long count = orderDAO.count();
 
         Assertions.assertEquals(1, count);
@@ -105,22 +107,15 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testDeleteExisting(Order order){
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        order = orderDAO.insert(order);
-        boolean actual = orderDAO.delete(order.getId());
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        order = orderDAO.save(order);
+        orderDAO.delete(order);
+        Optional<Order> orderInDb = orderDAO.findById(order.getId());
 
-        Assertions.assertTrue(actual);
-    }
-
-    @Test
-    @Transactional
-    public void testDeleteNotExisting(){
-        boolean actual = orderDAO.delete(1L);
-
-        Assertions.assertFalse(actual);
+        Assertions.assertFalse(orderInDb.isPresent());
     }
 
     @ParameterizedTest
@@ -128,14 +123,14 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testInsert(Order order){
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        orderDAO.insert(order);
-        List<Order> orderInDb = orderDAO.findByQuery(null, null, 1L,10);
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        orderDAO.save(order);
+        Page<Order> orderInDb = orderDAO.findByQuery(null, null, Pageable.unpaged());
 
-        Assertions.assertEquals(order.getId(), orderInDb.get(0).getId());
+        Assertions.assertEquals(order.getId(), orderInDb.getContent().get(0).getId());
     }
 
     @ParameterizedTest
@@ -143,13 +138,13 @@ public class OrderDAOTest {
     @Transactional
     @Rollback
     public void testUpdate(Order order){
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        Order orderInDB = orderDAO.insert(order);
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        Order orderInDB = orderDAO.save(order);
         order.setTotalPrice(BigDecimal.valueOf(4));
-        Order updatedOrderInDB = orderDAO.update(order, orderInDB.getId());
+        Order updatedOrderInDB = orderDAO.save(order);
 
         Assertions.assertEquals(order.getTotalPrice(), updatedOrderInDB.getTotalPrice());
     }
@@ -161,12 +156,12 @@ public class OrderDAOTest {
     public void testFindByNotFoundQuery(Order order) {
         SearchCriteria searchCriteria = new SearchCriteria("totalPrice", SearchOperation.EQUALITY, "3.00");
 
-        User user = userDAO.findOne(1L);
-        GiftCertificate giftCertificate = certificateDAO.findOne(1L);
-        order.setUser(user);
-        order.getOrderCertificates().get(0).setCertificate(giftCertificate);
-        orderDAO.insert(order);
-        List<Order> ordersByQuery = orderDAO.findByQuery(Lists.list(searchCriteria), null, 1L,10);
-        Assertions.assertEquals(0, ordersByQuery.size());
+        Optional<User> user = userDAO.findById(1L);
+        Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
+        order.setUser(user.get());
+        order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        orderDAO.save(order);
+        Page<Order> ordersByQuery = orderDAO.findByQuery(Lists.list(searchCriteria), null, Pageable.unpaged());
+        Assertions.assertEquals(0, ordersByQuery.getTotalElements());
     }
 }

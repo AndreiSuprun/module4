@@ -1,30 +1,25 @@
 package com.epam.esm.service.security;
 
-import com.epam.esm.service.exception.ErrorCode;
-import com.epam.esm.service.exception.ValidationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
-import java.util.Locale;
+import java.util.HashMap;
 
 @Component
 public class JwtUtils {
+
+    private static final String CODING = "utf-8";
+    private static final String MESSAGE = "message";
+    private static final String CODE = "code";
 
     @Value("${app.jwtSecret}")
     private String jwtSecret;
@@ -51,11 +46,19 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put(CODE, HttpStatus.UNAUTHORIZED.toString());
+            map.put(MESSAGE, e.getLocalizedMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setCharacterEncoding(CODING);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(e.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
-            return false;
+            ObjectMapper objectMapper = new ObjectMapper();
+            String resBody = objectMapper.writeValueAsString(map);
+            PrintWriter printWriter = response.getWriter();
+            printWriter.print(resBody);
+            printWriter.flush();
+            printWriter.close();
         }
+        return false;
     }
 }

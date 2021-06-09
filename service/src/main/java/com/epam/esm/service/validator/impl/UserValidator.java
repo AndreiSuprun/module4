@@ -1,7 +1,5 @@
 package com.epam.esm.service.validator.impl;
 
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.exception.ErrorCode;
 import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.security.RegisterRequest;

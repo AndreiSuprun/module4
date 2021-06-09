@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @ExtendWith(SpringExtension.class)
@@ -24,11 +27,11 @@ import java.util.stream.Stream;
 public class GiftCertificateDAOTest {
 
     @Autowired
-    private GiftCertificateDAO certificateDAO;
+    private CertificateRepository certificateDAO;
     @Autowired
-    private OrderDAO orderDAO;
+    private OrderRepository orderDAO;
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository userDAO;
 
     static Stream<GiftCertificate> defaultGiftCertificate() {
         GiftCertificate certificate = new GiftCertificate();
@@ -46,19 +49,19 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testFindOne(GiftCertificate certificate){
-        certificate = certificateDAO.insert(certificate);
-        GiftCertificate certificateInDb = certificateDAO.findOne(certificate.getId());
+        certificate = certificateDAO.save(certificate);
+        Optional<GiftCertificate> certificateInDb = certificateDAO.findById(certificate.getId());
 
-        Assertions.assertEquals(certificate.getId(), certificateInDb.getId());
+        Assertions.assertEquals(certificate.getId(), certificateInDb.get().getId());
     }
 
     @Test
     @Transactional
     @Rollback
     public void testFindOneNotPresent(){
-        GiftCertificate certificateInDb = certificateDAO.findOne(2L);
+        Optional<GiftCertificate> certificateInDb = certificateDAO.findById(2L);
 
-        Assertions.assertNull(certificateInDb);
+        Assertions.assertFalse(certificateInDb.isPresent());
     }
 
     @ParameterizedTest
@@ -66,10 +69,9 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testFindByQuery(GiftCertificate certificate){
-        certificateDAO.insert(certificate);
-        List<GiftCertificate> certificateInDb = certificateDAO.findByQuery(null, null, 1L, 10);
-
-        Assertions.assertEquals(2, certificateInDb.size());
+        certificateDAO.save(certificate);
+        Page<GiftCertificate> certificateInDb = certificateDAO.findByQuery(null, null, Pageable.unpaged());
+        Assertions.assertEquals(2, certificateInDb.getTotalElements());
     }
 
     @ParameterizedTest
@@ -77,7 +79,7 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testCount(GiftCertificate certificate){
-        certificateDAO.insert(certificate);
+        certificateDAO.save(certificate);
         Long count = certificateDAO.count();
 
         Assertions.assertEquals(2, count);
@@ -88,18 +90,11 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testDeleteExisting(GiftCertificate certificate){
-        certificate = certificateDAO.insert(certificate);
-        boolean actual = certificateDAO.delete(certificate.getId());
+        certificate = certificateDAO.save(certificate);
+        certificateDAO.delete(certificate);
 
-        Assertions.assertTrue(actual);
-    }
-
-    @Test
-    @Transactional
-    public void testDeleteNotExisting(){
-        boolean actual = certificateDAO.delete(2L);
-
-        Assertions.assertFalse(actual);
+        Optional<GiftCertificate> certificateInDb = certificateDAO.findById(certificate.getId());
+        Assertions.assertFalse(certificateInDb.isPresent());
     }
 
     @ParameterizedTest
@@ -107,10 +102,10 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testAddCertificate(GiftCertificate certificate){
-        GiftCertificate giftCertificate = certificateDAO.insert(certificate);
-        GiftCertificate certificateInDb = certificateDAO.findOne(giftCertificate.getId());
+        GiftCertificate giftCertificate = certificateDAO.save(certificate);
+        Optional<GiftCertificate> certificateInDb = certificateDAO.findById(giftCertificate.getId());
 
-        Assertions.assertEquals(certificate.getName(), certificateInDb.getName());
+        Assertions.assertEquals(certificate.getName(), certificateInDb.get().getName());
     }
 
     @ParameterizedTest
@@ -118,10 +113,10 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testFindByName(GiftCertificate certificate) {
-        certificateDAO.insert(certificate);
-        GiftCertificate certificateInDB = certificateDAO.findByName(certificate.getName());
+        certificateDAO.save(certificate);
+        Optional<GiftCertificate> certificateInDB = certificateDAO.findByName(certificate.getName());
 
-        Assertions.assertEquals(certificate.getName(), certificateInDB.getName());
+        Assertions.assertEquals(certificate.getName(), certificateInDB.get().getName());
     }
 
     @ParameterizedTest
@@ -129,17 +124,17 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testGetOrdersFromCertificate(GiftCertificate certificate){
-        User user = userDAO.findOne(1L);
+        Optional<User> user = userDAO.findById(1L);
         OrderItem orderItem = new OrderItem();
-        GiftCertificate certificateInDB = certificateDAO.findOne(1L);
-        orderItem.setCertificate(certificateInDB);
+        Optional<GiftCertificate> certificateInDB = certificateDAO.findById(1L);
+        orderItem.setCertificate(certificateInDB.get());
         orderItem.setQuantity(1);
         Order order = new Order();
-        order.setUser(user);
+        order.setUser(user.get());
         order.setOrderCertificates(Lists.list(orderItem));
         order.setTotalPrice(BigDecimal.valueOf(1));
-        orderDAO.insert(order);
-        List<Order> tags = certificateDAO.getOrdersForCertificates(certificateInDB.getId());
+        orderDAO.save(order);
+        List<Order> tags = certificateDAO.findOrdersForCertificates(certificateInDB.get().getId());
         Assertions.assertEquals(order.getId(), tags.get(0).getId());
     }
 
@@ -148,9 +143,9 @@ public class GiftCertificateDAOTest {
     @Transactional
     @Rollback
     public void testUpdateCertificate(GiftCertificate certificate){
-        GiftCertificate certificateInDB = certificateDAO.insert(certificate);
+        GiftCertificate certificateInDB = certificateDAO.save(certificate);
         certificate.setName("CertificateUpdated");
-        GiftCertificate updatedCertificateInDB = certificateDAO.update(certificate, certificateInDB.getId());
+        GiftCertificate updatedCertificateInDB = certificateDAO.save(certificate);
 
         Assertions.assertEquals(certificate.getName(), updatedCertificateInDB.getName());
     }
@@ -162,9 +157,9 @@ public class GiftCertificateDAOTest {
     public void testFindByNotFoundQuery(GiftCertificate certificate) {
         SearchCriteria searchCriteria = new SearchCriteria("name", SearchOperation.EQUALITY, "Certificate new");
 
-        certificateDAO.insert(certificate);
-        List<GiftCertificate> certificatesByQuery = certificateDAO.findByQuery(Lists.list(searchCriteria), null, 1L,10);
+        certificateDAO.save(certificate);
+        Page<GiftCertificate> certificatesByQuery = certificateDAO.findByQuery(Lists.list(searchCriteria), null, Pageable.unpaged());
 
-        Assertions.assertEquals(0, certificatesByQuery.size());
+        Assertions.assertEquals(0, certificatesByQuery.getTotalElements());
     }
 }

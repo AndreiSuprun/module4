@@ -40,18 +40,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
-    @Autowired
-    private MessageSource messageSource;
-
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-
-//    @Bean
-//    public ExceptionHandlerFilter exceptionHandlerFilter() {
-//        return new ExceptionHandlerFilter(messageSource);
-//    }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {

@@ -1,12 +1,9 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.OrderRepository;
 import com.epam.esm.dao.criteria.OrderCriteria;
 import com.epam.esm.dao.criteria.SearchCriteria;
-import com.epam.esm.dao.criteria.SearchOperation;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.User;
 import com.epam.esm.service.GiftCertificatesService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -22,7 +19,6 @@ import com.epam.esm.service.validator.impl.OrderItemValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

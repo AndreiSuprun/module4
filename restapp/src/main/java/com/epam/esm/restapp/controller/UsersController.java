@@ -12,22 +12,16 @@ import com.epam.esm.service.exception.ValidationException;
 import com.epam.esm.service.search.OrderCriteriaBuilder;
 import com.epam.esm.service.search.SearchCriteriaBuilder;
 import com.epam.esm.service.security.JwtResponse;
-import com.epam.esm.service.security.JwtUtils;
 import com.epam.esm.service.security.LoginRequest;
 import com.epam.esm.service.security.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,20 +65,6 @@ public class UsersController {
     public EntityModel<UserDTO> registerUser(@RequestBody RegisterRequest registerRequest) {
         UserDTO userDTO = userService.add(registerRequest);
         return responseBuilder.getUserEntityModel(userDTO);
-    }
-
-    @GetMapping("/passw")
-    public void authenticateUser() {
-        List<User> users = userService.findAll();
-        Role role = new Role();
-        role.setId(1);
-        role.setName(ERole.USER);
-        Set<Role> p = new HashSet<>();
-        p.add(role);
-        for(User user: users){
-            user.setRoles(p);
-            userRepository.save(user);
-        }
     }
 
     /**
