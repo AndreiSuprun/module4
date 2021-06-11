@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" external-system-id="Maven" name="restapp:war">
+    <output-path>$PROJECT_DIR$/restapp/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>restapp</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="restapp-1.0.war">
+      <element id="artifact" artifact-name="restapp:war exploded" />
+    </root>
+  </artifact>
+</component>
