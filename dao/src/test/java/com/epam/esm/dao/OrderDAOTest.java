@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -86,8 +87,9 @@ public class OrderDAOTest {
         Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
         order.setUser(user.get());
         order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        Pageable pageable = PageRequest.of(0, 2);
         orderDAO.save(order);
-        Page<Order> ordersInDb = orderDAO.findByQuery(null, null, Pageable.unpaged());
+        Page<Order> ordersInDb = orderDAO.findByQuery(null, null, pageable);
 
         Assertions.assertEquals(1, ordersInDb.getTotalElements());
     }
@@ -132,8 +134,9 @@ public class OrderDAOTest {
         Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
         order.setUser(user.get());
         order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        Pageable pageable = PageRequest.of(0, 2);
         orderDAO.save(order);
-        Page<Order> orderInDb = orderDAO.findByQuery(null, null, Pageable.unpaged());
+        Page<Order> orderInDb = orderDAO.findByQuery(null, null, pageable);
 
         Assertions.assertEquals(order.getId(), orderInDb.getContent().get(0).getId());
     }
@@ -165,8 +168,9 @@ public class OrderDAOTest {
         Optional<GiftCertificate> giftCertificate = certificateDAO.findById(1L);
         order.setUser(user.get());
         order.getOrderCertificates().get(0).setCertificate(giftCertificate.get());
+        Pageable pageable = PageRequest.of(0, 2);
         orderDAO.save(order);
-        Page<Order> ordersByQuery = orderDAO.findByQuery(Lists.list(searchCriteria), null, Pageable.unpaged());
+        Page<Order> ordersByQuery = orderDAO.findByQuery(Lists.list(searchCriteria), null, pageable);
         Assertions.assertEquals(0, ordersByQuery.getTotalElements());
     }
 }

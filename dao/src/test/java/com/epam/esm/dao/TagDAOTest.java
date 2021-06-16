@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,9 +59,10 @@ public class TagDAOTest {
     @Rollback
     public void testFindByQuery(){
         Tag tag = new Tag("Tag");
+        Pageable pageable = PageRequest.of(0, 2);
 
         tagDAO.save(tag);
-        Page<Tag> tagInDb = tagDAO.findByQuery(null, null, Pageable.unpaged());
+        Page<Tag> tagInDb = tagDAO.findByQuery(null, null, pageable);
         Assertions.assertEquals(2, tagInDb.getTotalElements());
     }
 

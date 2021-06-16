@@ -38,7 +38,7 @@ public class GiftCertificateDTOValidatorTest {
         expected.setName("Certificate");
 
         when(giftCertificateDAO.findById(id)).thenReturn(Optional.of(certificateInDB));
-        when(giftCertificateDAO.findByName(expectedDTO.getName())).thenReturn(null);
+        when(giftCertificateDAO.findByName(expectedDTO.getName())).thenReturn(Optional.empty());
 
         GiftCertificate actual = certificateDTOValidator.validate(expectedDTO, id);
 

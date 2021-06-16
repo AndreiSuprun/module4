@@ -59,7 +59,7 @@ class OrderDTOValidatorTest {
         orderDTO.setCertificates(Lists.list(orderItemDTO));
 
         assertThrows(ValidationException.class, () -> {
-            orderDTOValidator.validate(orderDTO);
+            orderDTOValidator.validateWithUser(orderDTO);
         });
     }
 

@@ -171,12 +171,13 @@ public class GiftCertificateServiceTest {
         GiftCertificateDTO certificateDTO = new GiftCertificateDTO();
         certificateDTO.setName("CertificateDTO");
 
-        when(giftCertificateDAO.findById(id)).thenReturn(Optional.of(certificate));
+        when(giftCertificateDAO.existsById(id)).thenReturn(true);
+        when(giftCertificateDAO.findOrdersForCertificates(id)).thenReturn(Lists.emptyList());
         when(mapper.mapEntityToDTO(certificate)).thenReturn(certificateDTO);
-        doNothing().when(giftCertificateDAO).delete(certificate);
+        doNothing().when(giftCertificateDAO).deleteById(id);
         giftCertificateService.delete(id);
 
-        verify(giftCertificateDAO, times(1)).delete(certificate);
+        verify(giftCertificateDAO, times(1)).deleteById(id);
     }
 
     @Test
@@ -184,13 +185,14 @@ public class GiftCertificateServiceTest {
         GiftCertificate certificate = new GiftCertificate();
         Long id = 2L;
 
+        when(giftCertificateDAO.existsById(id)).thenReturn(false);
         when(giftCertificateDAO.findOrdersForCertificates(id)).thenReturn(Lists.emptyList());
-        doNothing().when(giftCertificateDAO).delete(certificate);
+        doNothing().when(giftCertificateDAO).deleteById(id);
 
         assertThrows(ValidationException.class, () -> {
             giftCertificateService.delete(id);
         });
-        verify(giftCertificateDAO, times(1)).delete(certificate);
+        verify(giftCertificateDAO, never()).deleteById(id);
     }
 
     @Test

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,7 +49,8 @@ public class UserDAOTest {
     @Transactional
     @Rollback
     public void testFindByQuery(){
-        Page<User> userInDb = userDAO.findByQuery(null, null, Pageable.unpaged());
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<User> userInDb = userDAO.findByQuery(null, null, pageable);
 
         Assertions.assertEquals(1, userInDb.getTotalElements());
     }

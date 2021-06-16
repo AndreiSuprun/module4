@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.Rollback;
@@ -76,7 +77,8 @@ public class GiftCertificateDAOTest {
     @Rollback
     public void testFindByQuery(GiftCertificate certificate){
         certificateDAO.save(certificate);
-        Page<GiftCertificate> certificateInDb = certificateDAO.findByQuery(null, null, Pageable.unpaged());
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<GiftCertificate> certificateInDb = certificateDAO.findByQuery(null, null, pageable);
         Assertions.assertEquals(2, certificateInDb.getTotalElements());
     }
 
@@ -139,9 +141,11 @@ public class GiftCertificateDAOTest {
         order.setUser(user.get());
         order.setOrderCertificates(Lists.list(orderItem));
         order.setTotalPrice(BigDecimal.valueOf(1));
-        orderDAO.save(order);
-        List<Order> tags = certificateDAO.findOrdersForCertificates(certificateInDB.get().getId());
-        Assertions.assertEquals(order.getId(), tags.get(0).getId());
+        order = orderDAO.save(order);
+        orderItem.setOrder(order);
+        order = orderDAO.save(order);
+        List<Order> orders = certificateDAO.findOrdersForCertificates(certificateInDB.get().getId());
+        Assertions.assertEquals(order.getId(), orders.get(0).getId());
     }
 
     @ParameterizedTest
@@ -162,9 +166,10 @@ public class GiftCertificateDAOTest {
     @Rollback
     public void testFindByNotFoundQuery(GiftCertificate certificate) {
         SearchCriteria searchCriteria = new SearchCriteria("name", SearchOperation.EQUALITY, "Certificate new");
+        Pageable pageable = PageRequest.of(0, 2);
 
         certificateDAO.save(certificate);
-        Page<GiftCertificate> certificatesByQuery = certificateDAO.findByQuery(Lists.list(searchCriteria), null, Pageable.unpaged());
+        Page<GiftCertificate> certificatesByQuery = certificateDAO.findByQuery(Lists.list(searchCriteria), null, pageable);
 
         Assertions.assertEquals(0, certificatesByQuery.getTotalElements());
     }

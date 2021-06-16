@@ -45,7 +45,9 @@ class UserMapperTest {
 
     @Test
     void mapEntityToDTOTest() {
-        User user = new User("userName", "email", "111");
+        User user = new User();
+        user.setUserName("userName");
+        user.setEmail("email");
         UserDTO userDTO = new UserDTO();
         userDTO.setUserName("userName");
         userDTO.setEmail("email");

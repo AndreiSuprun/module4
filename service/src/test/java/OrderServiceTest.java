@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
@@ -154,11 +155,11 @@ public class OrderServiceTest {
         Order order = new Order();
         order.setTotalPrice(BigDecimal.valueOf(20));
 
-        when(orderDAO.findById(order.getId())).thenReturn(Optional.of(order));
-        doNothing().when(orderDAO).delete(order);
+        when(orderDAO.findById(id)).thenReturn(Optional.of(order));
+        doNothing().when(orderDAO).deleteById(id);
         orderService.delete(id);
 
-        verify(orderDAO, times(1)).delete(order);
+        verify(orderDAO, times(1)).deleteById(id);
     }
 
     @Test
@@ -240,14 +241,16 @@ public class OrderServiceTest {
         expectedDTO.setTotalPrice(BigDecimal.valueOf(20));
         expectedDTO.setId(id);
         Page<OrderDTO> pageableDTO = new PageImpl<>(Lists.list(expectedDTO));
+        Pageable pageablePage = PageRequest.of(0, 2);
 
         when(userService.find(id)).thenReturn(new UserDTO());
-        when(orderDAO.findByQuery(searchParams, null, Pageable.unpaged())).
+        when(orderDAO.findByQuery(searchParams, null, pageablePage)).
                 thenReturn(pageable);
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
-        Page<OrderDTO> actual = orderService.findByUser(id, Pageable.unpaged());
+        when(orderDAO.findByUserId(id, pageablePage)).thenReturn(pageable);
+        Page<OrderDTO> actual = orderService.findByUser(id, pageablePage);
 
         assertEquals(pageableDTO, actual);
-        verify(orderDAO, times(1)).findByQuery(searchParams, null, Pageable.unpaged());
+        verify(orderDAO, times(1)).findByUserId(id, pageablePage);
     }
 }
