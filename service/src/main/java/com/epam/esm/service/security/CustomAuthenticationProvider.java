@@ -28,11 +28,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String userName = authentication.getName();
         String password = authentication.getCredentials().toString();
         Optional<User> userOptional = userRepository.findByUserName(userName);
-        if (!userOptional.isPresent()) {
-            throw new ValidationException(ErrorCode.USER_NAME_NOT_VALID, userName);
-        }
-        if (!passwordEncoder.matches(password, userOptional.get().getPassword())) {
-            throw new ValidationException(ErrorCode.PASSWORD_NOT_VALID);
+        if (!userOptional.isPresent() || !passwordEncoder.matches(password, userOptional.get().getPassword())) {
+            throw new ValidationException(ErrorCode.USER_NAME_OR_PASSWORD_NOT_VALID);
         }
         UserDetails principal = UserDetailsImpl.build(userOptional.get());
         return new UsernamePasswordAuthenticationToken(
