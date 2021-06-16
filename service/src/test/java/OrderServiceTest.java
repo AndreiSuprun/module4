@@ -154,6 +154,7 @@ public class OrderServiceTest {
         Order order = new Order();
         order.setTotalPrice(BigDecimal.valueOf(20));
 
+        when(orderDAO.findById(order.getId())).thenReturn(Optional.of(order));
         doNothing().when(orderDAO).delete(order);
         orderService.delete(id);
 
@@ -163,20 +164,22 @@ public class OrderServiceTest {
     @Test
     void deleteNotCorrectTest() {
         Order order = new Order();
+        order.setId(2L);
 
+        when(orderDAO.findById(order.getId())).thenReturn(Optional.empty());
         doNothing().when(orderDAO).delete(order);
 
         assertThrows(ValidationException.class, () -> {
             orderService.delete(order.getId());
         });
-        verify(orderDAO, times(1)).delete(order);
+        verify(orderDAO, never()).delete(order);
     }
 
     @Test
     void findNotCorrectTest() {
         Long id = 1L;
 
-        when(orderDAO.findById(id)).thenReturn(null);
+        when(orderDAO.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ValidationException.class, () -> {
             orderService.find(id);

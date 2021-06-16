@@ -1,10 +1,12 @@
 package com.epam.esm.dao;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -20,14 +22,15 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {"com.epam.esm.dao"})
 @EnableTransactionManagement
 @PropertySource("classpath:/database.properties")
+@EnableJpaRepositories("com.epam.esm.dao")
 public class TestDBConfig {
 
-    @Value("${database.driver}") String driver;
+    @Value("${spring.datasource.driver-class-name}") String driver;
     @Value("${database.name}") String name;
-    @Value("${database.encoding}") String encoding;
+    @Value("${spring.datasource.sql-script-encoding}") String encoding;
     @Value("${database.script}") String script;
 
-    @Bean
+    @Bean(name="dataSource")
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setName(name)
@@ -38,16 +41,16 @@ public class TestDBConfig {
                 .build();
     }
 
-    @Bean
+    @Bean(name="entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean getEntityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan("com.epam.esm.entity");
-        entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        return entityManagerFactoryBean;
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setDataSource(dataSource);
+        entityManagerFactory.setPackagesToScan("com.epam.esm.entity");
+        entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        return entityManagerFactory;
     }
 
-    @Bean
+    @Bean(name="transactionManager")
     public PlatformTransactionManager txManager(DataSource dataSource, EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory);

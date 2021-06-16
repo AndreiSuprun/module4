@@ -96,7 +96,7 @@ public class GiftCertificateServiceTest {
         when(mapper.mapDtoToEntity(expectedDTO)).thenReturn(expected);
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
         doNothing().when(validator).validate(expected);
-        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(null);
+        when(giftCertificateDAO.findByName(expected.getName())).thenReturn(Optional.empty());
         when(giftCertificateDAO.save(expected)).thenReturn(expected);
         when(tagService.findByName(tagDTO.getName())).thenReturn(tagDTO);
         doNothing().when(validator).validate(expected);
@@ -197,7 +197,7 @@ public class GiftCertificateServiceTest {
     void findCertificateNotCorrectTest() {
         Long id = 1L;
 
-        when(giftCertificateDAO.findById(id)).thenReturn(null);
+        when(giftCertificateDAO.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ValidationException.class, () -> {
             giftCertificateService.find(id);

@@ -63,7 +63,7 @@ public class TagServiceTest {
         when(mapper.mapEntityToDTO(expected)).thenReturn(expectedDTO);
         doNothing().when(validator).validate(expected);
         when(tagDAO.save(expected)).thenReturn(expected);
-        when(tagDAO.findByName(expected.getName())).thenReturn(null);
+        when(tagDAO.findByName(expected.getName())).thenReturn(Optional.empty());
         TagDTO actual = tagService.add(expectedDTO);
 
         assertEquals(expectedDTO, actual);
@@ -76,9 +76,10 @@ public class TagServiceTest {
         tag.setId(1L);
 
         doNothing().when(tagDAO).delete(tag);
+        when(tagDAO.existsById(tag.getId())).thenReturn(true);
         tagService.delete(tag.getId());
 
-        verify(tagDAO, times(1)).delete(tag);
+        verify(tagDAO, never()).delete(tag);
     }
 
     @Test
@@ -91,14 +92,13 @@ public class TagServiceTest {
         assertThrows(ValidationException.class, () -> {
             tagService.delete(tag.getId());
         });
-        verify(tagDAO, times(1)).delete(tag);
     }
 
     @Test
     void findTagNotCorrectTest() {
         Long id = 1L;
 
-        when(tagDAO.findById(id)).thenReturn(null);
+        when(tagDAO.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ValidationException.class, () -> {
             tagService.find(id);

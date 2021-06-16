@@ -47,7 +47,7 @@ public class User {
     @Column(name = "updated_by")
     @LastModifiedBy
     private String modifiedBy;
-    @Column(name = "created_on", nullable = false, updatable = false)
+    @Column(name = "created_on")
     @CreatedDate
     private LocalDateTime createdDate;
     @Column(name = "updated_on")

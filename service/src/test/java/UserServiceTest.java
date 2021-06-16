@@ -41,7 +41,7 @@ public class UserServiceTest {
     void findUserNotCorrectTest() {
         Long id = 1L;
 
-        when(userDAO.findById(id)).thenReturn(null);
+        when(userDAO.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ValidationException.class, () -> {
             userService.find(id);

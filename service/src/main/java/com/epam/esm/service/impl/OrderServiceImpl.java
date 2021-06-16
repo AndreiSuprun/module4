@@ -77,9 +77,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         orderDTOValidator.validate(orderDTO);
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        UserDTO user = userService.findByUserName(userDetails.getUsername());
+        UserDetails userDetails = null;
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
+        }
+        UserDTO user = null;
+        if (userDetails != null) {
+            user = userService.findByUserName(userDetails.getUsername());
+        }
         BigDecimal totalPrice = orderDTO.getCertificates().stream().
                 map(orderItemDTO -> certificatesService.find(orderItemDTO.getGiftCertificateDTO().getId()).getPrice().
                         multiply(BigDecimal.valueOf(orderItemDTO.getQuantity()))).
@@ -124,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void delete(Long id) {
-        if(!orderRepository.findById(id).isPresent()){
+        if (!orderRepository.findById(id).isPresent()) {
             throw new ValidationException(ErrorCode.CERTIFICATE_NOT_FOUND, id);
         }
         orderRepository.deleteById(id);
