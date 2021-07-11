@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -14,7 +15,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EntityScan(basePackages = {"com.epam.esm.entity"})
 @EnableJpaRepositories("com.epam.esm.dao")
 @EnableJpaAuditing
-public class ModuleApplication {
+public class ModuleApplication extends SpringBootServletInitializer{
 
     public static void main(String[] args) {
         SpringApplication.run(ModuleApplication.class, args);
