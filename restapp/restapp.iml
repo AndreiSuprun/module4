@@ -19,6 +19,7 @@
         <datasource-mapping>
           <factory-entry name="entityManagerFactory" />
           <factory-entry name="getEntityManagerFactory" />
+          <factory-entry name="restapp" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>
